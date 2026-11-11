@@ -85,78 +85,9 @@
             background-color: #f0f0f0; border-radius: 8px; display: block;
         }
 
-        /* --- КНОПКА ПРОФИЛЯ НА ФОТО --- */
-        .profile-btn-overlay {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
+        /* --- КНОПКИ ПОД ФОТО (ЕДИНЫЙ СТИЛЬ) --- */
+        .action-btn {
             width: 40px; height: 40px;
-            background: rgba(255, 255, 255, 0.45);
-            backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            z-index: 10;
-        }
-        
-        .profile-btn-overlay svg { 
-            width: 22px; height: 22px; 
-            stroke: black; stroke-width: 2; fill: transparent; 
-        }
-        
-        .profile-btn-overlay:active { 
-            transform: translateX(-50%) scale(0.85); 
-        }
-
-        /* --- ИНФО БЛОК ПОД ФОТО --- */
-        .post-info { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            /* Отступ сверху 15px, чтобы было как у кнопки профиля */
-            padding-top: 15px; 
-            font-size: 13px; 
-            font-weight: 400; 
-            letter-spacing: -0.2px;
-            position: relative; 
-            z-index: 100; 
-            width: 100%; 
-        }
-        
-        .post-tag { 
-            color: var(--text-color); 
-            text-decoration: none; 
-            font-weight: 500; 
-            cursor: pointer; 
-            flex: 1; 
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .post-date { 
-            color: var(--secondary-text); 
-            font-size: 13px; 
-            flex: 1; 
-            text-align: right; 
-        }
-
-        /* Центральный блок (ТОЛЬКО лайк, по центру) - ВОЗВРАЩЕН В ПОТОК */
-        .center-like {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-shrink: 0;
-            padding: 0 10px;
-        }
-
-        /* --- Кнопка лайка (в стиле плюса) --- */
-        .like-btn {
-            width: 34px; height: 34px;
             background: rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.6);
@@ -167,20 +98,102 @@
             transition: transform 0.2s ease;
             flex-shrink: 0;
         }
-        
-        .like-btn svg { 
-            width: 20px; height: 20px; 
+
+        .action-btn svg { 
+            width: 22px; height: 22px; 
             stroke: black; stroke-width: 2; fill: transparent; 
             transition: stroke 0.2s, fill 0.2s; 
         }
         
+        .action-btn:active { 
+            transform: scale(0.85); 
+        }
+
+        /* Специфичные стили для лайка */
         .like-btn.liked svg { 
             stroke: var(--like-color); 
             fill: var(--like-color); 
         }
+
+        /* --- ИНФО БЛОК ПОД ФОТО --- */
+        .post-info { 
+            display: flex; 
+            align-items: center; 
+            padding-top: 15px; 
+            /* СДВИГ ПО ГОРИЗОНТАЛИ К ЦЕНТРУ НА 7 ПИКСЕЛЕЙ */
+            padding-left: 7px;
+            padding-right: 7px;
+            font-size: 13px; 
+            font-weight: 400; 
+            letter-spacing: -0.2px;
+            position: relative; 
+            z-index: 100; 
+            width: 100%; 
+            gap: 10px; 
+            /* Убрали глобальный line-height: 1, чтобы не резало текст */
+        }
         
-        .like-btn:active { 
-            transform: scale(0.85); 
+        /* Левая часть (Кнопка профиля + Тег) */
+        .info-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0; 
+        }
+
+        /* Обертка для тега, чтобы работал градиент */
+        .tag-wrapper {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
+            mask-image: linear-gradient(to right, black 80%, transparent 100%);
+        }
+
+        .post-tag { 
+            color: var(--text-color); 
+            text-decoration: none; 
+            font-weight: 500; 
+            cursor: pointer; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
+            padding-bottom: 2px; /* Запас снизу для хвостиков @ и g, y, p */
+            display: inline-block;
+        }
+
+        /* Центральный разделитель (три точки) */
+        .info-divider {
+            color: var(--secondary-text);
+            font-size: 20px;      
+            line-height: 1;       
+            display: flex;
+            align-items: center;  
+            justify-content: center;
+            flex-shrink: 0;
+            letter-spacing: 2px;  
+            padding: 0 5px;
+        }
+
+        /* Правая часть (Дата + Кнопка лайка) */
+        .info-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+            justify-content: flex-end;
+        }
+        
+        .post-date { 
+            color: var(--secondary-text); 
+            font-size: 13px; 
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         /* Стиль для статичных постов */
@@ -452,7 +465,7 @@
         let isLongPress = false;
 
         // 1. ЗАГРУЗКА ДАННЫХ ИЗ БАЗЫ SUPABASE
-        async function loadRealPhotos() {
+        async function loadRealPhotos(isInitialLoad = false) {
             const { data, error } = await supabaseClient
                 .from('photos')
                 .select(`
@@ -473,6 +486,26 @@
                 .eq('user_id', currentUserId);
             
             likedPhotos = myLikes ? [...new Set(myLikes.map(l => l.photo_id))] : [];
+
+            // Если это не первичная загрузка, мы не пересобираем весь DOM,
+            // а просто обновляем состояние лайков у существующих постов
+            if (!isInitialLoad) {
+                likedPhotos.forEach(id => {
+                    const btn = document.querySelector(`#post-${id} .like-btn`);
+                    if (btn) btn.classList.add('liked');
+                });
+                // Убираем лайки, которые могли быть удалены с другого устройства
+                document.querySelectorAll('.like-btn.liked').forEach(btn => {
+                    const postElement = btn.closest('.post');
+                    if (postElement) {
+                        const postId = parseInt(postElement.dataset.id);
+                        if (!likedPhotos.includes(postId)) {
+                            btn.classList.remove('liked');
+                        }
+                    }
+                });
+                return;
+            }
 
             feed.innerHTML = ''; 
             allPostsData = []; 
@@ -501,27 +534,32 @@
                         <div class="post" id="post-${post.id}" data-id="${post.id}">
                             <div class="image-container">
                                 <img src="${post.image_url}" alt="Photo" class="dynamic-img">
-                                
-                                <!-- Кнопка профиля ПОВЕРХ фото (по центру внизу) -->
-                                <button class="profile-btn-overlay" onclick="openTelegramLink('${post.tag}')">
-                                    <svg viewBox="0 0 24 24">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <circle cx="12" cy="9" r="3"></circle>
-                                        <path d="M6.5 18.5c1.5-2 3.5-3 5.5-3s4 1 5.5 3"></path>
-                                    </svg>
-                                </button>
                             </div>
                             <div class="post-info">
-                                <span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span>
-                                
-                                <!-- Центральный блок (только лайк) -->
-                                <div class="center-like">
-                                    <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${post.id}')">
+                                <!-- Левая часть: Кнопка профиля + Тег (с градиентом) -->
+                                <div class="info-left">
+                                    <button class="action-btn profile-btn" onclick="openTelegramLink('${post.tag}')">
+                                        <svg viewBox="0 0 24 24">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <circle cx="12" cy="9" r="3"></circle>
+                                            <path d="M6.5 18.5c1.5-2 3.5-3 5.5-3s4 1 5.5 3"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="tag-wrapper">
+                                        <span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span>
+                                    </div>
+                                </div>
+
+                                <!-- Центральный разделитель -->
+                                <div class="info-divider">•••</div>
+
+                                <!-- Правая часть: Дата + Кнопка лайка -->
+                                <div class="info-right">
+                                    <span class="post-date">${dateStr}</span>
+                                    <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${post.id}')">
                                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                                     </button>
                                 </div>
-
-                                <span class="post-date">${dateStr}</span>
                             </div>
                         </div>
                     `);
@@ -539,14 +577,18 @@
                 `);
             });
 
-            setTimeout(() => {
-                const targetPost = document.getElementById('bottom-static-1');
-                if (targetPost) targetPost.scrollIntoView({ behavior: 'instant', block: 'center' });
-                btnDown.classList.add('hidden'); 
-            }, 100);
+            // Прокрутка вниз только при первичной загрузке
+            if (isInitialLoad) {
+                setTimeout(() => {
+                    const targetPost = document.getElementById('bottom-static-1');
+                    if (targetPost) targetPost.scrollIntoView({ behavior: 'instant', block: 'center' });
+                    btnDown.classList.add('hidden'); 
+                }, 100);
+            }
         }
 
-        loadRealPhotos();
+        // Первичная загрузка
+        loadRealPhotos(true);
 
         // --- ЛОГИКА УДАЛЕНИЯ (АДМИН) ---
         if (isAdmin) {
@@ -629,8 +671,11 @@
         }
 
         // --- ОСТАЛЬНАЯ ЛОГИКА ---
+        // Исправлено: при возврате в приложение обновляем только лайки, не пересобирая ленту
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') loadRealPhotos();
+            if (document.visibilityState === 'visible') {
+                loadRealPhotos(false); 
+            }
         });
 
         setTimeout(() => {
