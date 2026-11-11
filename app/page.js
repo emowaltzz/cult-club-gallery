@@ -1,5 +1,9 @@
-import { redirect } from 'next/navigation';
+import fs from 'fs';
+import path from 'path';
 
 export default function Home() {
-  redirect('/index.html');
+  const filePath = path.join(process.cwd(), 'public', 'index.html');
+  const html = fs.readFileSync(filePath, 'utf8');
+  
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }
