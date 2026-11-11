@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 // --- НАСТРОЙКИ ---
 const supabaseUrl = 'https://asoljhfvsrxmeniwsvel.supabase.co';
 // ВАЖНО: Замени это на свой секретный ключ (sb_secret_...) из Supabase -> Settings -> API
-const supabaseSecretKey = 'process.env.SUPABASE_SECRET_KEY; 
+const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY; 
 
 const BOT_TOKEN = '9282771149:AAG8sfR7iDHAqffvmgvllqOvy-DV0jYIKVY';
 const CHAT_ID = '424175344';
