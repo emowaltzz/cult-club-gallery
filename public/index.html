@@ -348,7 +348,7 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
-        tg.disableVerticalSwipes();ы
+        tg.disableVerticalSwipes();
 
         let currentUserId = tg.initDataUnsafe?.user?.id;
         if (!currentUserId) {
@@ -585,26 +585,28 @@
             if (targetPost) targetPost.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
- function openTelegramLink(tag) {
-    // 1. Убираем все пробелы и все символы @
-    let username = tag.trim().replace(/@/g, '');
-    
-    // 2. Формируем полную ссылку (Telegram требует именно такой формат)
-    const url = `https://t.me/${username}`;
-    
-    // 3. Пытаемся открыть через Telegram WebApp
-    if (tg && tg.openTelegramLink) {
-        try {
-            tg.openTelegramLink(url);
-        } catch (e) {
-            // Если Telegram выдал ошибку — открываем как обычную ссылку
-            window.open(url, '_blank');
+        function openTelegramLink(tag) {
+            let username = tag.trim().replace(/@/g, '');
+            const url = `https://t.me/${username}`;
+            
+            if (tg && tg.openTelegramLink) {
+                try {
+                    tg.openTelegramLink(url);
+                } catch (e) {
+                    window.open(url, '_blank');
+                }
+            } else {
+                window.open(url, '_blank');
+            }
         }
-    } else {
-        // Если это обычный браузер — открываем в новой вкладке
-        window.open(url, '_blank');
-    }
-}
+
+        function openModal(id) {
+            bottomControls.classList.add('hidden');
+            document.body.classList.add('modal-open');
+            const modal = document.getElementById(id);
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
 
         function closeModal(e, id) {
             if (e.target === document.getElementById(id) || !e.target) {
@@ -643,11 +645,9 @@
             const deltaY = e.changedTouches[0].clientY - touchStartY;
             
             if (deltaY > 100) {
-                // Закрываем модалку
                 const modal = currentTouchModal.closest('.modal-overlay');
                 if (modal) closeModal({ target: modal }, modal.id);
             } else {
-                // Возвращаем на место
                 currentTouchModal.style.transform = '';
             }
             currentTouchModal = null;
