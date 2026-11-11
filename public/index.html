@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cult Club Gallery</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --secondary-text: #888888;
+            --smooth-ease: cubic-bezier(0.25, 1, 0.5, 1);
+            --smooth-duration: 0.6s;
+            --like-color: #ff2d55;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color); color: var(--text-color);
+            overflow: hidden; position: fixed; width: 100%; height: 100%;
+            touch-action: pan-y; overscroll-behavior-y: none; user-select: none;
+            -webkit-font-smoothing: antialiased; 
+        }
+
+        /* --- БЛЮР-МАСКИ --- */
+        .blur-mask-top {
+            position: fixed; top: 0; left: 0; right: 4px; height: 180px; z-index: 90;
+            pointer-events: none; 
+            background: rgba(255, 255, 255, 0.01); 
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            -webkit-mask-image: linear-gradient(to bottom, black 10%, transparent 90%);
+            mask-image: linear-gradient(to bottom, black 10%, transparent 90%);
+        }
+        .blur-mask-bottom {
+            position: fixed; bottom: 0; left: 0; right: 4px; height: 200px; z-index: 90;
+            pointer-events: none; 
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            -webkit-mask-image: linear-gradient(to top, black 10%, transparent 90%);
+            mask-image: linear-gradient(to top, black 10%, transparent 90%);
+        }
+
+        /* --- ЛОГОТИП (47%) --- */
+        .floating-logo {
+            position: fixed; top: 15px; left: 50%; 
+            transform: translateX(-50%) scale(1);
+            z-index: 100; pointer-events: none; 
+            width: 47%; max-width: 250px; 
+            transition: transform var(--smooth-duration) var(--smooth-ease), filter var(--smooth-duration) var(--smooth-ease);
+        }
+        .floating-logo img { 
+            width: 100%; height: auto; object-fit: contain; 
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 2px 4px rgba(0,0,0,0.2)); 
+        }
+        .floating-logo.shrunk { transform: translateX(-50%) scale(0.95); }
+
+        /* --- ЛЕНТА --- */
+        .feed {
+            height: 100vh; overflow-y: scroll; scroll-behavior: smooth;
+            padding-top: 80px; padding-bottom: 200px; 
+            display: flex; flex-direction: column; align-items: center;
+            padding-left: 7px; padding-right: 7px;
+        }
+        .feed::-webkit-scrollbar { width: 4px; }
+        .feed::-webkit-scrollbar-track { background: transparent; }
+        .feed::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.6); border-radius: 10px; }
+
+        .post { 
+            width: 100%; max-width: 500px; margin-bottom: 30px; 
+            display: flex; flex-direction: column; position: relative; 
+        }
+        
+        .image-container { position: relative; width: 100%; }
+
+        .post img {
+            width: 100%; height: auto; max-height: 80vh; object-fit: cover;
+            background-color: #f0f0f0; border-radius: 8px; display: block;
+        }
+
+        .clickable-img { cursor: pointer; }
+
+        /* --- ИНФО БЛОК ПОД ФОТО --- */
+        .post-info { 
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 10px 0; 
+            font-size: 13px; font-weight: 400; letter-spacing: -0.2px;
+            position: relative; z-index: 100; 
+        }
+        
+        .post-tag { color: var(--text-color); text-decoration: none; font-weight: 500; }
+        .post-date { color: var(--secondary-text); }
+
+        /* Блок лайка по центру */
+        .like-container {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            margin-top: -5px; 
+        }
+
+        .like-btn {
+            background: none; border: none; padding: 0; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            transition: transform 0.2s ease;
+        }
+        .like-btn svg { width: 20px; height: 20px; stroke: #555; stroke-width: 2; fill: transparent; transition: stroke 0.2s, fill 0.2s; }
+        .like-btn.liked svg { stroke: var(--like-color); fill: var(--like-color); }
+        .like-btn:active { transform: scale(0.85); }
+        .like-count { font-size: 10px; color: var(--secondary-text); font-weight: 500; }
+
+        /* Стиль для статичных постов */
+        .post.static-post { margin-bottom: 10px; }
+
+        /* --- НИЖНЯЯ ПАНЕЛЬ КНОПОК --- */
+        .bottom-controls {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            z-index: 300; display: flex; align-items: center; justify-content: center;
+            gap: 15px;
+        }
+
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer;
+            transition: transform var(--smooth-duration) var(--smooth-ease);
+        }
+        .liquid-glass svg { width: 24px; height: 24px; stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.8; }
+
+        .btn-search, .btn-likes { width: 50px; height: 50px; }
+        .btn-add { width: 65px; height: 65px; }
+
+        .bottom-controls.shrunk .btn-search,
+        .bottom-controls.shrunk .btn-likes { transform: scale(0.85); }
+        .bottom-controls.shrunk .btn-add { transform: scale(0.85); }
+        
+        .bottom-controls.hidden { opacity: 0; pointer-events: none; }
+
+        /* --- КНОПКА СТРЕЛКА --- */
+        .btn-down {
+            position: fixed; bottom: 37px; right: 20px; width: 50px; height: 50px; z-index: 300;
+            transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.6s var(--smooth-ease), visibility 0.6s var(--smooth-ease);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-down svg { stroke: #ffffff; }
+        .btn-down.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px) scale(0.8); }
+
+        /* --- МОДАЛКИ --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.1); display: none;
+            justify-content: center; align-items: flex-end; z-index: 200; opacity: 0; transition: opacity 0.4s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border-top: 1px solid rgba(255, 255, 255, 0.8); width: 100%; max-width: 500px;
+            border-radius: 24px 24px 0 0; padding: 30px 20px 20px;
+            transform: translateY(100%); opacity: 0; 
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; 
+            display: flex; flex-direction: column; gap: 20px; box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+            position: relative; z-index: 201; max-height: 60vh; overflow-y: auto;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); opacity: 1; }
+        .modal-content::before {
+            content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+            width: 40px; height: 4px; background: rgba(0,0,0,0.1); border-radius: 2px;
+        }
+        .modal-title { font-size: 18px; font-weight: 600; text-align: center; margin-top: 10px; color: #000; }
+
+        /* --- МОДАЛКА ОТПРАВКИ --- */
+        .file-upload-wrapper {
+            position: relative; width: 100%; height: 150px;
+            border: 2px dashed rgba(0,0,0,0.15); border-radius: 16px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: rgba(255, 255, 255, 0.4); cursor: pointer; overflow: hidden;
+        }
+        .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .upload-icon svg { width: 32px; height: 32px; stroke: #555; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; margin-bottom: 10px; }
+        .upload-text { font-size: 14px; color: #555; font-weight: 400; }
+        .preview-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 2; }
+
+        .modal-content input[type="text"] {
+            padding: 15px; border: 1px solid rgba(0,0,0,0.1); background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px; font-size: 16px; outline: none;
+        }
+        .btn-submit {
+            padding: 16px; background: #000; color: #fff; border: none; border-radius: 14px; font-size: 16px; font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* --- МОДАЛКА ПОИСКА И ЛАЙКОВ --- */
+        .search-modal, .likes-modal { padding-top: 20px; }
+        .search-header { display: flex; align-items: center; justify-content: center; position: relative; padding-bottom: 15px; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .search-title { font-size: 18px; font-weight: 600; color: #000; }
+        .tags-list { display: flex; flex-direction: column; padding-bottom: 20px; }
+        
+        .alphabet-header {
+            font-size: 15px; font-weight: 600; color: #000; 
+            padding: 15px 0 5px 10px; 
+            background: transparent; 
+            position: relative; 
+            z-index: 1;
+        }
+
+        .tag-item { padding: 12px 15px; background: rgba(255, 255, 255, 0.4); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .tag-info { display: flex; flex-direction: column; }
+        .tag-name { font-weight: 500; font-size: 16px; }
+        .tag-count { font-size: 13px; color: var(--secondary-text); font-weight: 400; }
+
+        .author-grid, .likes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding-bottom: 100px; width: 100%; }
+        .grid-item { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 8px; cursor: pointer; background: #eee; }
+        .grid-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Кнопка Назад (снизу) */
+        .btn-back-floating {
+            position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px);
+            width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden;
+            transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        .btn-back-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        .btn-back-floating svg { width: 24px; height: 24px; stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+
+        /* Модалка удаления */
+        .delete-confirm-modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5); display: none;
+            justify-content: center; align-items: center; z-index: 500;
+            opacity: 0; transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .delete-confirm-modal.active { display: flex; opacity: 1; }
+        .delete-confirm-content { background: #fff; border-radius: 16px; padding: 25px; width: 80%; max-width: 300px; text-align: center; }
+        .delete-confirm-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .delete-confirm-btn { flex: 1; padding: 12px; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; }
+        .btn-cancel { background: #eee; color: #000; }
+        .btn-delete { background: #ff3b30; color: #fff; }
+
+        /* Блюр фона при открытии меню */
+        body.modal-open .feed, body.modal-open .floating-logo { filter: blur(10px); }
+    </style>
+</head>
+<body>
+
+    <div class="blur-mask-top"></div>
+    <div class="blur-mask-bottom"></div>
+
+    <div class="floating-logo" id="logo">
+        <img src="logo.png" alt="Logo">
+    </div>
+
+    <main class="feed" id="feed"></main>
+
+    <div class="bottom-controls" id="bottomControls">
+        <button class="liquid-glass btn-search" onclick="openSearchModal()">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+        
+        <button class="liquid-glass btn-add" onclick="openModal('submitModal')">
+            <svg class="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+
+        <button class="liquid-glass btn-likes" onclick="openLikesModal()">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        </button>
+    </div>
+
+    <button class="liquid-glass btn-down hidden" id="btnDown" onclick="scrollToBottom()">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+    </button>
+
+    <button class="liquid-glass btn-back-floating" id="btnBackFloating" onclick="showTagsList()">
+        <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+
+    <!-- МОДАЛКА ОТПРАВКИ -->
+    <div class="modal-overlay" id="submitModal" onclick="closeModal(event, 'submitModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-title">Предложить фото</div>
+            <div class="file-upload-wrapper">
+                <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(this)">
+                <img src="" class="preview-image" id="previewImage" alt="Preview">
+                <div class="upload-icon" id="uploadIcon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                </div>
+                <div class="upload-text" id="uploadText">Нажмите, чтобы выбрать фото</div>
+            </div>
+            <input type="text" id="tagInput" placeholder="Ваш тег (например, @username)" value="@">
+            <button class="btn-submit" onclick="submitPhoto()">Отправить</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА ПОИСКА -->
+    <div class="modal-overlay" id="searchModal" onclick="closeModal(event, 'searchModal')">
+        <div class="modal-content search-modal" onclick="event.stopPropagation()">
+            <div class="search-header">
+                <div class="search-title" id="searchTitle">Поиск по тегам</div>
+            </div>
+            <div id="tagsView">
+                <div class="tags-list" id="tagsList"></div>
+            </div>
+            <div id="gridView" style="display:none;">
+                <div class="author-grid" id="authorGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА ЛАЙКОВ -->
+    <div class="modal-overlay" id="likesModal" onclick="closeModal(event, 'likesModal')">
+        <div class="modal-content likes-modal" onclick="event.stopPropagation()">
+            <div class="search-header">
+                <div class="search-title">Понравившиеся</div>
+            </div>
+            <div class="likes-grid" id="likesGrid"></div>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА УДАЛЕНИЯ -->
+    <div class="delete-confirm-modal" id="deleteConfirmModal">
+        <div class="delete-confirm-content">
+            <div class="delete-confirm-title">Удалить это фото?</div>
+            <div class="delete-confirm-buttons">
+                <button class="delete-confirm-btn btn-cancel" onclick="closeDeleteConfirm()">Отмена</button>
+                <button class="delete-confirm-btn btn-delete" onclick="confirmDelete()">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="compressCanvas" style="display:none;"></canvas>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // Получаем ID пользователя из Telegram (или генерируем для браузера)
+        let currentUserId = tg.initDataUnsafe?.user?.id;
+        if (!currentUserId) {
+            currentUserId = localStorage.getItem('browser_user_id');
+            if (!currentUserId) {
+                currentUserId = Math.floor(Math.random() * 1000000000);
+                localStorage.setItem('browser_user_id', currentUserId);
+            }
+        }
+
+        // --- БАЗА ДАННЫХ ---
+        const supabaseUrl = 'https://asoljhfvsrxmeniwsvel.supabase.co';
+        const supabaseKey = 'sb_publishable_zRTzYg6bqdPH4JYRIngTMQ_K0JNe7zG';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const ADMIN_ID = 424175344; // Твой ID
+        const feed = document.getElementById('feed');
+        const btnDown = document.getElementById('btnDown');
+        const bottomControls = document.getElementById('bottomControls');
+        const btnBackFloating = document.getElementById('btnBackFloating');
+        const logo = document.getElementById('logo');
+        const submitModal = document.getElementById('submitModal');
+        const searchModal = document.getElementById('searchModal');
+        const previewImage = document.getElementById('previewImage');
+
+        let allPostsData = []; 
+        let likedPhotos = []; 
+        let postToDelete = null;
+        let currentFileToUpload = null;
+        
+        let scrollTimeout;
+        let hideArrowTimeout;
+        let pressTimer = null;
+        let isLongPress = false;
+
+        // 1. ЗАГРУЗКА ДАННЫХ ИЗ БАЗЫ SUPABASE
+        async function loadRealPhotos() {
+            const { data, error } = await supabaseClient
+                .from('photos')
+                .select(`
+                    *,
+                    likes ( id, user_id )
+                `)
+                .eq('status', 'approved')
+                .order('created_at', { ascending: true });
+
+            if (error) {
+                console.error("Ошибка загрузки фото:", error);
+                return;
+            }
+
+            // Получаем все лайки текущего пользователя
+            const { data: myLikes } = await supabaseClient
+                .from('likes')
+                .select('photo_id')
+                .eq('user_id', currentUserId);
+            
+            likedPhotos = myLikes ? myLikes.map(l => l.photo_id) : [];
+
+            feed.innerHTML = ''; 
+            allPostsData = []; 
+
+            // Статика сверху
+            feed.insertAdjacentHTML('afterbegin', `
+                <div class="post static-post">
+                    <div class="image-container"><img src="1.png" alt="Static"></div>
+                </div>
+            `);
+
+            // Рендерим фото из базы
+            if (data && data.length > 0) {
+                data.forEach((post, i) => {
+                    allPostsData.push({ tag: post.tag, img: post.image_url, id: post.id });
+
+                    const isLiked = likedPhotos.includes(post.id);
+                    const likesCount = post.likes ? post.likes.length : 0;
+
+                    const dateStr = new Date(post.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + 
+                                    new Date(post.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+                    feed.insertAdjacentHTML('beforeend', `
+                        <div class="post" id="post-${post.id}" data-id="${post.id}">
+                            <div class="image-container">
+                                <img src="${post.image_url}" onclick="openTelegramLink('${post.tag}')" alt="Photo" class="clickable-img dynamic-img">
+                            </div>
+                            <div class="post-info">
+                                <span class="post-tag">${post.tag}</span>
+                                <div class="like-container">
+                                    <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${post.id}')">
+                                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                    </button>
+                                    <span class="like-count" id="count-${post.id}">${likesCount}</span>
+                                </div>
+                                <span class="post-date">${dateStr}</span>
+                            </div>
+                        </div>
+                    `);
+                });
+            } else {
+                feed.insertAdjacentHTML('beforeend', `<p style="text-align:center; width:100%; padding: 20px; color:#888;">Пока нет одобренных фото</p>`);
+            }
+
+            // Статика снизу
+            [1, 2].forEach(num => {
+                feed.insertAdjacentHTML('beforeend', `
+                    <div class="post static-post" id="bottom-static-${num}">
+                        <div class="image-container"><img src="${num}.png" alt="Static"></div>
+                    </div>
+                `);
+            });
+
+            setTimeout(() => {
+                const targetPost = document.getElementById('bottom-static-1');
+                if (targetPost) targetPost.scrollIntoView({ behavior: 'instant', block: 'center' });
+                btnDown.classList.add('hidden'); 
+            }, 100);
+        }
+
+        loadRealPhotos();
+
+        // --- ЛОГИКА УДАЛЕНИЯ (АДМИН) ---
+        if (isAdmin) {
+            feed.addEventListener('touchstart', (e) => {
+                const img = e.target.closest('.dynamic-img');
+                if (!img) return;
+                startDeleteTimer(img);
+            }, { passive: true });
+
+            feed.addEventListener('touchend', (e) => {
+                clearTimeout(pressTimer);
+                const img = e.target.closest('.dynamic-img');
+                if (img) img.classList.remove('long-pressing');
+            });
+
+            feed.addEventListener('touchmove', (e) => {
+                clearTimeout(pressTimer);
+                const img = e.target.closest('.dynamic-img');
+                if (img) img.classList.remove('long-pressing');
+            }, { passive: true });
+        }
+
+        function startDeleteTimer(img) {
+            img.classList.add('long-pressing');
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                const post = img.closest('.post');
+                postToDelete = post.dataset.id;
+                document.getElementById('deleteConfirmModal').classList.add('active');
+                if (navigator.vibrate) navigator.vibrate(50);
+            }, 800);
+        }
+
+        function closeDeleteConfirm() {
+            document.getElementById('deleteConfirmModal').classList.remove('active');
+            postToDelete = null;
+        }
+
+        async function confirmDelete() {
+            if (!postToDelete) return;
+            
+            const postElement = document.getElementById(`post-${postToDelete}`);
+            if (postElement) {
+                postElement.classList.add('deleting');
+                
+                try {
+                    const res = await fetch('/api/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ photoId: postToDelete })
+                    });
+
+                    if (res.ok) {
+                        setTimeout(() => {
+                            postElement.remove();
+                            closeDeleteConfirm();
+                        }, 300);
+                    } else {
+                        alert('Ошибка удаления с сервера');
+                        postElement.classList.remove('deleting');
+                    }
+                } catch (err) {
+                    alert('Ошибка сети при удалении');
+                    postElement.classList.remove('deleting');
+                }
+            }
+        }
+
+        // --- ОСТАЛЬНАЯ ЛОГИКА ---
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') loadRealPhotos();
+        });
+
+        feed.addEventListener('scroll', () => {
+            logo.classList.add('shrunk');
+            bottomControls.classList.add('shrunk');
+            btnDown.classList.remove('hidden');
+            
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                logo.classList.remove('shrunk');
+                bottomControls.classList.remove('shrunk');
+            }, 200);
+
+            clearTimeout(hideArrowTimeout);
+            hideArrowTimeout = setTimeout(() => btnDown.classList.add('hidden'), 1000);
+        });
+
+        function scrollToBottom() {
+            btnDown.classList.add('hidden');
+            const targetPost = document.getElementById('bottom-static-1');
+            if (targetPost) targetPost.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function openTelegramLink(tag) {
+            const username = tag.replace('@', '');
+            if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/${username}`);
+            else window.open(`https://t.me/${username}`, '_blank');
+        }
+
+        function openModal(id) {
+            bottomControls.classList.add('hidden');
+            document.body.classList.add('modal-open');
+            const modal = document.getElementById(id);
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function closeModal(e, id) {
+            if (e.target === document.getElementById(id) || !e.target) {
+                const modal = document.getElementById(id);
+                modal.classList.remove('active');
+                document.body.classList.remove('modal-open');
+                btnBackFloating.classList.remove('active');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    bottomControls.classList.remove('hidden');
+                }, 400);
+            }
+        }
+
+        // --- ПОИСК С АЛФАВИТОМ ---
+        function openSearchModal() {
+            const tagsList = document.getElementById('tagsList');
+            const uniqueTags = [...new Set(allPostsData.map(p => p.tag))].sort();
+            
+            tagsList.innerHTML = '';
+            let currentLetter = '';
+
+            uniqueTags.forEach(tag => {
+                const count = allPostsData.filter(p => p.tag === tag).length;
+                const letter = tag.replace('@', '').charAt(0).toUpperCase();
+
+                if (letter !== currentLetter) {
+                    currentLetter = letter;
+                    tagsList.innerHTML += `<div class="alphabet-header">${letter}</div>`;
+                }
+
+                tagsList.innerHTML += `
+                    <div class="tag-item" onclick="showTagPhotos('${tag}')">
+                        <div class="tag-info">
+                            <span class="tag-name">${tag}</span>
+                            <span class="tag-count">${count} фото</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('tagsView').style.display = 'block';
+            document.getElementById('gridView').style.display = 'none';
+            document.getElementById('searchTitle').innerText = 'Поиск по тегам';
+            btnBackFloating.classList.remove('active');
+            openModal('searchModal');
+        }
+
+        function showTagPhotos(tag) {
+            const authorGrid = document.getElementById('authorGrid');
+            authorGrid.innerHTML = '';
+            allPostsData.filter(p => p.tag === tag).forEach(photo => {
+                authorGrid.innerHTML += `
+                    <div class="grid-item" onclick="scrollToPost('${photo.id}', 'searchModal')">
+                        <img src="${photo.img}">
+                    </div>
+                `;
+            });
+            document.getElementById('tagsView').style.display = 'none';
+            document.getElementById('gridView').style.display = 'block';
+            document.getElementById('searchTitle').innerText = tag;
+            btnBackFloating.classList.add('active');
+        }
+
+        function showTagsList() {
+            document.getElementById('tagsView').style.display = 'block';
+            document.getElementById('gridView').style.display = 'none';
+            document.getElementById('searchTitle').innerText = 'Поиск по тегам';
+            btnBackFloating.classList.remove('active');
+        }
+
+        function scrollToPost(id, modalId) {
+            closeModal({ target: document.getElementById(modalId) }, modalId);
+            setTimeout(() => {
+                const post = document.getElementById(`post-${id}`);
+                if (post) post.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 400);
+        }
+
+        // --- ЛАЙКИ ---
+        async function toggleLike(e, postId) {
+            e.stopPropagation();
+            const btn = e.currentTarget;
+            const countSpan = document.getElementById(`count-${postId}`);
+            let count = parseInt(countSpan.innerText);
+            if (count < 0) count = 0;
+
+            const idAsNumber = parseInt(postId);
+            btn.disabled = true;
+
+            if (likedPhotos.includes(idAsNumber)) {
+                const { error } = await supabaseClient
+                    .from('likes')
+                    .delete()
+                    .eq('photo_id', idAsNumber)
+                    .eq('user_id', currentUserId);
+
+                if (!error) {
+                    likedPhotos = likedPhotos.filter(id => id !== idAsNumber);
+                    btn.classList.remove('liked');
+                    countSpan.innerText = Math.max(0, count - 1);
+                }
+            } else {
+                const { error } = await supabaseClient
+                    .from('likes')
+                    .insert([{ photo_id: idAsNumber, user_id: currentUserId }]);
+
+                if (!error) {
+                    likedPhotos.push(idAsNumber);
+                    btn.classList.add('liked');
+                    countSpan.innerText = count + 1;
+                }
+            }
+            btn.disabled = false;
+        }
+
+        function openLikesModal() {
+            const likesGrid = document.getElementById('likesGrid');
+            likesGrid.innerHTML = '';
+            if (likedPhotos.length === 0) {
+                likesGrid.innerHTML = `<p style="grid-column: span 3; text-align: center; color: #888;">Пока пусто</p>`;
+            } else {
+                likedPhotos.forEach(id => {
+                    const photo = allPostsData.find(p => p.id.toString() === id.toString());
+                    if (photo) {
+                        likesGrid.innerHTML += `
+                            <div class="grid-item" onclick="scrollToPost('${id}', 'likesModal')">
+                                <img src="${photo.img}">
+                            </div>
+                        `;
+                    }
+                });
+            }
+            openModal('likesModal');
+        }
+
+        // --- ОТПРАВКА ФОТО ---
+        function handleFileSelect(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.getElementById('compressCanvas');
+                        const ctx = canvas.getContext('2d');
+                        let width = img.width, height = img.height;
+                        const MAX_SIZE = 1080;
+                        if (width > height && width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+                        else if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+                        canvas.width = width; canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        canvas.toBlob(function(blob) {
+                            currentFileToUpload = new File([blob], "photo.jpg", { type: "image/jpeg" });
+                            previewImage.src = URL.createObjectURL(blob);
+                            previewImage.style.display = 'block';
+                            document.getElementById('uploadText').innerText = 'Фото готово';
+                            document.getElementById('uploadIcon').style.display = 'none';
+                        }, 'image/jpeg', 0.8);
+                    }
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function submitPhoto() {
+            const tagInput = document.getElementById('tagInput').value;
+            if (!currentFileToUpload) { alert("Выберите фото!"); return; }
+            if (tagInput === '@') { alert("Введите тег!"); return; }
+
+            const formData = new FormData();
+            formData.append('photo', currentFileToUpload);
+            formData.append('tag', tagInput);
+
+            const btn = document.querySelector('.btn-submit');
+            btn.innerText = 'Отправка...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/submit', { method: 'POST', body: formData });
+                if (res.ok) {
+                    alert('Фото успешно отправлено на модерацию!');
+                    document.getElementById('fileInput').value = '';
+                    previewImage.style.display = 'none';
+                    previewImage.src = '';
+                    document.getElementById('uploadText').innerText = 'Нажмите, чтобы выбрать фото';
+                    document.getElementById('uploadIcon').style.display = 'flex';
+                    currentFileToUpload = null;
+                    closeModal({target: submitModal}, 'submitModal');
+                } else {
+                    const data = await res.json();
+                    alert('Ошибка: ' + data.error);
+                }
+            } catch (err) {
+                alert('Ошибка сети');
+            } finally {
+                btn.innerText = 'Отправить';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
