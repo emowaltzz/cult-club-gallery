@@ -365,6 +365,7 @@
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         const ADMIN_ID = 424175344; // Твой ID
+        const isAdmin = currentUserId === ADMIN_ID;
         const feed = document.getElementById('feed');
         const btnDown = document.getElementById('btnDown');
         const bottomControls = document.getElementById('bottomControls');
