@@ -5,19 +5,19 @@ const PRODUCTION_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL;
 
 async function setWebhook() {
   if (!PRODUCTION_URL) {
-    console.log('⚠️ VERCEL_PROJECT_PRODUCTION_URL не найден. Проверь настройки Vercel.');
+    console.log('VERCEL_PROJECT_PRODUCTION_URL не найден. Проверь настройки Vercel.');
     return;
   }
 
   const webhookUrl = `https://${PRODUCTION_URL}/api/webhook`;
-  console.log(`🔗 Устанавливаем Webhook на: ${webhookUrl}`);
+  console.log(`Устанавливаем Webhook на: ${webhookUrl}`);
 
   try {
     const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook?url=${webhookUrl}`);
     const data = await res.json();
     
     if (data.ok) {
-      console.log('✅ Webhook успешно установлен на постоянный домен!');
+      console.log('✅ Webhook успешно установлен!');
     } else {
       console.error('❌ Ошибка установки Webhook:', data.description);
     }
@@ -26,4 +26,4 @@ async function setWebhook() {
   }
 }
 
-setWebhook();ы
+setWebhook();
