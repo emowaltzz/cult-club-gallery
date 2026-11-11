@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cult • Club Gallery</title>
+    <title>Cult Club Gallery</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -81,57 +81,62 @@
             background-color: #f0f0f0; border-radius: 8px; display: block;
         }
 
-        /* --- ИНФО БЛОК ПОД ФОТО --- */
+        /* --- ИНФО БЛОК ПОД ФОТО (ВСЁ В ОДНУ ЛИНИЮ) --- */
         .post-info { 
-            display: flex; justify-content: space-between; align-items: flex-start;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; /* Выравниваем по центру */
             padding: 10px 0; 
-            font-size: 13px; font-weight: 400; letter-spacing: -0.2px;
-            position: relative; z-index: 100; 
+            font-size: 13px; 
+            font-weight: 400; 
+            letter-spacing: -0.2px;
+            position: relative; 
+            z-index: 100; 
         }
         
         .post-tag { color: var(--text-color); text-decoration: none; font-weight: 500; cursor: pointer; }
-        .post-date { color: var(--secondary-text); }
+        .post-date { color: var(--secondary-text); font-size: 13px; }
 
-        /* Блок лайка и лупы по центру */
-        .like-container {
+        /* Центральный блок с лайком и лупой */
+        .center-actions {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            flex-direction: row;
             align-items: center;
-            gap: 15px;
-            margin-top: -5px; 
+            gap: 20px; /* Отступ между иконками */
         }
 
-        .like-btn, .search-btn-inline {
+        .action-btn {
             background: none; border: none; padding: 0; cursor: pointer;
             display: flex; justify-content: center; align-items: center;
             transition: transform 0.2s ease;
+            /* Увеличиваем зону нажатия */
+            padding: 5px;
         }
         
-        .like-btn svg { 
-            width: 20px; height: 20px; 
+        /* Увеличенные иконки */
+        .action-btn svg { 
+            width: 24px; height: 24px; 
             stroke: #555; stroke-width: 2; fill: transparent; 
             transition: stroke 0.2s, fill 0.2s; 
         }
         
-        .search-btn-inline svg { 
-            width: 20px; height: 20px; 
-            stroke: #555; stroke-width: 2; fill: none; 
-            transition: stroke 0.2s; 
-        }
-
-        .like-btn.liked svg { 
+        .action-btn.liked svg { 
             stroke: var(--like-color); 
             fill: var(--like-color); 
         }
         
-        .like-btn:active, .search-btn-inline:active { 
+        .action-btn:active { 
             transform: scale(0.85); 
         }
-        
-        .like-count { font-size: 10px; color: var(--secondary-text); font-weight: 500; }
+
+        .like-count { 
+            font-size: 12px; 
+            color: var(--secondary-text); 
+            font-weight: 500; 
+            margin-left: -10px; /* Сдвигаем счетчик ближе к лайку */
+        }
 
         /* Стиль для статичных постов */
         .post.static-post { margin-bottom: 10px; }
@@ -427,7 +432,7 @@
             feed.innerHTML = ''; 
             allPostsData = []; 
 
-            // СТАТИКА СВЕРХУ (2.png, затем 1.png)
+            // СТАТИКА СВЕРХУ
             feed.insertAdjacentHTML('afterbegin', `
                 <div class="post static-post">
                     <div class="image-container"><img src="2.png" alt="Static"></div>
@@ -456,14 +461,14 @@
                             <div class="post-info">
                                 <span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span>
                                 
-                                <div class="like-container">
+                                <div class="center-actions">
                                     <!-- Кнопка лупы -->
-                                    <button class="search-btn-inline" onclick="openSearchModal('${post.tag}')">
+                                    <button class="action-btn" onclick="openSearchModal('${post.tag}')">
                                         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                                     </button>
                                     
                                     <!-- Кнопка лайка -->
-                                    <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${post.id}')">
+                                    <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${post.id}')">
                                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                                     </button>
                                     <span class="like-count" id="count-${post.id}">${likesCount}</span>
@@ -581,7 +586,6 @@
             if (document.visibilityState === 'visible') loadRealPhotos();
         });
 
-        // Перерисовка блюра при запуске
         setTimeout(() => {
             const topMask = document.querySelector('.blur-mask-top');
             const bottomMask = document.querySelector('.blur-mask-bottom');
@@ -711,7 +715,6 @@
             btnBackFloating.classList.remove('active');
             openModal('searchModal');
             
-            // Если передан тег, сразу открываем его
             if (preSelectedTag) {
                 setTimeout(() => showTagPhotos(preSelectedTag), 100);
             }
