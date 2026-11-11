@@ -44,18 +44,21 @@
             mask-image: linear-gradient(to top, black 10%, transparent 90%);
         }
 
-        /* --- ЛОГОТИП (47%) --- */
+        /* --- ЛОГОТИП --- */
         .floating-logo {
             position: fixed; top: 15px; left: 50%; 
             transform: translateX(-50%) scale(1);
             z-index: 100; pointer-events: none; 
             width: 47%; max-width: 250px; 
-            transition: transform var(--smooth-duration) var(--smooth-ease), filter var(--smooth-duration) var(--smooth-ease);
+            transition: transform var(--smooth-duration) var(--smooth-ease);
         }
+
         .floating-logo img { 
             width: 100%; height: auto; object-fit: contain; 
-            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 2px 4px rgba(0,0,0,0.2)); 
+            /* Мягкая тень по контуру, без квадратов */
+            filter: drop-shadow(0px 0px 15px rgba(255, 255, 255, 0.2));
         }
+        
         .floating-logo.shrunk { transform: translateX(-50%) scale(0.95); }
 
         /* --- ЛЕНТА --- */
@@ -91,7 +94,16 @@
             position: relative; z-index: 100; 
         }
         
-        .post-tag { color: var(--text-color); text-decoration: none; font-weight: 500; }
+        /* Сделали тег кликабельным */
+        .post-tag { 
+            color: var(--text-color); 
+            text-decoration: none; 
+            font-weight: 500; 
+            cursor: pointer; 
+            transition: color 0.2s;
+        }
+        .post-tag:active { color: #888; }
+        
         .post-date { color: var(--secondary-text); }
 
         /* Блок лайка по центру */
@@ -390,7 +402,7 @@
                 .from('photos')
                 .select(`
                     *,
-                    likes ( id, user_id )
+                    likes ( user_id )
                 `)
                 .eq('status', 'approved')
                 .order('created_at', { ascending: true });
@@ -426,6 +438,7 @@
                     allPostsData.push({ tag: post.tag, img: post.image_url, id: post.id });
 
                     const isLiked = likedPhotos.includes(post.id);
+                    // Считаем лайки правильно (уникальные пользователи)
                     const likesCount = post.likes ? post.likes.length : 0;
 
                     const dateStr = new Date(post.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + 
@@ -434,10 +447,11 @@
                     feed.insertAdjacentHTML('beforeend', `
                         <div class="post" id="post-${post.id}" data-id="${post.id}">
                             <div class="image-container">
-                                <img src="${post.image_url}" onclick="openTelegramLink('${post.tag}')" alt="Photo" class="clickable-img dynamic-img">
+                                <img src="${post.image_url}" alt="Photo" class="dynamic-img">
                             </div>
                             <div class="post-info">
-                                <span class="post-tag">${post.tag}</span>
+                                <!-- Тег теперь кликабельный -->
+                                <span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span>
                                 <div class="like-container">
                                     <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${post.id}')">
                                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -471,13 +485,12 @@
 
         loadRealPhotos();
 
-        // --- ЛОГИКА УДАЛЕНИЯ (АДМИН) ДЛЯ ТЕЛЕФОНА И МЫШИ ---
+        // --- ЛОГИКА УДАЛЕНИЯ (АДМИН) ---
         if (isAdmin) {
-            // Для телефона (touch)
             feed.addEventListener('touchstart', (e) => {
                 const img = e.target.closest('.dynamic-img');
                 if (!img) return;
-                e.preventDefault(); // Предотвращаем стандартное выделение картинки
+                e.preventDefault(); 
                 startDeleteTimer(img);
             }, { passive: false });
 
@@ -493,7 +506,6 @@
                 if (img) img.classList.remove('long-pressing');
             }, { passive: true });
 
-            // Для компьютера (mouse)
             feed.addEventListener('mousedown', (e) => {
                 const img = e.target.closest('.dynamic-img');
                 if (!img) return;
@@ -501,12 +513,6 @@
             });
 
             feed.addEventListener('mouseup', (e) => {
-                clearTimeout(pressTimer);
-                const img = e.target.closest('.dynamic-img');
-                if (img) img.classList.remove('long-pressing');
-            });
-
-            feed.addEventListener('mouseleave', (e) => {
                 clearTimeout(pressTimer);
                 const img = e.target.closest('.dynamic-img');
                 if (img) img.classList.remove('long-pressing');
@@ -656,6 +662,7 @@
         // --- ПОИСК С АЛФАВИТОМ ---
         function openSearchModal() {
             const tagsList = document.getElementById('tagsList');
+            // Берем уникальные теги
             const uniqueTags = [...new Set(allPostsData.map(p => p.tag))].sort();
             
             tagsList.innerHTML = '';
@@ -758,10 +765,14 @@
         function openLikesModal() {
             const likesGrid = document.getElementById('likesGrid');
             likesGrid.innerHTML = '';
-            if (likedPhotos.length === 0) {
+            
+            // Убираем дубликаты ID лайков
+            const uniqueLikedIds = [...new Set(likedPhotos)];
+
+            if (uniqueLikedIds.length === 0) {
                 likesGrid.innerHTML = `<p style="grid-column: span 3; text-align: center; color: #888;">Пока пусто</p>`;
             } else {
-                likedPhotos.forEach(id => {
+                uniqueLikedIds.forEach(id => {
                     const photo = allPostsData.find(p => p.id.toString() === id.toString());
                     if (photo) {
                         likesGrid.innerHTML += `
