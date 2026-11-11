@@ -6,7 +6,7 @@ const ADMIN_ID = 424175344; // Твой ID
 
 // Секретный ключ для обхода RLS при обновлении статуса
 const supabaseUrl = 'https://asoljhfvsrxmeniwsvel.supabase.co';
-const supabaseSecretKey = 'sb_secret_OOXSk4mR9oD6PBMDRfvxmA_zd1-tz9e'; // <--- ВСТАВЬ СЮДА!
+const supabaseSecretKey = 'process.env.SUPABASE_SECRET_KEY; // <--- ВСТАВЬ СЮДА!
 const supabaseAdmin = createClient(supabaseUrl, supabaseSecretKey);
 
 export async function POST(request) {
