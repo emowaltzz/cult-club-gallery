@@ -349,7 +349,6 @@
         tg.expand();
         tg.ready();
 
-        // Получаем ID пользователя из Telegram (или генерируем для браузера)
         let currentUserId = tg.initDataUnsafe?.user?.id;
         if (!currentUserId) {
             currentUserId = localStorage.getItem('browser_user_id');
@@ -359,20 +358,19 @@
             }
         }
 
-        // --- БАЗА ДАННЫХ ---
         const supabaseUrl = 'https://asoljhfvsrxmeniwsvel.supabase.co';
         const supabaseKey = 'sb_publishable_zRTzYg6bqdPH4JYRIngTMQ_K0JNe7zG';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        const ADMIN_ID = 424175344; // Твой ID
+        const ADMIN_ID = 424175344;
         const isAdmin = currentUserId === ADMIN_ID;
+
         const feed = document.getElementById('feed');
         const btnDown = document.getElementById('btnDown');
         const bottomControls = document.getElementById('bottomControls');
         const btnBackFloating = document.getElementById('btnBackFloating');
         const logo = document.getElementById('logo');
         const submitModal = document.getElementById('submitModal');
-        const searchModal = document.getElementById('searchModal');
         const previewImage = document.getElementById('previewImage');
 
         let allPostsData = []; 
@@ -401,7 +399,6 @@
                 return;
             }
 
-            // Получаем все лайки текущего пользователя
             const { data: myLikes } = await supabaseClient
                 .from('likes')
                 .select('photo_id')
@@ -412,8 +409,11 @@
             feed.innerHTML = ''; 
             allPostsData = []; 
 
-            // Статика сверху
+            // СТАТИКА СВЕРХУ (2.png, затем 1.png)
             feed.insertAdjacentHTML('afterbegin', `
+                <div class="post static-post">
+                    <div class="image-container"><img src="2.png" alt="Static"></div>
+                </div>
                 <div class="post static-post">
                     <div class="image-container"><img src="1.png" alt="Static"></div>
                 </div>
@@ -470,13 +470,15 @@
 
         loadRealPhotos();
 
-        // --- ЛОГИКА УДАЛЕНИЯ (АДМИН) ---
+        // --- ЛОГИКА УДАЛЕНИЯ (АДМИН) ДЛЯ ТЕЛЕФОНА И МЫШИ ---
         if (isAdmin) {
+            // Для телефона (touch)
             feed.addEventListener('touchstart', (e) => {
                 const img = e.target.closest('.dynamic-img');
                 if (!img) return;
+                e.preventDefault(); // Предотвращаем стандартное выделение картинки
                 startDeleteTimer(img);
-            }, { passive: true });
+            }, { passive: false });
 
             feed.addEventListener('touchend', (e) => {
                 clearTimeout(pressTimer);
@@ -489,6 +491,25 @@
                 const img = e.target.closest('.dynamic-img');
                 if (img) img.classList.remove('long-pressing');
             }, { passive: true });
+
+            // Для компьютера (mouse)
+            feed.addEventListener('mousedown', (e) => {
+                const img = e.target.closest('.dynamic-img');
+                if (!img) return;
+                startDeleteTimer(img);
+            });
+
+            feed.addEventListener('mouseup', (e) => {
+                clearTimeout(pressTimer);
+                const img = e.target.closest('.dynamic-img');
+                if (img) img.classList.remove('long-pressing');
+            });
+
+            feed.addEventListener('mouseleave', (e) => {
+                clearTimeout(pressTimer);
+                const img = e.target.closest('.dynamic-img');
+                if (img) img.classList.remove('long-pressing');
+            });
         }
 
         function startDeleteTimer(img) {
@@ -589,6 +610,40 @@
                 }, 400);
             }
         }
+
+        // --- СВАЙПЫ ДЛЯ ЗАКРЫТИЯ МОДАЛОК ---
+        let touchStartY = 0;
+        let currentTouchModal = null;
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.modal-content')) {
+                currentTouchModal = e.target.closest('.modal-content');
+                touchStartY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!currentTouchModal) return;
+            const deltaY = e.touches[0].clientY - touchStartY;
+            if (deltaY > 0) {
+                currentTouchModal.style.transform = `translateY(${deltaY}px)`;
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            if (!currentTouchModal) return;
+            const deltaY = e.changedTouches[0].clientY - touchStartY;
+            
+            if (deltaY > 100) {
+                // Закрываем модалку
+                const modal = currentTouchModal.closest('.modal-overlay');
+                if (modal) closeModal({ target: modal }, modal.id);
+            } else {
+                // Возвращаем на место
+                currentTouchModal.style.transform = '';
+            }
+            currentTouchModal = null;
+        });
 
         // --- ПОИСК С АЛФАВИТОМ ---
         function openSearchModal() {
