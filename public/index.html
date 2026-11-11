@@ -85,7 +85,7 @@
         .post-info { 
             display: flex; 
             justify-content: space-between; 
-            align-items: center; /* Выравниваем по вертикали */
+            align-items: center; 
             padding: 10px 0; 
             font-size: 13px; 
             font-weight: 400; 
@@ -124,7 +124,7 @@
             background: none; border: none; padding: 5px; cursor: pointer;
             display: flex; justify-content: center; align-items: center;
             transition: transform 0.2s ease;
-            position: relative; /* Для позиционирования счетчика */
+            position: relative;
         }
         
         .like-btn svg { 
@@ -142,7 +142,6 @@
             transform: scale(0.85); 
         }
 
-        /* Счетчик справа от кнопки */
         .like-count { 
             position: absolute;
             left: 100%; 
@@ -484,6 +483,15 @@
                                     </button>
                                     <span class="like-count" id="count-${post.id}">${likesCount}</span>
                                 </div>
+
+                                <!-- Кнопка профиля -->
+                                <button onclick="openTelegramLink('${post.tag}')" style="width: 30px; height: 30px; background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; padding: 0; flex-shrink: 0;">
+                                    <svg style="width: 16px; height: 16px; stroke: #555; stroke-width: 2; fill: transparent;" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <circle cx="12" cy="9" r="3"></circle>
+                                        <path d="M6.5 18.5c1.5-2 3.5-3 5.5-3s4 1 5.5 3"></path>
+                                    </svg>
+                                </button>
 
                                 <span class="post-date">${dateStr}</span>
                             </div>
