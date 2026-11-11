@@ -28,7 +28,7 @@
 
         /* --- БЛЮР-МАСКИ --- */
         .blur-mask-top {
-            position: fixed; top: 0; left: 0; right: 4px; height: 180px; z-index: 90;
+            position: fixed; top: 0; left: 0; right: 4px; height: 180px; z-index: 150;
             pointer-events: none; 
             background: rgba(255, 255, 255, 0.01); 
             backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
@@ -48,7 +48,8 @@
         .floating-logo {
             position: fixed; top: 15px; left: 50%; 
             transform: translateX(-50%) scale(1);
-            z-index: 100; pointer-events: none; 
+            z-index: 200;
+            pointer-events: none; 
             width: 47%; max-width: 250px; 
             transition: transform var(--smooth-duration) var(--smooth-ease);
         }
@@ -64,10 +65,13 @@
             padding-top: 80px; padding-bottom: 200px; 
             display: flex; flex-direction: column; align-items: center;
             padding-left: 7px; padding-right: 7px;
+            scrollbar-width: none; 
+            -ms-overflow-style: none; 
         }
-        .feed::-webkit-scrollbar { width: 4px; }
-        .feed::-webkit-scrollbar-track { background: transparent; }
-        .feed::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.6); border-radius: 10px; }
+        .feed::-webkit-scrollbar { 
+            width: 0px; 
+            display: none;
+        }
 
         .post { 
             width: 100%; max-width: 500px; margin-bottom: 30px; 
@@ -81,12 +85,40 @@
             background-color: #f0f0f0; border-radius: 8px; display: block;
         }
 
+        /* --- КНОПКА ПРОФИЛЯ НА ФОТО --- */
+        .profile-btn-overlay {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px; height: 40px;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 0 10px rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            z-index: 10;
+        }
+        
+        .profile-btn-overlay svg { 
+            width: 22px; height: 22px; 
+            stroke: black; stroke-width: 2; fill: transparent; 
+        }
+        
+        .profile-btn-overlay:active { 
+            transform: translateX(-50%) scale(0.85); 
+        }
+
         /* --- ИНФО БЛОК ПОД ФОТО --- */
         .post-info { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding: 10px 0; 
+            /* Отступ сверху 15px, чтобы было как у кнопки профиля */
+            padding-top: 15px; 
             font-size: 13px; 
             font-weight: 400; 
             letter-spacing: -0.2px;
@@ -101,6 +133,9 @@
             font-weight: 500; 
             cursor: pointer; 
             flex: 1; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .post-date { 
@@ -110,26 +145,32 @@
             text-align: right; 
         }
 
-        /* Центральный блок (только лайк и счетчик) */
-        .like-container {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
+        /* Центральный блок (ТОЛЬКО лайк, по центру) - ВОЗВРАЩЕН В ПОТОК */
+        .center-like {
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-shrink: 0;
+            padding: 0 10px;
         }
 
+        /* --- Кнопка лайка (в стиле плюса) --- */
         .like-btn {
-            background: none; border: none; padding: 5px; cursor: pointer;
+            width: 34px; height: 34px;
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), inset 0 0 10px rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
             transition: transform 0.2s ease;
-            position: relative;
+            flex-shrink: 0;
         }
         
         .like-btn svg { 
-            width: 24px; height: 24px; 
-            stroke: #555; stroke-width: 2; fill: transparent; 
+            width: 20px; height: 20px; 
+            stroke: black; stroke-width: 2; fill: transparent; 
             transition: stroke 0.2s, fill 0.2s; 
         }
         
@@ -140,18 +181,6 @@
         
         .like-btn:active { 
             transform: scale(0.85); 
-        }
-
-        .like-count { 
-            position: absolute;
-            left: 100%; 
-            top: 50%;
-            transform: translateY(-50%); 
-            margin-left: 2px; 
-            font-size: 13px; 
-            color: var(--secondary-text); 
-            font-weight: 500; 
-            white-space: nowrap; 
         }
 
         /* Стиль для статичных постов */
@@ -448,7 +477,7 @@
             feed.innerHTML = ''; 
             allPostsData = []; 
 
-            // СТАТИКА СВЕРХУ (2.png, затем 1.png)
+            // СТАТИКА СВЕРХУ
             feed.insertAdjacentHTML('afterbegin', `
                 <div class="post static-post">
                     <div class="image-container"><img src="2.png" alt="Static"></div>
@@ -464,7 +493,6 @@
                     allPostsData.push({ tag: post.tag, img: post.image_url, id: post.id });
 
                     const isLiked = likedPhotos.includes(post.id);
-                    const likesCount = post.likes ? new Set(post.likes.map(l => l.user_id)).size : 0;
 
                     const dateStr = new Date(post.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + 
                                     new Date(post.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
@@ -473,25 +501,25 @@
                         <div class="post" id="post-${post.id}" data-id="${post.id}">
                             <div class="image-container">
                                 <img src="${post.image_url}" alt="Photo" class="dynamic-img">
-                            </div>
-                            <div class="post-info">
-                                <span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span>
                                 
-                                <div class="like-container">
-                                    <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${post.id}')">
-                                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                                    </button>
-                                    <span class="like-count" id="count-${post.id}">${likesCount}</span>
-                                </div>
-
-                                <!-- Кнопка профиля -->
-                                <button onclick="openTelegramLink('${post.tag}')" style="width: 30px; height: 30px; background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; padding: 0; flex-shrink: 0;">
-                                    <svg style="width: 16px; height: 16px; stroke: #555; stroke-width: 2; fill: transparent;" viewBox="0 0 24 24">
+                                <!-- Кнопка профиля ПОВЕРХ фото (по центру внизу) -->
+                                <button class="profile-btn-overlay" onclick="openTelegramLink('${post.tag}')">
+                                    <svg viewBox="0 0 24 24">
                                         <circle cx="12" cy="12" r="10"></circle>
                                         <circle cx="12" cy="9" r="3"></circle>
                                         <path d="M6.5 18.5c1.5-2 3.5-3 5.5-3s4 1 5.5 3"></path>
                                     </svg>
                                 </button>
+                            </div>
+                            <div class="post-info">
+                                <span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span>
+                                
+                                <!-- Центральный блок (только лайк) -->
+                                <div class="center-like">
+                                    <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${post.id}')">
+                                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                    </button>
+                                </div>
 
                                 <span class="post-date">${dateStr}</span>
                             </div>
@@ -637,12 +665,8 @@
             let username = tag.trim().replace(/@/g, '');
             const url = `https://t.me/${username}`;
             
-            if (tg && tg.openTelegramLink) {
-                try {
-                    tg.openTelegramLink(url);
-                } catch (e) {
-                    window.open(url, '_blank');
-                }
+            if (tg && tg.openLink) {
+                tg.openLink(url);
             } else {
                 window.open(url, '_blank');
             }
@@ -770,10 +794,6 @@
         async function toggleLike(e, postId) {
             e.stopPropagation();
             const btn = e.currentTarget;
-            const countSpan = document.getElementById(`count-${postId}`);
-            let count = parseInt(countSpan.innerText);
-            if (count < 0) count = 0;
-
             const idAsNumber = parseInt(postId);
             btn.disabled = true;
 
@@ -787,7 +807,6 @@
                 if (!error) {
                     likedPhotos = likedPhotos.filter(id => id !== idAsNumber);
                     btn.classList.remove('liked');
-                    countSpan.innerText = Math.max(0, count - 1);
                 }
             } else {
                 const { error } = await supabaseClient
@@ -797,7 +816,6 @@
                 if (!error) {
                     likedPhotos.push(idAsNumber);
                     btn.classList.add('liked');
-                    countSpan.innerText = count + 1;
                 }
             }
             btn.disabled = false;
