@@ -592,16 +592,16 @@
         }
 
         function openTelegramLink(tag) {
+            // Очищаем тег от лишних символов
             let username = tag.trim().replace(/@/g, '');
             const url = `https://t.me/${username}`;
             
+            // Если это Telegram Mini App (на телефоне)
             if (tg && tg.openTelegramLink) {
-                try {
-                    tg.openTelegramLink(url);
-                } catch (e) {
-                    window.open(url, '_blank');
-                }
-            } else {
+                tg.openTelegramLink(url);
+            } 
+            // Если это обычный браузер на ПК
+            else {
                 window.open(url, '_blank');
             }
         }
@@ -852,6 +852,16 @@
                 btn.disabled = false;
             }
         }
+
+        // Принудительная перерисовка блюр-масок при запуске
+        setTimeout(() => {
+            const topMask = document.querySelector('.blur-mask-top');
+            const bottomMask = document.querySelector('.blur-mask-bottom');
+            
+            if (topMask) topMask.style.transform = 'translateZ(0)';
+            if (bottomMask) bottomMask.style.transform = 'translateZ(0)';
+        }, 100);
+
     </script>
 </body>
 </html>
