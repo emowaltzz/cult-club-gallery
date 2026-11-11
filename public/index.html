@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cult Club Gallery</title>
+    <title>Cult • Club Gallery</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -81,61 +81,78 @@
             background-color: #f0f0f0; border-radius: 8px; display: block;
         }
 
-        /* --- ИНФО БЛОК ПОД ФОТО (ВСЁ В ОДНУ ЛИНИЮ) --- */
+        /* --- ИНФО БЛОК ПОД ФОТО --- */
         .post-info { 
             display: flex; 
             justify-content: space-between; 
-            align-items: center; /* Выравниваем по центру */
+            align-items: center; /* Выравниваем по вертикали */
             padding: 10px 0; 
             font-size: 13px; 
             font-weight: 400; 
             letter-spacing: -0.2px;
             position: relative; 
             z-index: 100; 
+            width: 100%; 
         }
         
-        .post-tag { color: var(--text-color); text-decoration: none; font-weight: 500; cursor: pointer; }
-        .post-date { color: var(--secondary-text); font-size: 13px; }
+        .post-tag { 
+            color: var(--text-color); 
+            text-decoration: none; 
+            font-weight: 500; 
+            cursor: pointer; 
+            flex: 1; 
+        }
+        
+        .post-date { 
+            color: var(--secondary-text); 
+            font-size: 13px; 
+            flex: 1; 
+            text-align: right; 
+        }
 
-        /* Центральный блок с лайком и лупой */
-        .center-actions {
+        /* Центральный блок (только лайк и счетчик) */
+        .like-container {
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
+            justify-content: center;
             align-items: center;
-            gap: 20px; /* Отступ между иконками */
         }
 
-        .action-btn {
-            background: none; border: none; padding: 0; cursor: pointer;
+        .like-btn {
+            background: none; border: none; padding: 5px; cursor: pointer;
             display: flex; justify-content: center; align-items: center;
             transition: transform 0.2s ease;
-            /* Увеличиваем зону нажатия */
-            padding: 5px;
+            position: relative; /* Для позиционирования счетчика */
         }
         
-        /* Увеличенные иконки */
-        .action-btn svg { 
+        .like-btn svg { 
             width: 24px; height: 24px; 
             stroke: #555; stroke-width: 2; fill: transparent; 
             transition: stroke 0.2s, fill 0.2s; 
         }
         
-        .action-btn.liked svg { 
+        .like-btn.liked svg { 
             stroke: var(--like-color); 
             fill: var(--like-color); 
         }
         
-        .action-btn:active { 
+        .like-btn:active { 
             transform: scale(0.85); 
         }
 
+        /* Счетчик справа от кнопки */
         .like-count { 
-            font-size: 12px; 
+            position: absolute;
+            left: 100%; 
+            top: 50%;
+            transform: translateY(-50%); 
+            margin-left: 2px; 
+            font-size: 13px; 
             color: var(--secondary-text); 
             font-weight: 500; 
-            margin-left: -10px; /* Сдвигаем счетчик ближе к лайку */
+            white-space: nowrap; 
         }
 
         /* Стиль для статичных постов */
@@ -432,7 +449,7 @@
             feed.innerHTML = ''; 
             allPostsData = []; 
 
-            // СТАТИКА СВЕРХУ
+            // СТАТИКА СВЕРХУ (2.png, затем 1.png)
             feed.insertAdjacentHTML('afterbegin', `
                 <div class="post static-post">
                     <div class="image-container"><img src="2.png" alt="Static"></div>
@@ -461,14 +478,8 @@
                             <div class="post-info">
                                 <span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span>
                                 
-                                <div class="center-actions">
-                                    <!-- Кнопка лупы -->
-                                    <button class="action-btn" onclick="openSearchModal('${post.tag}')">
-                                        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                                    </button>
-                                    
-                                    <!-- Кнопка лайка -->
-                                    <button class="action-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${post.id}')">
+                                <div class="like-container">
+                                    <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${post.id}')">
                                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                                     </button>
                                     <span class="like-count" id="count-${post.id}">${likesCount}</span>
@@ -683,7 +694,7 @@
         });
 
         // --- ПОИСК С АЛФАВИТОМ ---
-        function openSearchModal(preSelectedTag = null) {
+        function openSearchModal() {
             const tagsList = document.getElementById('tagsList');
             const uniqueTags = [...new Set(allPostsData.map(p => p.tag))].sort();
             
@@ -714,10 +725,6 @@
             document.getElementById('searchTitle').innerText = 'Поиск по тегам';
             btnBackFloating.classList.remove('active');
             openModal('searchModal');
-            
-            if (preSelectedTag) {
-                setTimeout(() => showTagPhotos(preSelectedTag), 100);
-            }
         }
 
         function showTagPhotos(tag) {
