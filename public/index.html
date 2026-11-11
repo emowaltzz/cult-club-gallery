@@ -288,7 +288,7 @@
     <!-- МОДАЛКА ОТПРАВКИ -->
     <div class="modal-overlay" id="submitModal" onclick="closeModal(event, 'submitModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-title">Предложить фото</div>
+            <div class="modal-title">Загрузка медиа</div>
             <div class="file-upload-wrapper">
                 <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(this)">
                 <img src="" class="preview-image" id="previewImage" alt="Preview">
@@ -299,7 +299,7 @@
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
                 </div>
-                <div class="upload-text" id="uploadText">Нажмите, чтобы выбрать фото</div>
+                <div class="upload-text" id="uploadText">Нажмите, чтобы выбрать файл</div>
             </div>
             <input type="text" id="tagInput" placeholder="Ваш тег (например, @username)" value="@">
             <button class="btn-submit" onclick="submitPhoto()">Отправить</button>
@@ -334,7 +334,7 @@
     <!-- МОДАЛКА УДАЛЕНИЯ -->
     <div class="delete-confirm-modal" id="deleteConfirmModal">
         <div class="delete-confirm-content">
-            <div class="delete-confirm-title">Удалить это фото?</div>
+            <div class="delete-confirm-title">Удалить этот файл?</div>
             <div class="delete-confirm-buttons">
                 <button class="delete-confirm-btn btn-cancel" onclick="closeDeleteConfirm()">Отмена</button>
                 <button class="delete-confirm-btn btn-delete" onclick="confirmDelete()">Удалить</button>
@@ -348,6 +348,7 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
+        tg.disableVerticalSwipes();ы
 
         let currentUserId = tg.initDataUnsafe?.user?.id;
         if (!currentUserId) {
@@ -449,7 +450,7 @@
                     `);
                 });
             } else {
-                feed.insertAdjacentHTML('beforeend', `<p style="text-align:center; width:100%; padding: 20px; color:#888;">Пока нет одобренных фото</p>`);
+                feed.insertAdjacentHTML('beforeend', `<p style="text-align:center; width:100%; padding: 20px; color:#888;">Пока нет одобренных медиа</p>`);
             }
 
             // Статика снизу
@@ -584,19 +585,26 @@
             if (targetPost) targetPost.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        function openTelegramLink(tag) {
-            const username = tag.replace('@', '');
-            if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/${username}`);
-            else window.open(`https://t.me/${username}`, '_blank');
+ function openTelegramLink(tag) {
+    // 1. Убираем все пробелы и все символы @
+    let username = tag.trim().replace(/@/g, '');
+    
+    // 2. Формируем полную ссылку (Telegram требует именно такой формат)
+    const url = `https://t.me/${username}`;
+    
+    // 3. Пытаемся открыть через Telegram WebApp
+    if (tg && tg.openTelegramLink) {
+        try {
+            tg.openTelegramLink(url);
+        } catch (e) {
+            // Если Telegram выдал ошибку — открываем как обычную ссылку
+            window.open(url, '_blank');
         }
-
-        function openModal(id) {
-            bottomControls.classList.add('hidden');
-            document.body.classList.add('modal-open');
-            const modal = document.getElementById(id);
-            modal.style.display = 'flex';
-            setTimeout(() => modal.classList.add('active'), 10);
-        }
+    } else {
+        // Если это обычный браузер — открываем в новой вкладке
+        window.open(url, '_blank');
+    }
+}
 
         function closeModal(e, id) {
             if (e.target === document.getElementById(id) || !e.target) {
@@ -788,7 +796,7 @@
                             currentFileToUpload = new File([blob], "photo.jpg", { type: "image/jpeg" });
                             previewImage.src = URL.createObjectURL(blob);
                             previewImage.style.display = 'block';
-                            document.getElementById('uploadText').innerText = 'Фото готово';
+                            document.getElementById('uploadText').innerText = 'Файл готов';
                             document.getElementById('uploadIcon').style.display = 'none';
                         }, 'image/jpeg', 0.8);
                     }
@@ -800,7 +808,7 @@
 
         async function submitPhoto() {
             const tagInput = document.getElementById('tagInput').value;
-            if (!currentFileToUpload) { alert("Выберите фото!"); return; }
+            if (!currentFileToUpload) { alert("Выберите файл!"); return; }
             if (tagInput === '@') { alert("Введите тег!"); return; }
 
             const formData = new FormData();
@@ -814,11 +822,11 @@
             try {
                 const res = await fetch('/api/submit', { method: 'POST', body: formData });
                 if (res.ok) {
-                    alert('Фото успешно отправлено на модерацию!');
+                    alert('Файл успешно отправлен на модерацию!');
                     document.getElementById('fileInput').value = '';
                     previewImage.style.display = 'none';
                     previewImage.src = '';
-                    document.getElementById('uploadText').innerText = 'Нажмите, чтобы выбрать фото';
+                    document.getElementById('uploadText').innerText = 'Нажмите, чтобы выбрать файл';
                     document.getElementById('uploadIcon').style.display = 'flex';
                     currentFileToUpload = null;
                     closeModal({target: submitModal}, 'submitModal');
