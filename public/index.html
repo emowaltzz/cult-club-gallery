@@ -49,14 +49,13 @@
             will-change: backdrop-filter;
         }
 
-        /* --- ЛОГОТИП (ВЫНЕСЕН ВЫШЕ ВСЕГО, СВОЙСТВА ИЗ ОБРАЗЦА) --- */
+        /* --- ЛОГОТИП --- */
         .floating-logo {
             position: fixed; top: 15px; left: 50%; 
             transform: translateX(-50%) scale(1);
-            z-index: 9999; /* Выше всех остальных элементов */
+            z-index: 9999; 
             pointer-events: none; 
             width: 47%; max-width: 250px; 
-            /* Точно как в образце */
             transition: transform var(--smooth-duration) var(--smooth-ease);
         }
         .floating-logo img { 
@@ -64,12 +63,9 @@
             filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 2px 4px rgba(0,0,0,0.2)); 
             transition: filter 0.3s ease;
         }
-        /* Точно как в образце */
         .floating-logo.shrunk { 
             transform: translateX(-50%) scale(0.95); 
         }
-
-        /* Блюр применяем ТОЛЬКО к картинке, чтобы не сбивать transform контейнера */
         body.modal-open .floating-logo img { 
             filter: blur(10px) drop-shadow(0 8px 16px rgba(0,0,0,0.4)); 
         }
@@ -84,12 +80,7 @@
             -ms-overflow-style: none; 
             transition: filter 0.3s ease;
         }
-        .feed::-webkit-scrollbar { 
-            width: 0px; 
-            display: none;
-        }
-        
-        /* Блюр ленты при открытом меню */
+        .feed::-webkit-scrollbar { width: 0px; display: none; }
         body.modal-open .feed { filter: blur(10px); }
 
         .post { 
@@ -104,7 +95,7 @@
             background-color: #f0f0f0; border-radius: 8px; display: block;
         }
 
-        /* --- КНОПКИ ПОД ФОТО (ЕДИНЫЙ СТИЛЬ) --- */
+        /* --- КНОПКИ ПОД ФОТО --- */
         .action-btn {
             width: 40px; height: 40px;
             background: rgba(255, 255, 255, 0.45);
@@ -124,111 +115,55 @@
             transition: stroke 0.2s, fill 0.2s; 
         }
         
-        .action-btn:active { 
-            transform: scale(0.85); 
-        }
+        .action-btn:active { transform: scale(0.85); }
+        .like-btn.liked svg { stroke: var(--like-color); fill: var(--like-color); }
 
-        /* Специфичные стили для лайка */
-        .like-btn.liked svg { 
-            stroke: var(--like-color); 
-            fill: var(--like-color); 
-        }
-
-        /* --- ИНФО БЛОК ПОД ФОТО --- */
+        /* --- ИНФО БЛОК --- */
         .post-info { 
-            display: flex; 
-            align-items: center; 
-            padding-top: 15px; 
-            padding-left: 7px;
-            padding-right: 7px;
-            font-size: 13px; 
-            font-weight: 400; 
-            letter-spacing: -0.2px;
-            position: relative; 
-            z-index: 100; 
-            width: 100%; 
-            gap: 10px; 
+            display: flex; align-items: center; 
+            padding-top: 15px; padding-left: 7px; padding-right: 7px;
+            font-size: 13px; font-weight: 400; letter-spacing: -0.2px;
+            position: relative; z-index: 100; width: 100%; gap: 10px; 
         }
         
-        /* Левая часть (Кнопка профиля + Тег) */
-        .info-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            min-width: 0; 
-        }
+        .info-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
 
-        /* Обертка для тега, чтобы работал градиент */
         .tag-wrapper {
-            flex: 1;
-            min-width: 0;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
+            flex: 1; min-width: 0; overflow: hidden; display: flex; align-items: center;
             -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
             mask-image: linear-gradient(to right, black 80%, transparent 100%);
         }
 
         .post-tag { 
-            color: var(--text-color); 
-            text-decoration: none; 
-            font-weight: 500; 
-            cursor: pointer; 
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            min-width: 0;
-            padding-bottom: 2px; 
-            display: inline-block;
+            color: var(--text-color); text-decoration: none; font-weight: 500; 
+            cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            min-width: 0; padding-bottom: 2px; display: inline-block;
         }
 
-        /* Центральный разделитель (три точки) */
         .info-divider {
-            color: var(--secondary-text);
-            font-size: 20px;      
-            line-height: 1;       
-            display: flex;
-            align-items: center;  
-            justify-content: center;
-            flex-shrink: 0;
-            letter-spacing: 2px;  
-            padding: 0 5px;
+            color: var(--secondary-text); font-size: 20px; line-height: 1;       
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; letter-spacing: 2px; padding: 0 5px;
         }
 
-        /* Правая часть (Дата + Кнопка лайка) */
         .info-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-            min-width: 0;
+            display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;
             justify-content: flex-end;
         }
         
-        .post-date { 
-            color: var(--secondary-text); 
-            font-size: 13px; 
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-        /* Стиль для статичных постов */
+        .post-date { color: var(--secondary-text); font-size: 13px; white-space: nowrap; flex-shrink: 0; }
         .post.static-post { margin-bottom: 10px; }
 
-        /* --- НИЖНЯЯ ПАНЕЛЬ КНОПОК --- */
+        /* --- НИЖНЯЯ ПАНЕЛЬ --- */
         .bottom-controls {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(0);
-            z-index: 300; display: flex; align-items: center; justify-content: center;
-            gap: 15px;
+            z-index: 300; display: flex; align-items: center; justify-content: center; gap: 15px;
             transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease);
             opacity: 1;
         }
 
         .bottom-controls.hidden { 
-            opacity: 0; 
-            pointer-events: none; 
-            transform: translateX(-50%) translateY(20px);
+            opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(20px);
         }
 
         .liquid-glass {
@@ -264,8 +199,7 @@
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.1); display: none;
             justify-content: center; align-items: flex-end; z-index: 200; 
-            opacity: 0; 
-            transition: opacity 0.4s ease;
+            opacity: 0; transition: opacity 0.4s ease;
         }
         .modal-overlay.active { display: flex; opacity: 1; }
         
@@ -274,26 +208,23 @@
             backdrop-filter: blur(25px) saturate(200%); -webkit-backdrop-filter: blur(25px) saturate(200%);
             border-top: 1px solid rgba(255, 255, 255, 0.8); 
             width: 100%; max-width: 500px;
-            border-radius: 24px 24px 0 0; 
-            height: 60vh; 
-            display: flex; 
-            flex-direction: column;
-            transform: translateY(100%); 
-            opacity: 0; 
+            border-radius: 24px 24px 0 0; height: 60vh; 
+            display: flex; flex-direction: column;
+            transform: translateY(100%); opacity: 0; 
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; 
             box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
-            position: relative; 
-            z-index: 201; 
-            overflow: hidden;
+            position: relative; z-index: 201; overflow: hidden;
         }
         
         .modal-overlay.active .modal-content { transform: translateY(0); opacity: 1; }
         
+        /* ВАЖНО: Запрещаем браузеру обрабатывать жесты в зоне заголовка */
         .modal-drag-area {
             padding: 30px 20px 15px;
             flex-shrink: 0;
             cursor: grab;
             position: relative;
+            touch-action: none; /* Отключаем скролл/жесты браузера */
         }
         
         .modal-content::before {
@@ -302,12 +233,8 @@
         }
 
         .modal-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 20px 20px;
-            overscroll-behavior: contain;
-            display: flex;
-            flex-direction: column;
+            flex: 1; overflow-y: auto; padding: 0 20px 20px;
+            overscroll-behavior: contain; display: flex; flex-direction: column;
         }
         
         .modal-body::-webkit-scrollbar { width: 0px; display: none; }
@@ -316,15 +243,10 @@
         .modal-title { font-size: 18px; font-weight: 600; text-align: center; color: #000; margin: 0; }
 
         /* --- МОДАЛКА ОТПРАВКИ --- */
-        #submitModal .modal-body {
-            gap: 15px; 
-        }
+        #submitModal .modal-body { gap: 15px; }
 
         .file-upload-wrapper {
-            position: relative; 
-            width: 100%; 
-            flex: 1; 
-            min-height: 120px; 
+            position: relative; width: 100%; flex: 1; min-height: 120px; 
             border: 2px dashed rgba(0,0,0,0.15); border-radius: 16px;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             background: rgba(255, 255, 255, 0.4); cursor: pointer; overflow: hidden;
@@ -335,30 +257,14 @@
         .preview-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 2; }
 
         .modal-content input[type="text"] {
-            width: 100%;
-            padding: 16px; 
-            border: 1px solid rgba(0,0,0,0.1); 
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 14px; 
-            font-size: 16px; 
-            outline: none; 
-            font-family: inherit;
-            flex-shrink: 0;
+            width: 100%; padding: 16px; border: 1px solid rgba(0,0,0,0.1); 
+            background: rgba(255, 255, 255, 0.6); border-radius: 14px; font-size: 16px; 
+            outline: none; font-family: inherit; flex-shrink: 0;
         }
         
         .btn-submit {
-            width: 100%;
-            padding: 16px; 
-            background: #000; 
-            color: #fff; 
-            border: none; 
-            border-radius: 14px; 
-            font-size: 16px; 
-            font-weight: 500;
-            cursor: pointer; 
-            font-family: inherit;
-            flex-shrink: 0;
-            transition: opacity 0.2s;
+            width: 100%; padding: 16px; background: #000; color: #fff; border: none; border-radius: 14px; 
+            font-size: 16px; font-weight: 500; cursor: pointer; font-family: inherit; flex-shrink: 0; transition: opacity 0.2s;
         }
         .btn-submit:active { opacity: 0.8; }
 
@@ -368,10 +274,7 @@
         
         .alphabet-header {
             font-size: 15px; font-weight: 600; color: #000; 
-            padding: 15px 0 5px 10px; 
-            background: transparent; 
-            position: relative; 
-            z-index: 1;
+            padding: 15px 0 5px 10px; background: transparent; position: relative; z-index: 1;
         }
 
         .tag-item { padding: 12px 15px; background: rgba(255, 255, 255, 0.4); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; transition: background 0.2s; }
@@ -385,7 +288,6 @@
         .grid-item:active { opacity: 0.7; }
         .grid-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Кнопка Назад (снизу) */
         .btn-back-floating {
             position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px);
             width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden;
@@ -395,7 +297,6 @@
         .btn-back-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
         .btn-back-floating svg { width: 24px; height: 24px; stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 
-        /* Модалка удаления */
         .delete-confirm-modal {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.5); display: none;
@@ -491,7 +392,7 @@
     <div class="modal-overlay" id="likesModal" onclick="closeModal(event, 'likesModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-drag-area">
-                <div class="modal-title">Понравившиеся</div>
+                <div class="modal-title">Избранное</div>
             </div>
             <div class="modal-body">
                 <div class="likes-grid" id="likesGrid"></div>
@@ -765,7 +666,7 @@
             if (bottomMask) bottomMask.style.transform = 'translateZ(0)';
         }, 100);
 
-        // Логика сжатия логотипа (как в образце)
+        // Логика сжатия логотипа
         feed.addEventListener('scroll', () => {
             logo.classList.add('shrunk');
             bottomControls.classList.add('shrunk');
@@ -819,7 +720,7 @@
             }
         }
 
-        // --- СВАЙПЫ ДЛЯ ЗАКРЫТИЯ МОДАЛОК (ТОЛЬКО ЗА ЗАГОЛОВОК) ---
+        // --- ИСПРАВЛЕННЫЕ СВАЙПЫ (С ПРЕДОТВРАЩЕНИЕМ ДЕФОЛТНОГО ПОВЕДЕНИЯ) ---
         let touchStartY = 0;
         let currentTouchModal = null;
 
@@ -834,10 +735,13 @@
         document.addEventListener('touchmove', (e) => {
             if (!currentTouchModal) return;
             const deltaY = e.touches[0].clientY - touchStartY;
+            
+            // Если тянем вниз, блокируем стандартный скролл/жест Telegram
             if (deltaY > 0) {
+                if (e.cancelable) e.preventDefault(); 
                 currentTouchModal.style.transform = `translateY(${deltaY}px)`;
             }
-        }, { passive: true });
+        }, { passive: false }); // Важно: passive: false, чтобы работал preventDefault
 
         document.addEventListener('touchend', (e) => {
             if (!currentTouchModal) return;
