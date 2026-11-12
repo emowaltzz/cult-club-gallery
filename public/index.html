@@ -63,12 +63,8 @@
             filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 2px 4px rgba(0,0,0,0.2)); 
             transition: filter 0.3s ease;
         }
-        .floating-logo.shrunk { 
-            transform: translateX(-50%) scale(0.95); 
-        }
-        body.modal-open .floating-logo img { 
-            filter: blur(10px) drop-shadow(0 8px 16px rgba(0,0,0,0.4)); 
-        }
+        .floating-logo.shrunk { transform: translateX(-50%) scale(0.95); }
+        body.modal-open .floating-logo img { filter: blur(10px) drop-shadow(0 8px 16px rgba(0,0,0,0.4)); }
 
         /* --- ЛЕНТА --- */
         .feed {
@@ -89,11 +85,7 @@
         }
         
         .image-container { position: relative; width: 100%; }
-
-        .post img {
-            width: 100%; height: auto; max-height: 80vh; object-fit: cover;
-            background-color: #f0f0f0; border-radius: 8px; display: block;
-        }
+        .post img { width: 100%; height: auto; max-height: 80vh; object-fit: cover; background-color: #f0f0f0; border-radius: 8px; display: block; }
 
         /* --- КНОПКИ ПОД ФОТО --- */
         .action-btn {
@@ -102,19 +94,10 @@
             backdrop-filter: blur(12px) saturate(180%); -webkit-backdrop-filter: blur(12px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.6);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), inset 0 0 10px rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            flex-shrink: 0;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0;
         }
-
-        .action-btn svg { 
-            width: 22px; height: 22px; 
-            stroke: black; stroke-width: 2; fill: transparent; 
-            transition: stroke 0.2s, fill 0.2s; 
-        }
-        
+        .action-btn svg { width: 22px; height: 22px; stroke: black; stroke-width: 2; fill: transparent; transition: stroke 0.2s, fill 0.2s; }
         .action-btn:active { transform: scale(0.85); }
         .like-btn.liked svg { stroke: var(--like-color); fill: var(--like-color); }
 
@@ -125,32 +108,15 @@
             font-size: 13px; font-weight: 400; letter-spacing: -0.2px;
             position: relative; z-index: 100; width: 100%; gap: 10px; 
         }
-        
         .info-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-
         .tag-wrapper {
             flex: 1; min-width: 0; overflow: hidden; display: flex; align-items: center;
             -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
             mask-image: linear-gradient(to right, black 80%, transparent 100%);
         }
-
-        .post-tag { 
-            color: var(--text-color); text-decoration: none; font-weight: 500; 
-            cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-            min-width: 0; padding-bottom: 2px; display: inline-block;
-        }
-
-        .info-divider {
-            color: var(--secondary-text); font-size: 20px; line-height: 1;       
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; letter-spacing: 2px; padding: 0 5px;
-        }
-
-        .info-right {
-            display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0;
-            justify-content: flex-end;
-        }
-        
+        .post-tag { color: var(--text-color); text-decoration: none; font-weight: 500; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; padding-bottom: 2px; display: inline-block; }
+        .info-divider { color: var(--secondary-text); font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; letter-spacing: 2px; padding: 0 5px; }
+        .info-right { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; justify-content: flex-end; }
         .post-date { color: var(--secondary-text); font-size: 13px; white-space: nowrap; flex-shrink: 0; }
         .post.static-post { margin-bottom: 10px; }
 
@@ -158,7 +124,7 @@
         .bottom-controls {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(0);
             z-index: 300; display: flex; align-items: center; justify-content: center; gap: 15px;
-            transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease);
+            transition: opacity 0.3s var(--smooth-ease), transform 0.3s var(--smooth-ease);
             opacity: 1;
         }
 
@@ -218,13 +184,12 @@
         
         .modal-overlay.active .modal-content { transform: translateY(0); opacity: 1; }
         
-        /* ВАЖНО: Запрещаем браузеру обрабатывать жесты в зоне заголовка */
         .modal-drag-area {
             padding: 30px 20px 15px;
             flex-shrink: 0;
             cursor: grab;
             position: relative;
-            touch-action: none; /* Отключаем скролл/жесты браузера */
+            touch-action: none; 
         }
         
         .modal-content::before {
@@ -272,10 +237,7 @@
         .search-header { display: flex; align-items: center; justify-content: center; position: relative; }
         .tags-list { display: flex; flex-direction: column; }
         
-        .alphabet-header {
-            font-size: 15px; font-weight: 600; color: #000; 
-            padding: 15px 0 5px 10px; background: transparent; position: relative; z-index: 1;
-        }
+        .alphabet-header { font-size: 15px; font-weight: 600; color: #000; padding: 15px 0 5px 10px; background: transparent; position: relative; z-index: 1; }
 
         .tag-item { padding: 12px 15px; background: rgba(255, 255, 255, 0.4); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; transition: background 0.2s; }
         .tag-item:active { background: rgba(255, 255, 255, 0.8); }
@@ -392,7 +354,7 @@
     <div class="modal-overlay" id="likesModal" onclick="closeModal(event, 'likesModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-drag-area">
-                <div class="modal-title">Избранное</div>
+                <div class="modal-title">Понравившиеся</div>
             </div>
             <div class="modal-body">
                 <div class="likes-grid" id="likesGrid"></div>
@@ -703,6 +665,11 @@
             bottomControls.classList.add('hidden');
             document.body.classList.add('modal-open');
             const modal = document.getElementById(id);
+            
+            // СБРОС СМЕЩЕНИЯ (лечит баг с недокрытым меню)
+            const content = modal.querySelector('.modal-content');
+            if (content) content.style.transform = '';
+
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('active'), 10);
         }
@@ -710,17 +677,26 @@
         function closeModal(e, id) {
             if (e.target === document.getElementById(id) || !e.target) {
                 const modal = document.getElementById(id);
+                const content = modal.querySelector('.modal-content');
+                
+                // Убираем класс active, чтобы меню поехало вниз
                 modal.classList.remove('active');
                 document.body.classList.remove('modal-open');
                 btnBackFloating.classList.remove('active');
+                
+                // Ждем окончания анимации закрытия (400мс), затем скрываем
                 setTimeout(() => {
                     modal.style.display = 'none';
+                    // Сбрасываем смещение после закрытия
+                    if (content) content.style.transform = '';
+                    
+                    // Возвращаем кнопки. Даем небольшую задержку, чтобы они появились плавно
                     bottomControls.classList.remove('hidden');
                 }, 400);
             }
         }
 
-        // --- ИСПРАВЛЕННЫЕ СВАЙПЫ (С ПРЕДОТВРАЩЕНИЕМ ДЕФОЛТНОГО ПОВЕДЕНИЯ) ---
+        // --- СВАЙПЫ (ИСПРАВЛЕНО) ---
         let touchStartY = 0;
         let currentTouchModal = null;
 
@@ -736,12 +712,12 @@
             if (!currentTouchModal) return;
             const deltaY = e.touches[0].clientY - touchStartY;
             
-            // Если тянем вниз, блокируем стандартный скролл/жест Telegram
+            // Блокируем дефолтный скролл
             if (deltaY > 0) {
                 if (e.cancelable) e.preventDefault(); 
                 currentTouchModal.style.transform = `translateY(${deltaY}px)`;
             }
-        }, { passive: false }); // Важно: passive: false, чтобы работал preventDefault
+        }, { passive: false }); 
 
         document.addEventListener('touchend', (e) => {
             if (!currentTouchModal) return;
@@ -751,6 +727,7 @@
                 const modal = currentTouchModal.closest('.modal-overlay');
                 if (modal) closeModal({ target: modal }, modal.id);
             } else {
+                // Если не дотянули - возвращаем на место
                 currentTouchModal.style.transform = '';
             }
             currentTouchModal = null;
