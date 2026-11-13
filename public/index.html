@@ -237,17 +237,10 @@
         /* --- МОДАЛКА ВХОДА --- */
         .auth-modal .modal-body { 
             gap: 15px; 
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             padding-top: 10px;
             padding-bottom: 30px;
-        }
-
-        .auth-logo {
-            width: 75%; /* Сделал логотип большим, как на скриншоте */
-            max-width: 300px;
-            margin: 0 auto 10px auto;
-            display: block;
         }
 
         .auth-subtitle {
@@ -285,7 +278,8 @@
             flex-shrink: 0; 
             transition: opacity 0.2s;
             text-transform: uppercase; 
-            margin-top: 10px;
+            margin-top: auto;
+            margin-bottom: 0;
         }
         .auth-btn:active { opacity: 0.8; }
 
@@ -384,6 +378,18 @@
             cursor: pointer; width: 160px;
         }
         .chat-btn:active { transform: scale(0.95); opacity: 0.8; }
+
+        /* Кнопка SUPPORT внутри меню входа */
+        .auth-support-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 12px 30px; background: #000; color: #fff;
+            text-decoration: none; border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease, opacity 0.2s;
+            cursor: pointer; width: 160px;
+            margin-top: 15px;
+            flex-shrink: 0;
+        }
+        .auth-support-btn:active { transform: scale(0.95); opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -426,11 +432,14 @@
                 <div class="modal-title">Вход</div>
             </div>
             <div class="modal-body">
-                <img src="logo.png" class="auth-logo" alt="Logo">
                 <div class="auth-subtitle">Введите логин и пароль.<br>Если вы здесь впервые, аккаунт создастся автоматически.</div>
                 
                 <input type="text" id="authUsername" class="auth-input" placeholder="Логин" autocomplete="off">
                 <input type="password" id="authPassword" class="auth-input" placeholder="Пароль" autocomplete="off">
+                
+                <!-- Кнопка SUPPORT под полями -->
+                <a href="https://t.me/ettoveracult?direct" target="_blank" class="auth-support-btn">SUPPORT</a>
+
                 <button class="auth-btn" onclick="submitAuth()">Продолжить</button>
             </div>
         </div>
