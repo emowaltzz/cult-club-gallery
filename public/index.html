@@ -94,11 +94,10 @@
             border: 1px solid rgba(0, 0, 0, 0.1);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             border-radius: 50%; 
-            position: relative; /* Важно для абсолютного центрирования иконки */
+            position: relative;
             cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0;
         }
 
-        /* ЖЕСТКОЕ ЦЕНТРИРОВАНИЕ ИКОНОК В КНОПКАХ ПОД ПОСТОМ */
         .action-btn svg { 
             position: absolute;
             top: 50%; left: 50%;
@@ -157,12 +156,11 @@
             border: 1px solid rgba(0, 0, 0, 0.1);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 50%; 
-            position: relative; /* Важно для центрирования */
+            position: relative;
             cursor: pointer;
             transition: transform var(--smooth-duration) var(--smooth-ease);
         }
         
-        /* ЖЕСТКОЕ ЦЕНТРИРОВАНИЕ ИКОНОК В НИЖНЕМ МЕНЮ */
         .liquid-glass svg { 
             position: absolute;
             top: 50%; left: 50%;
@@ -185,7 +183,6 @@
             transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.6s var(--smooth-ease), visibility 0.6s var(--smooth-ease);
             background: rgba(0, 0, 0, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            position: fixed;
             display: flex; justify-content: center; align-items: center;
         }
         .btn-down svg { display: block; margin: auto; stroke: #ffffff; width: 24px; height: 24px;}
@@ -272,9 +269,18 @@
 
         .tag-item { padding: 12px 15px; background: rgba(0, 0, 0, 0.05); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; transition: background 0.2s; }
         .tag-item:active { background: rgba(0, 0, 0, 0.1); }
-        .tag-info { display: flex; flex-direction: column; }
-        .tag-name { font-weight: 500; font-size: 16px; }
+        .tag-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+        .tag-name { font-weight: 500; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .tag-count { font-size: 13px; color: var(--secondary-text); font-weight: 400; }
+
+        /* Контейнер для кнопок в теге */
+        .tag-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
 
         .author-grid, .likes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding-bottom: 20px; width: 100%; }
         .grid-item { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 8px; cursor: pointer; background: #eee; transition: opacity 0.2s; }
@@ -305,12 +311,14 @@
         .btn-cancel { background: #eee; color: #000; }
         .btn-delete { background: #ff3b30; color: #fff; }
 
-        /* --- КНОПКА SUPPORT --- */
+        /* --- КНОПКИ SUPPORT И CHAT --- */
         .support-wrapper {
             width: 100%;
             max-width: 500px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
             margin-top: 10px;
             margin-bottom: 30px; 
         }
@@ -330,11 +338,29 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             transition: transform 0.2s ease, opacity 0.2s;
             cursor: pointer;
+            width: 160px;
         }
-        .support-btn:active {
-            transform: scale(0.95);
-            opacity: 0.8;
+        .support-btn:active { transform: scale(0.95); opacity: 0.8; }
+
+        .chat-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 30px;
+            background: rgba(255, 255, 255, 0.7);
+            color: #000;
+            text-decoration: none;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, opacity 0.2s;
+            cursor: pointer;
+            width: 160px;
         }
+        .chat-btn:active { transform: scale(0.95); opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -469,6 +495,7 @@
 
         let allPostsData = []; 
         let likedPhotos = []; 
+        let likedTags = []; // Массив для хранения избранных тегов
         let postToDelete = null;
         let currentFileToUpload = null;
         
@@ -493,12 +520,26 @@
                 return;
             }
 
+            // Загружаем лайки фото
             const { data: myLikes } = await supabaseClient
                 .from('likes')
                 .select('photo_id')
                 .eq('user_id', currentUserId);
             
             likedPhotos = myLikes ? [...new Set(myLikes.map(l => l.photo_id))] : [];
+
+            // Загружаем избранные теги
+            const { data: myTags, error: tagsError } = await supabaseClient
+                .from('liked_tags')
+                .select('tag')
+                .eq('user_id', currentUserId);
+
+            if (tagsError) {
+                console.error("Ошибка загрузки тегов (возможно, таблица не создана):", tagsError);
+                likedTags = [];
+            } else {
+                likedTags = myTags ? myTags.map(t => t.tag) : [];
+            }
 
             if (!isInitialLoad) {
                 likedPhotos.forEach(id => {
@@ -584,10 +625,11 @@
                 `);
             });
 
-            // ДОБАВЛЯЕМ КНОПКУ SUPPORT ПОД СТАТИКОЙ
+            // Кнопки SUPPORT и CHAT
             feed.insertAdjacentHTML('beforeend', `
                 <div class="support-wrapper">
                     <a href="https://t.me/ettoveracult?direct" target="_blank" class="support-btn">SUPPORT</a>
+                    <a href="https://t.me/cultclubchatroom" target="_blank" class="chat-btn">CHAT</a>
                 </div>
             `);
 
@@ -807,17 +849,31 @@
             uniqueTags.forEach(tag => {
                 const count = allPostsData.filter(p => p.tag === tag).length;
                 const letter = tag.replace('@', '').charAt(0).toUpperCase();
+                const isTagLiked = likedTags.includes(tag); // Проверяем, в избранном ли тег
 
                 if (letter !== currentLetter) {
                     currentLetter = letter;
                     tagsList.innerHTML += `<div class="alphabet-header">${letter}</div>`;
                 }
 
+                // Добавляем две кнопки: сердечко (для тега) и профиль (переход)
                 tagsList.innerHTML += `
-                    <div class="tag-item" onclick="showTagPhotos('${tag}')">
-                        <div class="tag-info">
+                    <div class="tag-item">
+                        <div class="tag-info" onclick="showTagPhotos('${tag}')">
                             <span class="tag-name">${tag}</span>
                             <span class="tag-count">${count} фото</span>
+                        </div>
+                        <div class="tag-actions">
+                            <button class="action-btn like-btn ${isTagLiked ? 'liked' : ''}" onclick="event.stopPropagation(); toggleTagLike(event, '${tag}')">
+                                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            </button>
+                            <button class="action-btn profile-btn" onclick="event.stopPropagation(); openTelegramLink('${tag}')">
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <circle cx="12" cy="9" r="3"></circle>
+                                    <path d="M6.5 18.5c1.5-2 3.5-3 5.5-3s4 1 5.5 3"></path>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 `;
@@ -858,10 +914,10 @@
             setTimeout(() => {
                 const post = document.getElementById(`post-${id}`);
                 if (post) post.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 400);
+            }, 500);
         }
 
-        // --- ЛАЙКИ ---
+        // --- ЛАЙКИ ФОТО ---
         async function toggleLike(e, postId) {
             e.stopPropagation();
             const btn = e.currentTarget;
@@ -887,6 +943,42 @@
                 if (!error) {
                     likedPhotos.push(idAsNumber);
                     btn.classList.add('liked');
+                }
+            }
+            btn.disabled = false;
+        }
+
+        // --- ЛАЙКИ ТЕГОВ ---
+        async function toggleTagLike(e, tag) {
+            e.stopPropagation();
+            const btn = e.currentTarget;
+            btn.disabled = true;
+
+            if (likedTags.includes(tag)) {
+                // Удаляем из избранного
+                const { error } = await supabaseClient
+                    .from('liked_tags')
+                    .delete()
+                    .eq('tag', tag)
+                    .eq('user_id', currentUserId);
+
+                if (!error) {
+                    likedTags = likedTags.filter(t => t !== tag);
+                    btn.classList.remove('liked');
+                } else {
+                    console.error("Ошибка удаления тега:", error);
+                }
+            } else {
+                // Добавляем в избранное
+                const { error } = await supabaseClient
+                    .from('liked_tags')
+                    .insert([{ tag: tag, user_id: currentUserId }]);
+
+                if (!error) {
+                    likedTags.push(tag);
+                    btn.classList.add('liked');
+                } else {
+                    console.error("Ошибка добавления тега:", error);
                 }
             }
             btn.disabled = false;
