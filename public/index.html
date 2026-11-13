@@ -127,7 +127,6 @@
             padding-top: 15px; padding-left: 7px; padding-right: 7px;
             font-size: 13px; font-weight: 400; letter-spacing: -0.2px;
             position: relative; z-index: 100; width: 100%; 
-            /* Убираем gap, чтобы контролировать отступы вручную */
             gap: 0; 
         }
         .info-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
@@ -153,7 +152,7 @@
             font-size: 13px; 
             white-space: nowrap; 
             flex-shrink: 0; 
-            margin-right: 10px; /* Отступ между датой и сердечком */
+            margin-right: 10px; 
         }
         
         /* --- СЧЕТЧИК ЛАЙКОВ --- */
@@ -161,11 +160,11 @@
             font-size: 12px;
             color: var(--secondary-text);
             font-weight: 500;
-            margin-left: 10px; /* Отступ между сердечком и счетчиком */
+            margin-left: 10px; 
             white-space: nowrap;
-            min-width: 15px; /* Чтобы число не прыгало при изменении */
+            min-width: 15px; 
             text-align: left;
-            flex-shrink: 0; /* Чтобы счетчик не сжимался */
+            flex-shrink: 0; 
         }
 
         .tag-item .like-count {
@@ -467,17 +466,14 @@
         <svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
     </button>
 
-    <!-- Кнопка Назад для меню поиска -->
     <button class="liquid-glass btn-back-floating" id="btnBackFloating" onclick="handleBackClick()">
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
 
-    <!-- Кнопка Сортировки для избранного -->
     <button class="liquid-glass btn-sort-floating" id="btnSortFloating" onclick="toggleSort()">
         <svg viewBox="0 0 24 24"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg>
     </button>
 
-    <!-- Кнопка Избранные теги (всегда по центру) -->
     <button class="liquid-glass btn-fav-tags-floating" id="btnFavTagsFloating" onclick="showFavoriteTags()">
         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
     </button>
@@ -668,7 +664,7 @@
             feed.innerHTML = ''; 
             allPostsData = []; 
 
-            // СТАТИКА СВЕРХУ: Добавляем 3.png
+            // СТАТИКА СВЕРХУ: 3.png
             feed.insertAdjacentHTML('afterbegin', `
                 <div class="post static-post">
                     <div class="image-container"><img src="3.png" alt="Static Top"></div>
@@ -724,7 +720,13 @@
                 feed.insertAdjacentHTML('beforeend', `<p style="text-align:center; width:100%; padding: 20px; color:#888;">Пока нет одобренных медиа</p>`);
             }
 
-            // СТАТИКА СНИЗУ
+            // СТАТИКА СНИЗУ: 3.png, 1.png, 2.png
+            feed.insertAdjacentHTML('beforeend', `
+                <div class="post static-post">
+                    <div class="image-container"><img src="3.png" alt="Static Bottom 3"></div>
+                </div>
+            `);
+
             [1, 2].forEach(num => {
                 feed.insertAdjacentHTML('beforeend', `
                     <div class="post static-post" id="bottom-static-${num}">
@@ -1158,7 +1160,7 @@
         }
 
         function showTagsList() {
-            handleBackClick(); // Используем единую логику
+            handleBackClick(); 
         }
 
         function scrollToPost(id, modalId) {
