@@ -236,11 +236,11 @@
 
         /* --- МОДАЛКА ВХОДА --- */
         .auth-modal .modal-body { 
-            gap: 15px; 
-            justify-content: flex-start;
+            gap: 12px; /* Немного уменьшил отступ между элементами */
+            justify-content: space-between; /* Распределяем элементы: текст сверху, кнопка снизу */
             align-items: center;
-            padding-top: 10px;
-            padding-bottom: 30px;
+            padding-top: 5px;
+            padding-bottom: 20px;
         }
 
         .auth-subtitle {
@@ -249,7 +249,7 @@
             text-align: center; 
             line-height: 1.4;
             padding: 0 10px;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
         }
 
         .auth-input {
@@ -278,7 +278,7 @@
             flex-shrink: 0; 
             transition: opacity 0.2s;
             text-transform: uppercase; 
-            margin-top: auto;
+            margin-top: auto; /* Прижимаем кнопку к низу */
             margin-bottom: 0;
         }
         .auth-btn:active { opacity: 0.8; }
@@ -378,18 +378,6 @@
             cursor: pointer; width: 160px;
         }
         .chat-btn:active { transform: scale(0.95); opacity: 0.8; }
-
-        /* Кнопка SUPPORT внутри меню входа */
-        .auth-support-btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            padding: 12px 30px; background: #000; color: #fff;
-            text-decoration: none; border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease, opacity 0.2s;
-            cursor: pointer; width: 160px;
-            margin-top: 15px;
-            flex-shrink: 0;
-        }
-        .auth-support-btn:active { transform: scale(0.95); opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -437,9 +425,6 @@
                 <input type="text" id="authUsername" class="auth-input" placeholder="Логин" autocomplete="off">
                 <input type="password" id="authPassword" class="auth-input" placeholder="Пароль" autocomplete="off">
                 
-                <!-- Кнопка SUPPORT под полями -->
-                <a href="https://t.me/ettoveracult?direct" target="_blank" class="auth-support-btn">SUPPORT</a>
-
                 <button class="auth-btn" onclick="submitAuth()">Продолжить</button>
             </div>
         </div>
