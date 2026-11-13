@@ -468,7 +468,7 @@
         tg.ready();
         tg.disableVerticalSwipes();
 
-        // ИСПРАВЛЕННОЕ ПОЛУЧЕНИЕ ID (ДЛЯ ДЕСКТОПА И ТЕЛЕФОНА)
+        // ИСПРАВЛЕННОЕ ПОЛУЧЕНИЕ ID
         let currentUserId = tg.initDataUnsafe?.user?.id;
 
         if (!currentUserId && tg.initData) {
@@ -518,13 +518,13 @@
         let pressTimer = null;
         let isLongPress = false;
 
-        // 1. ЗАГРУЗКА ДАННЫХ ИЗ БАЗЫ SUPABASE
+        // 1. ЗАГРУЗКА ДАННЫХ ИЗ БАЗЫ SUPABASE (ЕДИНАЯ ТАБЛИЦА)
         async function loadRealPhotos(isInitialLoad = false) {
             const { data, error } = await supabaseClient
                 .from('photos')
                 .select(`
                     *,
-                    likes ( user_id )
+                    likes ( user_id, photo_id, tag )
                 `)
                 .eq('status', 'approved')
                 .order('created_at', { ascending: true });
@@ -536,22 +536,11 @@
 
             const { data: myLikes } = await supabaseClient
                 .from('likes')
-                .select('photo_id')
+                .select('photo_id, tag')
                 .eq('user_id', currentUserId);
             
-            likedPhotos = myLikes ? [...new Set(myLikes.map(l => l.photo_id))] : [];
-
-            const { data: myTags, error: tagsError } = await supabaseClient
-                .from('liked_tags')
-                .select('tag')
-                .eq('user_id', currentUserId);
-
-            if (tagsError) {
-                console.error("Ошибка загрузки тегов:", tagsError);
-                likedTags = [];
-            } else {
-                likedTags = myTags ? myTags.map(t => t.tag) : [];
-            }
+            likedPhotos = myLikes ? [...new Set(myLikes.filter(l => l.photo_id).map(l => l.photo_id))] : [];
+            likedTags = myLikes ? [...new Set(myLikes.filter(l => l.tag).map(l => l.tag))] : [];
 
             if (!isInitialLoad) {
                 likedPhotos.forEach(id => {
@@ -961,7 +950,7 @@
 
             if (likedTags.includes(tag)) {
                 const { error } = await supabaseClient
-                    .from('liked_tags')
+                    .from('likes')
                     .delete()
                     .eq('tag', tag)
                     .eq('user_id', currentUserId);
@@ -974,7 +963,7 @@
                 }
             } else {
                 const { error } = await supabaseClient
-                    .from('liked_tags')
+                    .from('likes')
                     .insert([{ tag: tag, user_id: currentUserId }]);
 
                 if (!error) {
