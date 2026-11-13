@@ -234,6 +234,61 @@
 
         .modal-title { font-size: 18px; font-weight: 600; text-align: center; color: #000; margin: 0; }
 
+        /* --- МОДАЛКА ВХОДА --- */
+        .auth-modal .modal-body { 
+            gap: 15px; 
+            justify-content: center;
+            align-items: center;
+            padding-top: 10px;
+            padding-bottom: 30px;
+        }
+
+        .auth-logo {
+            width: 75%; /* Сделал логотип большим, как на скриншоте */
+            max-width: 300px;
+            margin: 0 auto 10px auto;
+            display: block;
+        }
+
+        .auth-subtitle {
+            font-size: 13px; 
+            color: var(--secondary-text); 
+            text-align: center; 
+            line-height: 1.4;
+            padding: 0 10px;
+            margin-bottom: 15px;
+        }
+
+        .auth-input {
+            width: 100%; 
+            padding: 16px; 
+            border: 1px solid rgba(0,0,0,0.1); 
+            background: rgba(255, 255, 255, 0.6); 
+            border-radius: 14px; 
+            font-size: 16px; 
+            outline: none; 
+            font-family: inherit; 
+            flex-shrink: 0;
+        }
+        
+        .auth-btn {
+            width: 100%; 
+            padding: 16px; 
+            background: #000; 
+            color: #fff; 
+            border: none; 
+            border-radius: 14px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            font-family: inherit; 
+            flex-shrink: 0; 
+            transition: opacity 0.2s;
+            text-transform: uppercase; 
+            margin-top: 10px;
+        }
+        .auth-btn:active { opacity: 0.8; }
+
         /* --- МОДАЛКА ОТПРАВКИ --- */
         #submitModal .modal-body { gap: 15px; }
 
@@ -273,13 +328,7 @@
         .tag-name { font-weight: 500; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .tag-count { font-size: 13px; color: var(--secondary-text); font-weight: 400; }
 
-        .tag-actions {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-shrink: 0;
-            margin-left: 10px;
-        }
+        .tag-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; margin-left: 10px; }
 
         .author-grid, .likes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding-bottom: 20px; width: 100%; }
         .grid-item { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 8px; cursor: pointer; background: #eee; transition: opacity 0.2s; }
@@ -312,52 +361,27 @@
 
         /* --- КНОПКИ SUPPORT И CHAT --- */
         .support-wrapper {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            margin-top: 10px;
-            margin-bottom: 30px; 
+            width: 100%; max-width: 500px;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+            margin-top: 10px; margin-bottom: 30px; 
         }
 
         .support-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 30px;
-            background: #000;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: transform 0.2s ease, opacity 0.2s;
-            cursor: pointer;
-            width: 160px;
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 12px 30px; background: #000; color: #fff;
+            text-decoration: none; border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease, opacity 0.2s;
+            cursor: pointer; width: 160px;
         }
         .support-btn:active { transform: scale(0.95); opacity: 0.8; }
 
         .chat-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 30px;
-            background: rgba(255, 255, 255, 0.7);
-            color: #000;
-            text-decoration: none;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease, opacity 0.2s;
-            cursor: pointer;
-            width: 160px;
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 12px 30px; background: rgba(255, 255, 255, 0.7); color: #000;
+            text-decoration: none; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 30px;
+            font-size: 14px; font-weight: 600; letter-spacing: 1px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s ease, opacity 0.2s;
+            cursor: pointer; width: 160px;
         }
         .chat-btn:active { transform: scale(0.95); opacity: 0.8; }
     </style>
@@ -378,11 +402,11 @@
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </button>
         
-        <button class="liquid-glass btn-add" onclick="openModal('submitModal')">
+        <button class="liquid-glass btn-add" onclick="handleAddClick()">
             <svg class="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         </button>
 
-        <button class="liquid-glass btn-likes" onclick="openLikesModal()">
+        <button class="liquid-glass btn-likes" onclick="handleLikesClick()">
             <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
         </button>
     </div>
@@ -394,6 +418,23 @@
     <button class="liquid-glass btn-back-floating" id="btnBackFloating" onclick="showTagsList()">
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
+
+    <!-- МОДАЛКА ВХОДА -->
+    <div class="modal-overlay" id="authModal" onclick="closeModal(event, 'authModal')">
+        <div class="modal-content auth-modal" onclick="event.stopPropagation()">
+            <div class="modal-drag-area">
+                <div class="modal-title">Вход</div>
+            </div>
+            <div class="modal-body">
+                <img src="logo.png" class="auth-logo" alt="Logo">
+                <div class="auth-subtitle">Введите логин и пароль.<br>Если вы здесь впервые, аккаунт создастся автоматически.</div>
+                
+                <input type="text" id="authUsername" class="auth-input" placeholder="Логин" autocomplete="off">
+                <input type="password" id="authPassword" class="auth-input" placeholder="Пароль" autocomplete="off">
+                <button class="auth-btn" onclick="submitAuth()">Продолжить</button>
+            </div>
+        </div>
+    </div>
 
     <!-- МОДАЛКА ОТПРАВКИ -->
     <div class="modal-overlay" id="submitModal" onclick="closeModal(event, 'submitModal')">
@@ -468,35 +509,9 @@
         tg.ready();
         tg.disableVerticalSwipes();
 
-        let currentUserId = tg.initDataUnsafe?.user?.id;
-
-        if (!currentUserId && tg.initData) {
-            try {
-                const urlParams = new URLSearchParams(tg.initData);
-                const userStr = urlParams.get('user');
-                if (userStr) {
-                    const userObj = JSON.parse(userStr);
-                    currentUserId = userObj.id;
-                }
-            } catch (e) {
-                console.error("Не удалось распарсить initData", e);
-            }
-        }
-
-        if (!currentUserId) {
-            currentUserId = localStorage.getItem('browser_user_id');
-            if (!currentUserId) {
-                currentUserId = Math.floor(Math.random() * 1000000000);
-                localStorage.setItem('browser_user_id', currentUserId);
-            }
-        }
-
         const supabaseUrl = 'https://asoljhfvsrxmeniwsvel.supabase.co';
         const supabaseKey = 'sb_publishable_zRTzYg6bqdPH4JYRIngTMQ_K0JNe7zG';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-        const ADMIN_ID = 424175344;
-        const isAdmin = currentUserId === ADMIN_ID;
 
         const feed = document.getElementById('feed');
         const btnDown = document.getElementById('btnDown');
@@ -505,7 +520,9 @@
         const logo = document.getElementById('logo');
         const submitModal = document.getElementById('submitModal');
         const previewImage = document.getElementById('previewImage');
+        const authModal = document.getElementById('authModal');
 
+        let currentUser = null;
         let allPostsData = []; 
         let likedPhotos = []; 
         let likedTags = [];
@@ -517,9 +534,27 @@
         let pressTimer = null;
         let isLongPress = false;
 
-        // 1. ЗАГРУЗКА ДАННЫХ (ИСПРАВЛЕНО РАЗДЕЛЕНИЕ ЗАПРОСОВ)
+        // 1. ПРОВЕРКА СЕССИИ (ЛОКАЛЬНО)
+        function checkAuth() {
+            const savedUser = localStorage.getItem('cult_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+            }
+            updateUIForAuth();
+        }
+
+        function updateUIForAuth() {
+            if (!currentUser) {
+                likedPhotos = [];
+                likedTags = [];
+            }
+        }
+
+        checkAuth();
+        loadRealPhotos(true);
+
+        // 2. ЗАГРУЗКА ДАННЫХ
         async function loadRealPhotos(isInitialLoad = false) {
-            // Сначала грузим фото БЕЗ вложенных лайков, чтобы не было ошибки 400
             const { data, error } = await supabaseClient
                 .from('photos')
                 .select('*')
@@ -531,14 +566,13 @@
                 return;
             }
 
-            // Потом отдельно грузим лайки пользователя
-            const { data: myLikes, error: likesError } = await supabaseClient
-                .from('likes')
-                .select('photo_id, tag')
-                .eq('user_id', currentUserId);
-            
-            if (likesError) {
-                console.error("Ошибка загрузки лайков:", likesError);
+            let myLikes = null;
+            if (currentUser) {
+                const { data: likesData } = await supabaseClient
+                    .from('likes')
+                    .select('photo_id, tag')
+                    .eq('user_id', currentUser.id);
+                myLikes = likesData;
             }
 
             likedPhotos = myLikes ? [...new Set(myLikes.filter(l => l.photo_id).map(l => l.photo_id))] : [];
@@ -605,7 +639,7 @@
 
                                 <div class="info-right">
                                     <span class="post-date">${dateStr}</span>
-                                    <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike(event, '${post.id}')">
+                                    <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" onclick="handleLikeClick(event, '${post.id}')">
                                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                                     </button>
                                 </div>
@@ -640,136 +674,191 @@
             }
         }
 
-        loadRealPhotos(true);
-
-        // --- ЛОГИКА УДАЛЕНИЯ (АДМИН) ---
-        if (isAdmin) {
-            feed.addEventListener('touchstart', (e) => {
-                const img = e.target.closest('.dynamic-img');
-                if (!img) return;
-                e.preventDefault(); 
-                startDeleteTimer(img);
-            }, { passive: false });
-
-            feed.addEventListener('touchend', (e) => {
-                clearTimeout(pressTimer);
-                const img = e.target.closest('.dynamic-img');
-                if (img) img.classList.remove('long-pressing');
-            });
-
-            feed.addEventListener('touchmove', (e) => {
-                clearTimeout(pressTimer);
-                const img = e.target.closest('.dynamic-img');
-                if (img) img.classList.remove('long-pressing');
-            }, { passive: true });
-
-            feed.addEventListener('mousedown', (e) => {
-                const img = e.target.closest('.dynamic-img');
-                if (!img) return;
-                startDeleteTimer(img);
-            });
-
-            feed.addEventListener('mouseup', (e) => {
-                clearTimeout(pressTimer);
-                const img = e.target.closest('.dynamic-img');
-                if (img) img.classList.remove('long-pressing');
-            });
+        // --- ПРОВЕРКИ ДЛЯ ДЕЙСТВИЙ ---
+        function checkAuthOrShowModal() {
+            if (!currentUser) {
+                openModal('authModal');
+                return false;
+            }
+            return true;
         }
 
-        function startDeleteTimer(img) {
-            img.classList.add('long-pressing');
-            pressTimer = setTimeout(() => {
-                isLongPress = true;
-                const post = img.closest('.post');
-                postToDelete = post.dataset.id;
-                document.getElementById('deleteConfirmModal').classList.add('active');
-                if (navigator.vibrate) navigator.vibrate(50);
-            }, 800);
+        function handleAddClick() {
+            if (checkAuthOrShowModal()) {
+                openModal('submitModal');
+            }
         }
 
-        function closeDeleteConfirm() {
-            document.getElementById('deleteConfirmModal').classList.remove('active');
-            postToDelete = null;
+        function handleLikesClick() {
+            if (checkAuthOrShowModal()) {
+                openLikesModal();
+            }
         }
 
-        async function confirmDelete() {
-            if (!postToDelete) return;
-            
-            const postElement = document.getElementById(`post-${postToDelete}`);
-            if (postElement) {
-                postElement.classList.add('deleting');
-                
-                try {
-                    const res = await fetch('/api/delete', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ photoId: postToDelete })
-                    });
+        function handleLikeClick(e, postId) {
+            if (!currentUser) {
+                e.stopPropagation();
+                openModal('authModal');
+                return;
+            }
+            toggleLike(e, postId);
+        }
 
-                    if (res.ok) {
-                        setTimeout(() => {
-                            postElement.remove();
-                            closeDeleteConfirm();
-                        }, 300);
+        // --- АВТОРИЗАЦИЯ ---
+        async function submitAuth() {
+            const usernameInput = document.getElementById('authUsername');
+            const passwordInput = document.getElementById('authPassword');
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!username || !password) {
+                alert("Заполните оба поля!");
+                return;
+            }
+
+            const btn = document.querySelector('.auth-btn');
+            btn.innerText = 'Проверка...';
+            btn.disabled = true;
+
+            try {
+                const { data: existingUser, error: findError } = await supabaseClient
+                    .from('users')
+                    .select('*')
+                    .eq('username', username)
+                    .single();
+
+                if (existingUser) {
+                    if (existingUser.password === password) {
+                        currentUser = existingUser;
+                        localStorage.setItem('cult_user', JSON.stringify(existingUser));
+                        
+                        closeModal({ target: authModal }, 'authModal');
+                        loadRealPhotos(true);
                     } else {
-                        alert('Ошибка удаления с сервера');
-                        postElement.classList.remove('deleting');
+                        alert("Неверный пароль!");
                     }
-                } catch (err) {
-                    alert('Ошибка сети при удалении');
-                    postElement.classList.remove('deleting');
+                } else {
+                    const { data: newUser, error: insertError } = await supabaseClient
+                        .from('users')
+                        .insert([{ username, password }])
+                        .select()
+                        .single();
+
+                    if (newUser) {
+                        currentUser = newUser;
+                        localStorage.setItem('cult_user', JSON.stringify(newUser));
+                        
+                        closeModal({ target: authModal }, 'authModal');
+                        loadRealPhotos(true);
+                    } else {
+                        alert("Ошибка при создании аккаунта: " + insertError.message);
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Ошибка сети");
+            } finally {
+                btn.innerText = 'Продолжить';
+                btn.disabled = false;
+                usernameInput.value = '';
+                passwordInput.value = '';
+            }
+        }
+
+        // --- ЛАЙКИ ФОТО ---
+        async function toggleLike(e, postId) {
+            e.stopPropagation();
+            const btn = e.currentTarget;
+            const idAsNumber = parseInt(postId);
+            btn.disabled = true;
+
+            if (likedPhotos.includes(idAsNumber)) {
+                const { error } = await supabaseClient
+                    .from('likes')
+                    .delete()
+                    .eq('photo_id', idAsNumber)
+                    .eq('user_id', currentUser.id);
+
+                if (!error) {
+                    likedPhotos = likedPhotos.filter(id => id !== idAsNumber);
+                    btn.classList.remove('liked');
+                }
+            } else {
+                const { error } = await supabaseClient
+                    .from('likes')
+                    .insert([{ photo_id: idAsNumber, user_id: currentUser.id }]);
+
+                if (!error) {
+                    likedPhotos.push(idAsNumber);
+                    btn.classList.add('liked');
                 }
             }
+            btn.disabled = false;
         }
 
-        // --- ОСТАЛЬНАЯ ЛОГИКА ---
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                loadRealPhotos(false); 
+        // --- ЛАЙКИ ТЕГОВ ---
+        async function toggleTagLike(e, tag) {
+            e.stopPropagation();
+            
+            if (!currentUser) {
+                closeModal({ target: document.getElementById('searchModal') }, 'searchModal');
+                setTimeout(() => {
+                    openModal('authModal');
+                }, 450);
+                return;
             }
-        });
 
-        setTimeout(() => {
-            const topMask = document.querySelector('.blur-mask-top');
-            const bottomMask = document.querySelector('.blur-mask-bottom');
-            if (topMask) topMask.style.transform = 'translateZ(0)';
-            if (bottomMask) bottomMask.style.transform = 'translateZ(0)';
-        }, 100);
+            const btn = e.currentTarget;
+            btn.disabled = true;
 
-        feed.addEventListener('scroll', () => {
-            logo.classList.add('shrunk');
-            bottomControls.classList.add('shrunk');
-            btnDown.classList.remove('hidden');
-            
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => {
-                logo.classList.remove('shrunk');
-                bottomControls.classList.remove('shrunk');
-            }, 200);
+            if (likedTags.includes(tag)) {
+                const { error } = await supabaseClient
+                    .from('likes')
+                    .delete()
+                    .eq('tag', tag)
+                    .eq('user_id', currentUser.id);
 
-            clearTimeout(hideArrowTimeout);
-            hideArrowTimeout = setTimeout(() => btnDown.classList.add('hidden'), 1000);
-        });
-
-        function scrollToBottom() {
-            btnDown.classList.add('hidden');
-            feed.scrollTo({
-                top: feed.scrollHeight,
-                behavior: 'smooth'
-            });
-        }
-
-        function openTelegramLink(tag) {
-            let username = tag.trim().replace(/@/g, '');
-            const url = `https://t.me/${username}`;
-            
-            if (tg && tg.openLink) {
-                tg.openLink(url);
+                if (!error) {
+                    likedTags = likedTags.filter(t => t !== tag);
+                    btn.classList.remove('liked');
+                }
             } else {
-                window.open(url, '_blank');
+                const { error } = await supabaseClient
+                    .from('likes')
+                    .insert([{ tag: tag, user_id: currentUser.id }]);
+
+                if (!error) {
+                    likedTags.push(tag);
+                    btn.classList.add('liked');
+                }
             }
+            btn.disabled = false;
         }
 
+        function openLikesModal() {
+            const likesGrid = document.getElementById('likesGrid');
+            likesGrid.innerHTML = '';
+            
+            const uniqueLikedIds = [...new Set(likedPhotos)];
+
+            if (uniqueLikedIds.length === 0) {
+                likesGrid.innerHTML = `<p style="grid-column: span 3; text-align: center; color: #888;">Пока пусто</p>`;
+            } else {
+                uniqueLikedIds.forEach(id => {
+                    const photo = allPostsData.find(p => p.id.toString() === id.toString());
+                    if (photo) {
+                        likesGrid.innerHTML += `
+                            <div class="grid-item" onclick="scrollToPost('${id}', 'likesModal')">
+                                <img src="${photo.img}">
+                            </div>
+                        `;
+                    }
+                });
+            }
+            openModal('likesModal');
+        }
+
+        // --- МОДАЛКИ (ОБЩАЯ ЛОГИКА) ---
         function openModal(id) {
             bottomControls.classList.add('hidden');
             document.body.classList.add('modal-open');
@@ -913,92 +1002,133 @@
             }, 500);
         }
 
-        // --- ЛАЙКИ ФОТО ---
-        async function toggleLike(e, postId) {
-            e.stopPropagation();
-            const btn = e.currentTarget;
-            const idAsNumber = parseInt(postId);
-            btn.disabled = true;
-
-            if (likedPhotos.includes(idAsNumber)) {
-                const { error } = await supabaseClient
-                    .from('likes')
-                    .delete()
-                    .eq('photo_id', idAsNumber)
-                    .eq('user_id', currentUserId);
-
-                if (!error) {
-                    likedPhotos = likedPhotos.filter(id => id !== idAsNumber);
-                    btn.classList.remove('liked');
-                }
-            } else {
-                const { error } = await supabaseClient
-                    .from('likes')
-                    .insert([{ photo_id: idAsNumber, user_id: currentUserId }]);
-
-                if (!error) {
-                    likedPhotos.push(idAsNumber);
-                    btn.classList.add('liked');
-                }
-            }
-            btn.disabled = false;
-        }
-
-        // --- ЛАЙКИ ТЕГОВ ---
-        async function toggleTagLike(e, tag) {
-            e.stopPropagation();
-            const btn = e.currentTarget;
-            btn.disabled = true;
-
-            if (likedTags.includes(tag)) {
-                const { error } = await supabaseClient
-                    .from('likes')
-                    .delete()
-                    .eq('tag', tag)
-                    .eq('user_id', currentUserId);
-
-                if (!error) {
-                    likedTags = likedTags.filter(t => t !== tag);
-                    btn.classList.remove('liked');
-                } else {
-                    console.error("Ошибка удаления тега:", error);
-                }
-            } else {
-                const { error } = await supabaseClient
-                    .from('likes')
-                    .insert([{ tag: tag, user_id: currentUserId }]);
-
-                if (!error) {
-                    likedTags.push(tag);
-                    btn.classList.add('liked');
-                } else {
-                    console.error("Ошибка добавления тега:", error);
-                }
-            }
-            btn.disabled = false;
-        }
-
-        function openLikesModal() {
-            const likesGrid = document.getElementById('likesGrid');
-            likesGrid.innerHTML = '';
+        function openTelegramLink(tag) {
+            let username = tag.trim().replace(/@/g, '');
+            const url = `https://t.me/${username}`;
             
-            const uniqueLikedIds = [...new Set(likedPhotos)];
-
-            if (uniqueLikedIds.length === 0) {
-                likesGrid.innerHTML = `<p style="grid-column: span 3; text-align: center; color: #888;">Пока пусто</p>`;
+            if (tg && tg.openLink) {
+                tg.openLink(url);
             } else {
-                uniqueLikedIds.forEach(id => {
-                    const photo = allPostsData.find(p => p.id.toString() === id.toString());
-                    if (photo) {
-                        likesGrid.innerHTML += `
-                            <div class="grid-item" onclick="scrollToPost('${id}', 'likesModal')">
-                                <img src="${photo.img}">
-                            </div>
-                        `;
-                    }
-                });
+                window.open(url, '_blank');
             }
-            openModal('likesModal');
+        }
+
+        function scrollToBottom() {
+            btnDown.classList.add('hidden');
+            feed.scrollTo({
+                top: feed.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+
+        // --- ОСТАЛЬНОЕ ---
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                loadRealPhotos(false); 
+            }
+        });
+
+        setTimeout(() => {
+            const topMask = document.querySelector('.blur-mask-top');
+            const bottomMask = document.querySelector('.blur-mask-bottom');
+            if (topMask) topMask.style.transform = 'translateZ(0)';
+            if (bottomMask) bottomMask.style.transform = 'translateZ(0)';
+        }, 100);
+
+        feed.addEventListener('scroll', () => {
+            logo.classList.add('shrunk');
+            bottomControls.classList.add('shrunk');
+            btnDown.classList.remove('hidden');
+            
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                logo.classList.remove('shrunk');
+                bottomControls.classList.remove('shrunk');
+            }, 200);
+
+            clearTimeout(hideArrowTimeout);
+            hideArrowTimeout = setTimeout(() => btnDown.classList.add('hidden'), 1000);
+        });
+
+        // --- АДМИН ЛОГИКА ---
+        const ADMIN_ID = 424175344;
+        if (currentUser && currentUser.id == ADMIN_ID) {
+            feed.addEventListener('touchstart', (e) => {
+                const img = e.target.closest('.dynamic-img');
+                if (!img) return;
+                e.preventDefault(); 
+                startDeleteTimer(img);
+            }, { passive: false });
+
+            feed.addEventListener('touchend', (e) => {
+                clearTimeout(pressTimer);
+                const img = e.target.closest('.dynamic-img');
+                if (img) img.classList.remove('long-pressing');
+            });
+
+            feed.addEventListener('touchmove', (e) => {
+                clearTimeout(pressTimer);
+                const img = e.target.closest('.dynamic-img');
+                if (img) img.classList.remove('long-pressing');
+            }, { passive: true });
+
+            feed.addEventListener('mousedown', (e) => {
+                const img = e.target.closest('.dynamic-img');
+                if (!img) return;
+                startDeleteTimer(img);
+            });
+
+            feed.addEventListener('mouseup', (e) => {
+                clearTimeout(pressTimer);
+                const img = e.target.closest('.dynamic-img');
+                if (img) img.classList.remove('long-pressing');
+            });
+        }
+
+        function startDeleteTimer(img) {
+            img.classList.add('long-pressing');
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                const post = img.closest('.post');
+                postToDelete = post.dataset.id;
+                document.getElementById('deleteConfirmModal').classList.add('active');
+                if (navigator.vibrate) navigator.vibrate(50);
+            }, 800);
+        }
+
+        function closeDeleteConfirm() {
+            document.getElementById('deleteConfirmModal').classList.remove('active');
+            postToDelete = null;
+        }
+
+        async function confirmDelete() {
+            if (!postToDelete) return;
+            
+            const postElement = document.getElementById(`post-${postToDelete}`);
+            if (postElement) {
+                postElement.classList.add('deleting');
+                
+                try {
+                    const res = await fetch('/api/delete', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ photoId: postToDelete })
+                    });
+
+                    if (res.ok) {
+                        setTimeout(() => {
+                            postElement.remove();
+                            closeDeleteConfirm();
+                        }, 300);
+                    } else {
+                        alert('Ошибка удаления с сервера');
+                        postElement.classList.remove('deleting');
+                    }
+                } catch (err) {
+                    alert('Ошибка сети при удалении');
+                    postElement.classList.remove('deleting');
+                }
+            }
         }
 
         // --- ОТПРАВКА ФОТО ---
