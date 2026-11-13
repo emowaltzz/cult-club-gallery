@@ -468,7 +468,6 @@
         tg.ready();
         tg.disableVerticalSwipes();
 
-        // ИСПРАВЛЕННОЕ ПОЛУЧЕНИЕ ID
         let currentUserId = tg.initDataUnsafe?.user?.id;
 
         if (!currentUserId && tg.initData) {
@@ -518,14 +517,12 @@
         let pressTimer = null;
         let isLongPress = false;
 
-        // 1. ЗАГРУЗКА ДАННЫХ ИЗ БАЗЫ SUPABASE (ЕДИНАЯ ТАБЛИЦА)
+        // 1. ЗАГРУЗКА ДАННЫХ (ИСПРАВЛЕНО РАЗДЕЛЕНИЕ ЗАПРОСОВ)
         async function loadRealPhotos(isInitialLoad = false) {
+            // Сначала грузим фото БЕЗ вложенных лайков, чтобы не было ошибки 400
             const { data, error } = await supabaseClient
                 .from('photos')
-                .select(`
-                    *,
-                    likes ( user_id, photo_id, tag )
-                `)
+                .select('*')
                 .eq('status', 'approved')
                 .order('created_at', { ascending: true });
 
@@ -534,11 +531,16 @@
                 return;
             }
 
-            const { data: myLikes } = await supabaseClient
+            // Потом отдельно грузим лайки пользователя
+            const { data: myLikes, error: likesError } = await supabaseClient
                 .from('likes')
                 .select('photo_id, tag')
                 .eq('user_id', currentUserId);
             
+            if (likesError) {
+                console.error("Ошибка загрузки лайков:", likesError);
+            }
+
             likedPhotos = myLikes ? [...new Set(myLikes.filter(l => l.photo_id).map(l => l.photo_id))] : [];
             likedTags = myLikes ? [...new Set(myLikes.filter(l => l.tag).map(l => l.tag))] : [];
 
