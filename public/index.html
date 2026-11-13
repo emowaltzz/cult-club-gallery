@@ -273,7 +273,6 @@
         .tag-name { font-weight: 500; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .tag-count { font-size: 13px; color: var(--secondary-text); font-weight: 400; }
 
-        /* Контейнер для кнопок в теге */
         .tag-actions {
             display: flex;
             gap: 8px;
@@ -469,7 +468,22 @@
         tg.ready();
         tg.disableVerticalSwipes();
 
+        // ИСПРАВЛЕННОЕ ПОЛУЧЕНИЕ ID (ДЛЯ ДЕСКТОПА И ТЕЛЕФОНА)
         let currentUserId = tg.initDataUnsafe?.user?.id;
+
+        if (!currentUserId && tg.initData) {
+            try {
+                const urlParams = new URLSearchParams(tg.initData);
+                const userStr = urlParams.get('user');
+                if (userStr) {
+                    const userObj = JSON.parse(userStr);
+                    currentUserId = userObj.id;
+                }
+            } catch (e) {
+                console.error("Не удалось распарсить initData", e);
+            }
+        }
+
         if (!currentUserId) {
             currentUserId = localStorage.getItem('browser_user_id');
             if (!currentUserId) {
@@ -495,7 +509,7 @@
 
         let allPostsData = []; 
         let likedPhotos = []; 
-        let likedTags = []; // Массив для хранения избранных тегов
+        let likedTags = [];
         let postToDelete = null;
         let currentFileToUpload = null;
         
@@ -520,7 +534,6 @@
                 return;
             }
 
-            // Загружаем лайки фото
             const { data: myLikes } = await supabaseClient
                 .from('likes')
                 .select('photo_id')
@@ -528,14 +541,13 @@
             
             likedPhotos = myLikes ? [...new Set(myLikes.map(l => l.photo_id))] : [];
 
-            // Загружаем избранные теги
             const { data: myTags, error: tagsError } = await supabaseClient
                 .from('liked_tags')
                 .select('tag')
                 .eq('user_id', currentUserId);
 
             if (tagsError) {
-                console.error("Ошибка загрузки тегов (возможно, таблица не создана):", tagsError);
+                console.error("Ошибка загрузки тегов:", tagsError);
                 likedTags = [];
             } else {
                 likedTags = myTags ? myTags.map(t => t.tag) : [];
@@ -561,7 +573,6 @@
             feed.innerHTML = ''; 
             allPostsData = []; 
 
-            // СТАТИКА СВЕРХУ
             feed.insertAdjacentHTML('afterbegin', `
                 <div class="post static-post">
                     <div class="image-container"><img src="2.png" alt="Static"></div>
@@ -571,7 +582,6 @@
                 </div>
             `);
 
-            // Рендерим фото из базы
             if (data && data.length > 0) {
                 data.forEach((post) => {
                     allPostsData.push({ tag: post.tag, img: post.image_url, id: post.id });
@@ -616,7 +626,6 @@
                 feed.insertAdjacentHTML('beforeend', `<p style="text-align:center; width:100%; padding: 20px; color:#888;">Пока нет одобренных медиа</p>`);
             }
 
-            // Статика снизу
             [1, 2].forEach(num => {
                 feed.insertAdjacentHTML('beforeend', `
                     <div class="post static-post" id="bottom-static-${num}">
@@ -625,7 +634,6 @@
                 `);
             });
 
-            // Кнопки SUPPORT и CHAT
             feed.insertAdjacentHTML('beforeend', `
                 <div class="support-wrapper">
                     <a href="https://t.me/ettoveracult?direct" target="_blank" class="support-btn">SUPPORT</a>
@@ -641,7 +649,6 @@
             }
         }
 
-        // Первичная загрузка
         loadRealPhotos(true);
 
         // --- ЛОГИКА УДАЛЕНИЯ (АДМИН) ---
@@ -738,7 +745,6 @@
             if (bottomMask) bottomMask.style.transform = 'translateZ(0)';
         }, 100);
 
-        // Логика сжатия логотипа
         feed.addEventListener('scroll', () => {
             logo.classList.add('shrunk');
             bottomControls.classList.add('shrunk');
@@ -849,14 +855,13 @@
             uniqueTags.forEach(tag => {
                 const count = allPostsData.filter(p => p.tag === tag).length;
                 const letter = tag.replace('@', '').charAt(0).toUpperCase();
-                const isTagLiked = likedTags.includes(tag); // Проверяем, в избранном ли тег
+                const isTagLiked = likedTags.includes(tag);
 
                 if (letter !== currentLetter) {
                     currentLetter = letter;
                     tagsList.innerHTML += `<div class="alphabet-header">${letter}</div>`;
                 }
 
-                // Добавляем две кнопки: сердечко (для тега) и профиль (переход)
                 tagsList.innerHTML += `
                     <div class="tag-item">
                         <div class="tag-info" onclick="showTagPhotos('${tag}')">
@@ -955,7 +960,6 @@
             btn.disabled = true;
 
             if (likedTags.includes(tag)) {
-                // Удаляем из избранного
                 const { error } = await supabaseClient
                     .from('liked_tags')
                     .delete()
@@ -969,7 +973,6 @@
                     console.error("Ошибка удаления тега:", error);
                 }
             } else {
-                // Добавляем в избранное
                 const { error } = await supabaseClient
                     .from('liked_tags')
                     .insert([{ tag: tag, user_id: currentUserId }]);
