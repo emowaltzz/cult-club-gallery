@@ -108,8 +108,8 @@
             border-radius: 8px;
             /* Тень берет форму поста и стекает вниз по бокам */
             box-shadow: 
-                0 -15px 30px -5px rgba(0, 0, 0, 0.22),
-                0 15px 25px -10px rgba(0, 0, 0, 0.04);
+                0 -15px 30px -5px rgba(0, 0, 0, 0.20),
+                0 15px 25px -10px rgba(0, 0, 0, 0.02);
             transition: box-shadow 0.3s ease;
         }
 
@@ -237,14 +237,20 @@
 
         /* --- НИЖНЯЯ ПАНЕЛЬ --- */
         .bottom-controls {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(0);
+            position: fixed; bottom: 30px; left: 50%; 
+            transform: translateX(-50%) translateY(0) scale(1);
             z-index: 300; display: flex; align-items: center; justify-content: center; gap: 15px;
-            transition: opacity 0.3s var(--smooth-ease), transform 0.3s var(--smooth-ease);
+            transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0s;
             opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
         }
 
         .bottom-controls.hidden { 
-            opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(20px);
+            opacity: 0; pointer-events: none; 
+            transform: translateX(-50%) translateY(20px) scale(0.9);
+            visibility: hidden;
+            transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0.4s;
         }
 
         .liquid-glass {
@@ -272,6 +278,56 @@
         .bottom-controls.shrunk .btn-search,
         .bottom-controls.shrunk .btn-likes { transform: scale(0.85); }
         .bottom-controls.shrunk .btn-add { transform: scale(0.85); }
+
+        /* --- КНОПКА СТРЕЛКА ВНИЗ (ПУЛЬСИРУЮЩАЯ) ---
+           Внешний .pulse-anchor — только позиционирование (fixed по центру),
+           никогда не анимируется. Внутри — сама кнопка, которая и пульсирует
+           (через translateY), и плавно скрывается (opacity + scale). */
+        .pulse-anchor {
+            position: fixed; bottom: 30px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 299;
+            pointer-events: none; /* события ловит сама кнопка */
+        }
+
+        .btn-pulse-down {
+            width: 65px; height: 65px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            pointer-events: auto;
+            /* Пульсация ВСЕЙ кнопки (фон + svg) через translateY */
+            animation: pulseWhole 2s ease-in-out infinite;
+            /* Плавное появление/скрытие — через opacity + scale, БЕЗ transform: translateY,
+               чтобы не конфликтовать с анимацией пульсации. */
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0s;
+            visibility: visible;
+        }
+
+        .btn-pulse-down.hidden {
+            opacity: 0;
+            transform: scale(0.85);
+            visibility: hidden;
+            pointer-events: none;
+            animation-play-state: paused; /* замораживаем пульсацию, чтобы не дёргалось при исчезновении */
+            transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0.35s;
+        }
+
+        .btn-pulse-down svg {
+            width: 24px; height: 24px;
+            stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.8;
+            display: block;
+        }
+
+        @keyframes pulseWhole {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1); }
+        }
 
         /* --- КНОПКА СТРЕЛКА ВВЕРХ --- */
         .btn-down {
@@ -522,7 +578,7 @@
 
     <main class="feed" id="feed"></main>
 
-    <div class="bottom-controls" id="bottomControls">
+    <div class="bottom-controls hidden" id="bottomControls">
         <button class="liquid-glass btn-search" onclick="openSearchModal()">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </button>
@@ -533,6 +589,12 @@
 
         <button class="liquid-glass btn-likes" onclick="handleLikesClick()">
             <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+        </button>
+    </div>
+
+    <div class="pulse-anchor">
+        <button class="btn-pulse-down" id="btnPulseDown" onclick="scrollDown()">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
         </button>
     </div>
 
@@ -648,6 +710,7 @@
 
         const feed = document.getElementById('feed');
         const btnDown = document.getElementById('btnDown');
+        const btnPulseDown = document.getElementById('btnPulseDown');
         const bottomControls = document.getElementById('bottomControls');
         const btnBackFloating = document.getElementById('btnBackFloating');
         const btnSortFloating = document.getElementById('btnSortFloating');
@@ -673,6 +736,12 @@
         let pressTimer = null;
         let isLongPress = false;
         let lastTap = 0;
+
+        // Таймер для отложенного показа кнопок меню после исчезновения стрелки
+        let controlsRevealTimer = null;
+        // Флаг: сейчас идёт программная прокрутка после нажатия на стрелку
+        let isProgrammaticScroll = false;
+        let programmaticScrollEndTimer = null;
 
         // 1. ПРОВЕРКА СЕССИИ
         function checkAuth() {
@@ -854,6 +923,8 @@
                     feed.scrollTop = 0;
                     btnDown.classList.add('hidden'); 
                     logo.classList.add('hide');
+                    bottomControls.classList.add('hidden');
+                    btnPulseDown.classList.remove('hidden');
                 }, 100);
             }
         }
@@ -1137,7 +1208,9 @@
 
         // --- МОДАЛКИ ---
         function openModal(id) {
+            clearTimeout(controlsRevealTimer);
             bottomControls.classList.add('hidden');
+            btnPulseDown.classList.add('hidden');
             document.body.classList.add('modal-open');
             const modal = document.getElementById(id);
             
@@ -1164,7 +1237,15 @@
                     modal.style.display = 'none';
                     if (content) content.style.transform = '';
                     
-                    bottomControls.classList.remove('hidden');
+                    // Восстанавливаем видимость панелей в зависимости от скролла
+                    const scrollTop = feed.scrollTop;
+                    if (scrollTop <= 10) {
+                        bottomControls.classList.add('hidden');
+                        btnPulseDown.classList.remove('hidden');
+                    } else {
+                        bottomControls.classList.remove('hidden');
+                        btnPulseDown.classList.add('hidden');
+                    }
                 }, 400);
             }
         }
@@ -1349,6 +1430,50 @@
             });
         }
 
+        // Плавное скрытие стрелки, затем с задержкой появление кнопок меню
+        function hideArrowThenShowControls() {
+            clearTimeout(controlsRevealTimer);
+            btnPulseDown.classList.add('hidden');
+            controlsRevealTimer = setTimeout(() => {
+                bottomControls.classList.remove('hidden');
+            }, 350);
+        }
+
+        // Плавное скрытие кнопок, затем с задержкой появление стрелки
+        function hideControlsThenShowArrow() {
+            clearTimeout(controlsRevealTimer);
+            bottomControls.classList.add('hidden');
+            controlsRevealTimer = setTimeout(() => {
+                btnPulseDown.classList.remove('hidden');
+            }, 400);
+        }
+
+        function scrollDown() {
+            if (navigator.vibrate) navigator.vibrate(20);
+
+            const target = (supportButtonOffset !== null) ? (supportButtonOffset - 20) : 200;
+            isProgrammaticScroll = true;
+
+            btnPulseDown.classList.add('hidden');
+
+            feed.scrollTo({
+                top: target,
+                behavior: 'smooth'
+            });
+
+            clearTimeout(programmaticScrollEndTimer);
+            programmaticScrollEndTimer = setTimeout(() => {
+                isProgrammaticScroll = false;
+                if (feed.scrollTop >= target - 5) {
+                    logo.classList.remove('hide');
+                }
+                clearTimeout(controlsRevealTimer);
+                controlsRevealTimer = setTimeout(() => {
+                    bottomControls.classList.remove('hidden');
+                }, 100);
+            }, 600);
+        }
+
         // --- ОСТАЛЬНОЕ ---
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
@@ -1363,13 +1488,16 @@
             if (bottomMask) bottomMask.style.transform = 'translateZ(0)';
         }, 100);
 
-        // --- ОБРАБОТЧИК СКРОЛЛА: ЛОГОТИП ПО КНОПКЕ SUPPORT И НИЗУ ---
+        // --- ОБРАБОТЧИК СКРОЛЛА ---
         feed.addEventListener('scroll', () => {
+            if (isProgrammaticScroll) return;
+
             const scrollTop = feed.scrollTop;
             const scrollHeight = feed.scrollHeight;
             const clientHeight = feed.clientHeight;
 
             const isAtBottom = scrollTop + clientHeight >= scrollHeight - 50;
+            const isAtTop = scrollTop <= 10;
 
             let showLogo = false;
 
@@ -1387,6 +1515,20 @@
                 logo.classList.remove('hide');
             } else {
                 logo.classList.add('hide');
+            }
+
+            if (isAtTop) {
+                if (!btnPulseDown.classList.contains('hidden') && bottomControls.classList.contains('hidden')) {
+                    // уже ок
+                } else if (!bottomControls.classList.contains('hidden')) {
+                    hideControlsThenShowArrow();
+                }
+            } else {
+                if (!bottomControls.classList.contains('hidden') && btnPulseDown.classList.contains('hidden')) {
+                    // уже ок
+                } else if (!btnPulseDown.classList.contains('hidden')) {
+                    hideArrowThenShowControls();
+                }
             }
 
             if (scrollTop > 200) {
