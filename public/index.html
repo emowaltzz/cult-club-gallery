@@ -30,7 +30,6 @@
             overscroll-behavior: none;
         }
 
-        /* --- БЛЮР-МАСКИ --- */
         .blur-mask-top {
             position: fixed; top: 0; left: 0; right: 0; height: 180px; z-index: 150;
             pointer-events: none; 
@@ -52,7 +51,6 @@
             will-change: backdrop-filter;
         }
 
-        /* --- ЛОГОТИП --- */
         .floating-logo {
             position: fixed; top: 15px; left: 50%; 
             transform: translateX(-50%) scale(1);
@@ -75,7 +73,6 @@
         body.modal-open .floating-logo img { filter: blur(10px) drop-shadow(0 8px 16px rgba(0,0,0,0.4)); }
         .floating-logo.hide { opacity: 0; transform: translateX(-50%) scale(0.9); pointer-events: none; }
 
-        /* --- ЛЕНТА --- */
         .feed {
             height: 100vh; overflow-y: scroll;
             padding-top: 80px; padding-bottom: 100px; 
@@ -86,6 +83,7 @@
             transition: filter 0.3s ease;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
+            position: relative;
         }
         .feed::-webkit-scrollbar { width: 0px; display: none; }
         body.modal-open .feed { filter: blur(10px); }
@@ -98,22 +96,15 @@
         .image-container { position: relative; width: 100%; }
         .post img { width: 100%; height: auto; max-height: 80vh; object-fit: cover; background-color: #f0f0f0; border-radius: 8px; display: block; }
 
-        /* Тень, стекающая с верхнего поста */
-        .post.last-published {
-            position: relative;
-        }
-
+        .post.last-published { position: relative; }
         .post.last-published .image-container {
-            position: relative;
-            border-radius: 8px;
-            /* Тень берет форму поста и стекает вниз по бокам */
+            position: relative; border-radius: 8px;
             box-shadow: 
                 0 -15px 30px -5px rgba(0, 0, 0, 0.20),
                 0 15px 25px -10px rgba(0, 0, 0, 0.02);
             transition: box-shadow 0.3s ease;
         }
 
-        /* --- СКЕЛЕТОН --- */
         .skeleton-loading {
             width: 100%; max-width: 500px; height: 400px; border-radius: 8px; margin-bottom: 30px;
             background: linear-gradient(90deg, var(--skeleton-bg) 25%, var(--skeleton-shimmer) 50%, var(--skeleton-bg) 75%);
@@ -125,74 +116,37 @@
             100% { background-position: -200% 0; }
         }
 
-        /* --- ДВОЙНОЙ ТАП И СЕРДЦЕ --- */
         .double-tap-heart {
-            position: absolute;
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            width: 80px; height: 80px;
-            z-index: 10;
-            pointer-events: none;
-            opacity: 0;
+            width: 80px; height: 80px; z-index: 10;
+            pointer-events: none; opacity: 0;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
             filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
         }
-        .double-tap-heart svg {
-            width: 100%; height: 100%;
-            fill: var(--like-color);
-            stroke: white;
-            stroke-width: 2;
-        }
-        .double-tap-heart.animate {
-            transform: translate(-50%, -50%) scale(1.2);
-            opacity: 1;
-        }
-        .double-tap-heart.fade-out {
-            transform: translate(-50%, -50%) scale(1.5);
-            opacity: 0;
-            transition: transform 0.4s ease, opacity 0.4s ease;
-        }
+        .double-tap-heart svg { width: 100%; height: 100%; fill: var(--like-color); stroke: white; stroke-width: 2; }
+        .double-tap-heart.animate { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        .double-tap-heart.fade-out { transform: translate(-50%, -50%) scale(1.5); opacity: 0; transition: transform 0.4s ease, opacity 0.4s ease; }
 
-        /* --- КНОПКИ ПОД ФОТО --- */
         .action-btn {
             width: 40px; height: 40px;
             background: rgba(255, 255, 255, 0.7);
             border: 1px solid rgba(0, 0, 0, 0.1);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border-radius: 50%; 
-            position: relative;
+            border-radius: 50%; position: relative;
             cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0;
         }
-
-        .action-btn svg { 
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            display: block;
-        }
-
-        .profile-btn svg { 
-            width: 22px; height: 22px; 
-            stroke: black; stroke-width: 2; fill: transparent; 
-            transition: stroke 0.2s, fill 0.2s; 
-        }
-
-        .like-btn svg { 
-            width: 19px; height: 19px; 
-            stroke: black; stroke-width: 2; fill: transparent; 
-            transition: stroke 0.2s, fill 0.2s; 
-        }
-
+        .action-btn svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block; }
+        .profile-btn svg { width: 22px; height: 22px; stroke: black; stroke-width: 2; fill: transparent; transition: stroke 0.2s, fill 0.2s; }
+        .like-btn svg { width: 19px; height: 19px; stroke: black; stroke-width: 2; fill: transparent; transition: stroke 0.2s, fill 0.2s; }
         .action-btn:active { transform: scale(0.85); }
         .like-btn.liked svg { stroke: var(--like-color); fill: var(--like-color); }
 
-        /* --- ИНФО БЛОК --- */
         .post-info { 
             display: flex; align-items: center; 
             padding-top: 15px; padding-left: 7px; padding-right: 7px;
             font-size: 13px; font-weight: 400; letter-spacing: -0.2px;
-            position: relative; z-index: 100; width: 100%; 
-            gap: 0; 
+            position: relative; z-index: 100; width: 100%; gap: 0; 
         }
         .info-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
         .tag-wrapper {
@@ -202,50 +156,22 @@
         }
         .post-tag { color: var(--text-color); text-decoration: none; font-weight: 500; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; padding-bottom: 2px; display: inline-block; }
         .info-divider { color: var(--secondary-text); font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; letter-spacing: 2px; padding: 0 5px; }
-        
-        .info-right { 
-            display: flex; 
-            align-items: center; 
-            flex: 1; 
-            min-width: 0; 
-            justify-content: flex-end; 
-        }
-        
-        .post-date { 
-            color: var(--secondary-text); 
-            font-size: 13px; 
-            white-space: nowrap; 
-            flex-shrink: 0; 
-            margin-right: 10px; 
-        }
-        
+        .info-right { display: flex; align-items: center; flex: 1; min-width: 0; justify-content: flex-end; }
+        .post-date { color: var(--secondary-text); font-size: 13px; white-space: nowrap; flex-shrink: 0; margin-right: 10px; }
         .like-count {
-            font-size: 12px;
-            color: var(--secondary-text);
-            font-weight: 500;
-            margin-left: 10px; 
-            white-space: nowrap;
-            min-width: 15px; 
-            text-align: left;
-            flex-shrink: 0; 
+            font-size: 12px; color: var(--secondary-text);
+            font-weight: 500; margin-left: 10px; 
+            white-space: nowrap; min-width: 15px; text-align: left; flex-shrink: 0; 
         }
+        .tag-item .like-count { margin-right: 8px; margin-left: 0; }
 
-        .tag-item .like-count {
-            margin-right: 8px;
-            margin-left: 0;
-        }
-
-        /* --- НИЖНЯЯ ПАНЕЛЬ --- */
         .bottom-controls {
             position: fixed; bottom: 30px; left: 50%; 
             transform: translateX(-50%) translateY(0) scale(1);
             z-index: 300; display: flex; align-items: center; justify-content: center; gap: 15px;
             transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0s;
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
+            opacity: 1; visibility: visible; pointer-events: auto;
         }
-
         .bottom-controls.hidden { 
             opacity: 0; pointer-events: none; 
             transform: translateX(-50%) translateY(20px) scale(0.9);
@@ -257,37 +183,27 @@
             background: rgba(255, 255, 255, 0.7);
             border: 1px solid rgba(0, 0, 0, 0.1);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 50%; 
-            position: relative;
-            cursor: pointer;
+            border-radius: 50%; position: relative; cursor: pointer;
             transition: transform var(--smooth-duration) var(--smooth-ease);
         }
-        
         .liquid-glass svg { 
-            position: absolute;
-            top: 50%; left: 50%;
+            position: absolute; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            display: block;
-            width: 24px; height: 24px; 
+            display: block; width: 24px; height: 24px; 
             stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.8; 
         }
 
         .btn-search, .btn-likes { width: 50px; height: 50px; }
         .btn-add { width: 65px; height: 65px; }
-
         .bottom-controls.shrunk .btn-search,
         .bottom-controls.shrunk .btn-likes { transform: scale(0.85); }
         .bottom-controls.shrunk .btn-add { transform: scale(0.85); }
 
-        /* --- КНОПКА СТРЕЛКА ВНИЗ (ПУЛЬСИРУЮЩАЯ) ---
-           Внешний .pulse-anchor — только позиционирование (fixed по центру),
-           никогда не анимируется. Внутри — сама кнопка, которая и пульсирует
-           (через translateY), и плавно скрывается (opacity + scale). */
         .pulse-anchor {
             position: fixed; bottom: 30px; left: 50%;
             transform: translateX(-50%);
             z-index: 299;
-            pointer-events: none; /* события ловит сама кнопка */
+            pointer-events: none;
         }
 
         .btn-pulse-down {
@@ -297,39 +213,27 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer;
-            pointer-events: auto;
-            /* Пульсация ВСЕЙ кнопки (фон + svg) через translateY */
+            cursor: pointer; pointer-events: auto;
             animation: pulseWhole 2s ease-in-out infinite;
-            /* Плавное появление/скрытие — через opacity + scale, БЕЗ transform: translateY,
-               чтобы не конфликтовать с анимацией пульсации. */
-            opacity: 1;
-            transform: scale(1);
+            opacity: 1; transform: scale(1);
             transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0s;
             visibility: visible;
         }
-
         .btn-pulse-down.hidden {
-            opacity: 0;
-            transform: scale(0.85);
-            visibility: hidden;
-            pointer-events: none;
-            animation-play-state: paused; /* замораживаем пульсацию, чтобы не дёргалось при исчезновении */
+            opacity: 0; transform: scale(0.85); visibility: hidden;
+            pointer-events: none; animation-play-state: paused;
             transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0.35s;
         }
-
         .btn-pulse-down svg {
             width: 24px; height: 24px;
             stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.8;
             display: block;
         }
-
         @keyframes pulseWhole {
             0%, 100% { transform: translateY(0) scale(1); }
             50% { transform: translateY(-8px) scale(1); }
         }
 
-        /* --- КНОПКА СТРЕЛКА ВВЕРХ --- */
         .btn-down {
             position: fixed; bottom: 37px; right: 20px; width: 50px; height: 50px; z-index: 300;
             transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.6s var(--smooth-ease), visibility 0.6s var(--smooth-ease);
@@ -340,7 +244,6 @@
         .btn-down svg { display: block; margin: auto; stroke: #ffffff; width: 24px; height: 24px;}
         .btn-down.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px) scale(0.8); }
 
-        /* --- МОДАЛКИ --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.2); display: none;
@@ -361,100 +264,57 @@
             box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
             position: relative; z-index: 201; overflow: hidden;
         }
-        
         .modal-overlay.active .modal-content { transform: translateY(0); opacity: 1; }
         
         .modal-drag-area {
             padding: 30px 20px 15px;
-            flex-shrink: 0;
-            cursor: grab;
-            position: relative;
-            touch-action: none; 
+            flex-shrink: 0; cursor: grab;
+            position: relative; touch-action: none; 
         }
-        
         .modal-content::before {
             content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
             width: 40px; height: 4px; background: rgba(0,0,0,0.1); border-radius: 2px;
         }
-
         .modal-body {
             flex: 1; overflow-y: auto; padding: 0 20px 80px;
             overscroll-behavior: contain; display: flex; flex-direction: column;
         }
-        
         .modal-body::-webkit-scrollbar { width: 0px; display: none; }
         .modal-body { scrollbar-width: none; -ms-overflow-style: none; }
 
         .modal-title { font-size: 18px; font-weight: 600; text-align: center; color: #000; margin: 0; }
 
-        /* --- МОДАЛКА ВХОДА --- */
         .auth-modal .modal-body { 
-            gap: 12px; 
-            justify-content: space-between; 
-            align-items: center;
-            padding-top: 5px;
-            padding-bottom: 20px;
+            gap: 12px; justify-content: space-between; align-items: center;
+            padding-top: 5px; padding-bottom: 20px;
         }
-
         .auth-subtitle {
-            font-size: 13px; 
-            color: var(--secondary-text); 
-            text-align: center; 
-            line-height: 1.4;
-            padding: 0 10px;
-            margin-bottom: 5px;
+            font-size: 13px; color: var(--secondary-text); 
+            text-align: center; line-height: 1.4;
+            padding: 0 10px; margin-bottom: 5px;
         }
-
         .auth-input {
-            width: 100%; 
-            padding: 16px; 
-            border: 1px solid rgba(0,0,0,0.1); 
-            background: rgba(255, 255, 255, 0.6); 
-            border-radius: 14px; 
-            font-size: 16px; 
-            outline: none; 
-            font-family: inherit; 
-            flex-shrink: 0;
+            width: 100%; padding: 16px; border: 1px solid rgba(0,0,0,0.1); 
+            background: rgba(255, 255, 255, 0.6); border-radius: 14px; 
+            font-size: 16px; outline: none; font-family: inherit; flex-shrink: 0;
         }
-        
         .auth-btn {
-            width: 100%; 
-            padding: 16px; 
-            background: #000; 
-            color: #fff; 
-            border: none; 
-            border-radius: 14px; 
-            font-size: 16px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            font-family: inherit; 
-            flex-shrink: 0; 
-            transition: opacity 0.2s;
-            text-transform: uppercase; 
-            margin-top: auto;
-            margin-bottom: 0;
+            width: 100%; padding: 16px; background: #000; color: #fff; 
+            border: none; border-radius: 14px; font-size: 16px; font-weight: 600; 
+            cursor: pointer; font-family: inherit; flex-shrink: 0; 
+            transition: opacity 0.2s; text-transform: uppercase; 
+            margin-top: auto; margin-bottom: 0;
         }
         .auth-btn:active { opacity: 0.8; }
 
-        /* --- МОДАЛКА ОТПРАВКИ (КАК НА СКРИНШОТЕ) --- */
-        #submitModal .modal-content {
-            height: 85vh;
-        }
-
-        #submitModal .modal-body { 
-            gap: 15px; 
-            justify-content: flex-start;
-            padding-bottom: 20px;
-        }
+        #submitModal .modal-content { height: 85vh; }
+        #submitModal .modal-body { gap: 15px; justify-content: flex-start; padding-bottom: 20px; }
 
         .file-upload-wrapper {
-            position: relative; width: 100%; 
-            flex: 1;
-            min-height: 150px; 
+            position: relative; width: 100%; flex: 1; min-height: 150px; 
             border: 2px dashed rgba(0,0,0,0.15); border-radius: 16px;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: rgba(255, 255, 255, 0.4); cursor: pointer; overflow: hidden;
-            margin-bottom: 0;
+            background: rgba(255, 255, 255, 0.4); cursor: pointer; overflow: hidden; margin-bottom: 0;
         }
         .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
         .upload-icon svg { width: 32px; height: 32px; stroke: #555; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
@@ -466,19 +326,15 @@
             background: rgba(255, 255, 255, 0.6); border-radius: 14px; font-size: 16px; 
             outline: none; font-family: inherit; flex-shrink: 0;
         }
-        
         .btn-submit {
             width: 100%; padding: 16px; background: #000; color: #fff; border: none; border-radius: 14px; 
-            font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; flex-shrink: 0; transition: opacity 0.2s;
-            text-transform: uppercase;
-            margin-top: auto;
+            font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; flex-shrink: 0; 
+            transition: opacity 0.2s; text-transform: uppercase; margin-top: auto;
         }
         .btn-submit:active { opacity: 0.8; }
 
-        /* --- МОДАЛКА ПОИСКА И ЛАЙКОВ --- */
         .search-header { display: flex; align-items: center; justify-content: center; position: relative; }
         .tags-list { display: flex; flex-direction: column; padding-bottom: 13px; }
-        
         .alphabet-header { font-size: 15px; font-weight: 600; color: #000; padding: 15px 0 5px 10px; background: transparent; position: relative; z-index: 1; }
 
         .tag-item { padding: 12px 15px; background: rgba(0, 0, 0, 0.05); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; transition: background 0.2s; }
@@ -486,7 +342,6 @@
         .tag-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
         .tag-name { font-weight: 500; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .tag-count { font-size: 13px; color: var(--secondary-text); font-weight: 400; }
-
         .tag-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; margin-left: 10px; }
 
         .author-grid, .likes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding-bottom: 20px; width: 100%; }
@@ -506,8 +361,7 @@
 
         .btn-sort-floating {
             position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px);
-            width: 50px; height: 50px;
-            z-index: 400; opacity: 0; visibility: hidden;
+            width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden;
             transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5);
             display: flex; justify-content: center; align-items: center;
@@ -517,8 +371,7 @@
 
         .btn-fav-tags-floating {
             position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px);
-            width: 50px; height: 50px;
-            z-index: 400; opacity: 0; visibility: hidden;
+            width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden;
             transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5);
             display: flex; justify-content: center; align-items: center;
@@ -540,13 +393,11 @@
         .btn-cancel { background: #eee; color: #000; }
         .btn-delete { background: #ff3b30; color: #fff; }
 
-        /* --- КНОПКИ SUPPORT И CHAT --- */
         .support-wrapper {
             width: 100%; max-width: 500px;
             display: flex; flex-direction: column; align-items: center; gap: 12px;
             margin-top: 10px; margin-bottom: 30px; 
         }
-
         .support-btn {
             display: inline-flex; align-items: center; justify-content: center;
             padding: 12px 30px; background: #000; color: #fff;
@@ -555,7 +406,6 @@
             cursor: pointer; width: 160px;
         }
         .support-btn:active { transform: scale(0.95); opacity: 0.8; }
-
         .chat-btn {
             display: inline-flex; align-items: center; justify-content: center;
             padding: 12px 30px; background: rgba(255, 255, 255, 0.7); color: #000;
@@ -582,18 +432,16 @@
         <button class="liquid-glass btn-search" onclick="openSearchModal()">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </button>
-        
         <button class="liquid-glass btn-add" onclick="handleAddClick()">
             <svg class="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         </button>
-
         <button class="liquid-glass btn-likes" onclick="handleLikesClick()">
             <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
         </button>
     </div>
 
     <div class="pulse-anchor">
-        <button class="btn-pulse-down" id="btnPulseDown" onclick="scrollDown()">
+        <button class="btn-pulse-down" id="btnPulseDown">
             <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
         </button>
     </div>
@@ -614,39 +462,27 @@
         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
     </button>
 
-    <!-- МОДАЛКА ВХОДА -->
     <div class="modal-overlay" id="authModal" onclick="closeModal(event, 'authModal')">
         <div class="modal-content auth-modal" onclick="event.stopPropagation()">
-            <div class="modal-drag-area">
-                <div class="modal-title">Вход</div>
-            </div>
+            <div class="modal-drag-area"><div class="modal-title">Вход</div></div>
             <div class="modal-body">
                 <div class="auth-subtitle">Введите логин и пароль.<br>Если вы здесь впервые, аккаунт создастся автоматически.</div>
-                
                 <input type="text" id="authUsername" class="auth-input" placeholder="Логин" autocomplete="off">
                 <input type="password" id="authPassword" class="auth-input" placeholder="Пароль" autocomplete="off">
-                
                 <button class="auth-btn" onclick="submitAuth()">Продолжить</button>
             </div>
         </div>
     </div>
 
-    <!-- МОДАЛКА ОТПРАВКИ -->
     <div class="modal-overlay" id="submitModal" onclick="closeModal(event, 'submitModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-drag-area">
-                <div class="modal-title">Загрузка медиа</div>
-            </div>
+            <div class="modal-drag-area"><div class="modal-title">Загрузка медиа</div></div>
             <div class="modal-body">
                 <div class="file-upload-wrapper">
                     <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(this)">
                     <img src="" class="preview-image" id="previewImage" alt="Preview">
                     <div class="upload-icon" id="uploadIcon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="17 8 12 3 7 8"></polyline>
-                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
+                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
                     <div class="upload-text" id="uploadText">Нажмите, чтобы выбрать файл</div>
                 </div>
@@ -656,36 +492,23 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА ПОИСКА -->
     <div class="modal-overlay" id="searchModal" onclick="closeModal(event, 'searchModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-drag-area">
-                <div class="modal-title" id="searchTitle">Поиск по тегам</div>
-            </div>
+            <div class="modal-drag-area"><div class="modal-title" id="searchTitle">Поиск по тегам</div></div>
             <div class="modal-body">
-                <div id="tagsView">
-                    <div class="tags-list" id="tagsList"></div>
-                </div>
-                <div id="gridView" style="display:none;">
-                    <div class="author-grid" id="authorGrid"></div>
-                </div>
+                <div id="tagsView"><div class="tags-list" id="tagsList"></div></div>
+                <div id="gridView" style="display:none;"><div class="author-grid" id="authorGrid"></div></div>
             </div>
         </div>
     </div>
 
-    <!-- МОДАЛКА ЛАЙКОВ -->
     <div class="modal-overlay" id="likesModal" onclick="closeModal(event, 'likesModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-drag-area">
-                <div class="modal-title">Избранное</div>
-            </div>
-            <div class="modal-body">
-                <div class="likes-grid" id="likesGrid"></div>
-            </div>
+            <div class="modal-drag-area"><div class="modal-title">Избранное</div></div>
+            <div class="modal-body"><div class="likes-grid" id="likesGrid"></div></div>
         </div>
     </div>
 
-    <!-- МОДАЛКА УДАЛЕНИЯ -->
     <div class="delete-confirm-modal" id="deleteConfirmModal">
         <div class="delete-confirm-content">
             <div class="delete-confirm-title">Удалить этот файл?</div>
@@ -737,32 +560,22 @@
         let isLongPress = false;
         let lastTap = 0;
 
-        // Таймер для отложенного показа кнопок меню после исчезновения стрелки
         let controlsRevealTimer = null;
-        // Флаг: сейчас идёт программная прокрутка после нажатия на стрелку
         let isProgrammaticScroll = false;
         let programmaticScrollEndTimer = null;
 
-        // 1. ПРОВЕРКА СЕССИИ
         function checkAuth() {
             const savedUser = localStorage.getItem('cult_user');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-            }
+            if (savedUser) currentUser = JSON.parse(savedUser);
             updateUIForAuth();
         }
-
         function updateUIForAuth() {
-            if (!currentUser) {
-                likedPhotos = [];
-                likedTags = [];
-            }
+            if (!currentUser) { likedPhotos = []; likedTags = []; }
         }
 
         checkAuth();
         loadRealPhotos(true);
 
-        // 2. ЗАГРУЗКА ДАННЫХ
         async function loadRealPhotos(isInitialLoad = false) {
             if (isInitialLoad) {
                 feed.innerHTML = `
@@ -773,26 +586,14 @@
             }
 
             const { data, error } = await supabaseClient
-                .from('photos')
-                .select('*')
-                .eq('status', 'approved')
-                .order('created_at', { ascending: true });
+                .from('photos').select('*').eq('status', 'approved').order('created_at', { ascending: true });
+            if (error) { console.error("Ошибка загрузки фото:", error); return; }
 
-            if (error) {
-                console.error("Ошибка загрузки фото:", error);
-                return;
-            }
-
-            const { data: allLikes } = await supabaseClient
-                .from('likes')
-                .select('photo_id, tag, user_id');
-            
+            const { data: allLikes } = await supabaseClient.from('likes').select('photo_id, tag, user_id');
             allLikesCache = allLikes || [];
 
             let myLikes = null;
-            if (currentUser && allLikesCache) {
-                myLikes = allLikesCache.filter(l => l.user_id == currentUser.id);
-            }
+            if (currentUser && allLikesCache) myLikes = allLikesCache.filter(l => l.user_id == currentUser.id);
 
             likedPhotos = myLikes ? [...new Set(myLikes.filter(l => l.photo_id).map(l => l.photo_id))] : [];
             likedTags = myLikes ? [...new Set(myLikes.filter(l => l.tag).map(l => l.tag))] : [];
@@ -806,9 +607,7 @@
                     const postElement = btn.closest('.post');
                     if (postElement) {
                         const postId = parseInt(postElement.dataset.id);
-                        if (!likedPhotos.includes(postId)) {
-                            btn.classList.remove('liked');
-                        }
+                        if (!likedPhotos.includes(postId)) btn.classList.remove('liked');
                     }
                 });
                 return;
@@ -827,7 +626,7 @@
                 </div>
                 <div class="support-wrapper" id="topSupportWrapper">
                     <a href="https://t.me/ettoveracult?direct" target="_blank" class="support-btn">SUPPORT</a>
-                    <a href="https://t.me/cultclubchatroom" target="_blank" class="chat-btn">CHAT</a>
+                    <a href="https://t.me/cultclubchatroom" target="_blank" class="chat-btn" id="topChatBtn">CHAT</a>
                 </div>
                 <div class="post static-post">
                     <div class="image-container"><img src="4.png" alt="Static Top 3"></div>
@@ -839,13 +638,10 @@
             if (reversedData.length > 0) {
                 reversedData.forEach((post) => {
                     allPostsData.push({ tag: post.tag, img: post.image_url, id: post.id });
-
                     const isLiked = likedPhotos.includes(post.id);
-                    
                     const postLikes = allLikesCache.filter(l => l.photo_id === post.id);
                     const uniqueUserLikes = [...new Set(postLikes.map(l => l.user_id))].length;
                     const countStr = formatCount(uniqueUserLikes);
-
                     const dateStr = new Date(post.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + 
                                     new Date(post.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
@@ -860,19 +656,11 @@
                             <div class="post-info">
                                 <div class="info-left">
                                     <button class="action-btn profile-btn" onclick="openTelegramLink('${post.tag}')">
-                                        <svg viewBox="0 0 24 24">
-                                            <circle cx="12" cy="12" r="10"></circle>
-                                            <circle cx="12" cy="9" r="3"></circle>
-                                            <path d="M6.5 18.5c1.5-2 3.5-3 5.5-3s4 1 5.5 3"></path>
-                                        </svg>
+                                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="9" r="3"></circle><path d="M6.5 18.5c1.5-2 3.5-3 5.5-3s4 1 5.5 3"></path></svg>
                                     </button>
-                                    <div class="tag-wrapper">
-                                        <span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span>
-                                    </div>
+                                    <div class="tag-wrapper"><span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span></div>
                                 </div>
-
                                 <div class="info-divider">•••</div>
-
                                 <div class="info-right">
                                     <span class="post-date">${dateStr}</span>
                                     <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" onclick="handleLikeClick(event, '${post.id}')">
@@ -885,11 +673,8 @@
                     `);
                 });
 
-                // Тень НАД последним опубликованным постом (самый верхний динамический)
                 const lastDynamicPost = feed.querySelector('.post[data-id]');
-                if (lastDynamicPost) {
-                    lastDynamicPost.classList.add('last-published');
-                }
+                if (lastDynamicPost) lastDynamicPost.classList.add('last-published');
             } else {
                 feed.insertAdjacentHTML('beforeend', `<p style="text-align:center; width:100%; padding: 20px; color:#888;">Пока нет одобренных медиа</p>`);
             }
@@ -907,12 +692,9 @@
                 </div>
             `);
 
-            // Вычисляем позицию верхней кнопки SUPPORT для появления логотипа
             const updateSupportOffset = () => {
                 const topSupport = document.getElementById('topSupportWrapper');
-                if (topSupport) {
-                    supportButtonOffset = topSupport.offsetTop;
-                }
+                if (topSupport) supportButtonOffset = topSupport.offsetTop;
             };
             setTimeout(updateSupportOffset, 200);
             setTimeout(updateSupportOffset, 1000);
@@ -930,19 +712,14 @@
         }
 
         function formatCount(num) {
-            if (num >= 1000) {
-                return (num / 1000).toFixed(1).replace('.0', '') + 'К';
-            }
+            if (num >= 1000) return (num / 1000).toFixed(1).replace('.0', '') + 'К';
             return num.toString();
         }
 
-        // --- ОБРАБОТКА ДВОЙНОГО ТАПА ---
         function handleSingleTap(e, postId) {
             if (e.target.closest('.action-btn') || e.target.closest('.post-info')) return;
-            
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTap;
-            
             if (tapLength < 300 && tapLength > 0) {
                 e.preventDefault();
                 handleDoubleTap(e, postId);
@@ -953,12 +730,8 @@
         }
 
         function handleDoubleTap(e, postId) {
-            if (!currentUser) {
-                openModal('authModal');
-                return;
-            }
+            if (!currentUser) { openModal('authModal'); return; }
             if (navigator.vibrate) navigator.vibrate(50);
-
             const heart = document.getElementById(`heart-${postId}`);
             if (heart) {
                 heart.classList.remove('fade-out');
@@ -968,90 +741,58 @@
                     heart.classList.add('fade-out');
                 }, 500);
             }
-
             const idAsNumber = parseInt(postId);
-            if (!likedPhotos.includes(idAsNumber)) {
-                toggleLike(null, postId);
-            }
+            if (!likedPhotos.includes(idAsNumber)) toggleLike(null, postId);
         }
 
-        // --- ПРОВЕРКИ ---
         function checkAuthOrShowModal() {
-            if (!currentUser) {
-                openModal('authModal');
-                return false;
-            }
+            if (!currentUser) { openModal('authModal'); return false; }
             return true;
         }
-
         function handleAddClick() {
             if (checkAuthOrShowModal()) {
                 if (navigator.vibrate) navigator.vibrate(20);
                 openModal('submitModal');
             }
         }
-
         function handleLikesClick() {
             if (checkAuthOrShowModal()) {
                 if (navigator.vibrate) navigator.vibrate(20);
                 openLikesModal();
             }
         }
-
         function handleLikeClick(e, postId) {
             if (e) e.stopPropagation();
-            if (!currentUser) {
-                openModal('authModal');
-                return;
-            }
+            if (!currentUser) { openModal('authModal'); return; }
             if (navigator.vibrate) navigator.vibrate(20);
             toggleLike(e, postId);
         }
 
-        // --- АВТОРИЗАЦИЯ ---
         async function submitAuth() {
             const usernameInput = document.getElementById('authUsername');
             const passwordInput = document.getElementById('authPassword');
             const username = usernameInput.value.trim();
             const password = passwordInput.value.trim();
-
-            if (!username || !password) {
-                alert("Заполните оба поля!");
-                return;
-            }
-
+            if (!username || !password) { alert("Заполните оба поля!"); return; }
             const btn = document.querySelector('.auth-btn');
             btn.innerText = 'Проверка...';
             btn.disabled = true;
-
             try {
-                const { data: existingUser, error: findError } = await supabaseClient
-                    .from('users')
-                    .select('*')
-                    .eq('username', username)
-                    .single();
-
+                const { data: existingUser } = await supabaseClient.from('users').select('*').eq('username', username).single();
                 if (existingUser) {
                     if (existingUser.password === password) {
                         currentUser = existingUser;
                         localStorage.setItem('cult_user', JSON.stringify(existingUser));
-                        
                         closeModal({ target: authModal }, 'authModal');
                         loadRealPhotos(true);
                     } else {
                         alert("Неверный пароль!");
                     }
                 } else {
-                    const { data: newUser, error: insertError } = await supabaseClient
-                        .from('users')
-                        .insert([{ username, password }])
-                        .select()
-                        .single();
-
+                    const { data: newUser, error: insertError } = await supabaseClient.from('users').insert([{ username, password }]).select().single();
                     if (newUser) {
                         currentUser = newUser;
                         localStorage.setItem('cult_user', JSON.stringify(newUser));
-                        
                         closeModal({ target: authModal }, 'authModal');
                         loadRealPhotos(true);
                     } else {
@@ -1069,20 +810,13 @@
             }
         }
 
-        // --- ЛАЙКИ ФОТО ---
         async function toggleLike(e, postId) {
             if (e) e.stopPropagation();
             const idAsNumber = parseInt(postId);
             const btn = document.querySelector(`#post-${postId} .like-btn`);
             if (btn) btn.disabled = true;
-
             if (likedPhotos.includes(idAsNumber)) {
-                const { error } = await supabaseClient
-                    .from('likes')
-                    .delete()
-                    .eq('photo_id', idAsNumber)
-                    .eq('user_id', currentUser.id);
-
+                const { error } = await supabaseClient.from('likes').delete().eq('photo_id', idAsNumber).eq('user_id', currentUser.id);
                 if (!error) {
                     likedPhotos = likedPhotos.filter(id => id !== idAsNumber);
                     if (btn) btn.classList.remove('liked');
@@ -1090,10 +824,7 @@
                     updatePostLikeCount(idAsNumber);
                 }
             } else {
-                const { error } = await supabaseClient
-                    .from('likes')
-                    .insert([{ photo_id: idAsNumber, user_id: currentUser.id }]);
-
+                const { error } = await supabaseClient.from('likes').insert([{ photo_id: idAsNumber, user_id: currentUser.id }]);
                 if (!error) {
                     likedPhotos.push(idAsNumber);
                     if (btn) btn.classList.add('liked');
@@ -1104,39 +835,26 @@
             if (btn) btn.disabled = false;
         }
 
-        async function updatePostLikeCount(postId) {
+        function updatePostLikeCount(postId) {
             const countSpan = document.getElementById(`like-count-${postId}`);
             if (!countSpan) return;
-
             const postLikes = allLikesCache.filter(l => l.photo_id === postId);
             const uniqueUserLikes = [...new Set(postLikes.map(l => l.user_id))].length;
             countSpan.innerText = formatCount(uniqueUserLikes);
         }
 
-        // --- ЛАЙКИ ТЕГОВ ---
         async function toggleTagLike(e, tag) {
             e.stopPropagation();
-            
             if (!currentUser) {
                 closeModal({ target: document.getElementById('searchModal') }, 'searchModal');
-                setTimeout(() => {
-                    openModal('authModal');
-                }, 450);
+                setTimeout(() => { openModal('authModal'); }, 450);
                 return;
             }
-
             if (navigator.vibrate) navigator.vibrate(20);
-
             const btn = e.currentTarget;
             btn.disabled = true;
-
             if (likedTags.includes(tag)) {
-                const { error } = await supabaseClient
-                    .from('likes')
-                    .delete()
-                    .eq('tag', tag)
-                    .eq('user_id', currentUser.id);
-
+                const { error } = await supabaseClient.from('likes').delete().eq('tag', tag).eq('user_id', currentUser.id);
                 if (!error) {
                     likedTags = likedTags.filter(t => t !== tag);
                     btn.classList.remove('liked');
@@ -1144,10 +862,7 @@
                     updateTagLikeCount(tag);
                 }
             } else {
-                const { error } = await supabaseClient
-                    .from('likes')
-                    .insert([{ tag: tag, user_id: currentUser.id }]);
-
+                const { error } = await supabaseClient.from('likes').insert([{ tag: tag, user_id: currentUser.id }]);
                 if (!error) {
                     likedTags.push(tag);
                     btn.classList.add('liked');
@@ -1169,28 +884,18 @@
             });
         }
 
-        // --- ИЗБРАННОЕ ---
         function openLikesModal() {
             const likesGrid = document.getElementById('likesGrid');
             likesGrid.innerHTML = '';
-            
             let uniqueLikedIds = [...new Set(likedPhotos)];
-            
-            if (!isLikesSortedAsc) {
-                uniqueLikedIds = uniqueLikedIds.reverse();
-            }
-
+            if (!isLikesSortedAsc) uniqueLikedIds = uniqueLikedIds.reverse();
             if (uniqueLikedIds.length === 0) {
                 likesGrid.innerHTML = `<p style="grid-column: span 3; text-align: center; color: #888;">Пока пусто</p>`;
             } else {
                 uniqueLikedIds.forEach(id => {
                     const photo = allPostsData.find(p => p.id.toString() === id.toString());
                     if (photo) {
-                        likesGrid.innerHTML += `
-                            <div class="grid-item" onclick="scrollToPost('${id}', 'likesModal')">
-                                <img src="${photo.img}">
-                            </div>
-                        `;
+                        likesGrid.innerHTML += `<div class="grid-item" onclick="scrollToPost('${id}', 'likesModal')"><img src="${photo.img}"></div>`;
                     }
                 });
             }
@@ -1206,17 +911,14 @@
             openLikesModal(); 
         }
 
-        // --- МОДАЛКИ ---
         function openModal(id) {
             clearTimeout(controlsRevealTimer);
             bottomControls.classList.add('hidden');
             btnPulseDown.classList.add('hidden');
             document.body.classList.add('modal-open');
             const modal = document.getElementById(id);
-            
             const content = modal.querySelector('.modal-content');
             if (content) content.style.transform = '';
-
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('active'), 10);
         }
@@ -1225,19 +927,15 @@
             if (e.target === document.getElementById(id) || !e.target) {
                 const modal = document.getElementById(id);
                 const content = modal.querySelector('.modal-content');
-                
                 modal.classList.remove('active');
                 document.body.classList.remove('modal-open');
                 btnBackFloating.classList.remove('active');
                 btnSortFloating.classList.remove('active');
                 btnFavTagsFloating.classList.remove('active');
                 isFavoriteTagsView = false;
-                
                 setTimeout(() => {
                     modal.style.display = 'none';
                     if (content) content.style.transform = '';
-                    
-                    // Восстанавливаем видимость панелей в зависимости от скролла
                     const scrollTop = feed.scrollTop;
                     if (scrollTop <= 10) {
                         bottomControls.classList.add('hidden');
@@ -1250,7 +948,6 @@
             }
         }
 
-        // --- СВАЙПЫ ---
         let touchStartY = 0;
         let currentTouchModal = null;
 
@@ -1265,7 +962,6 @@
         document.addEventListener('touchmove', (e) => {
             if (!currentTouchModal) return;
             const deltaY = e.touches[0].clientY - touchStartY;
-            
             if (deltaY > 0) {
                 if (e.cancelable) e.preventDefault(); 
                 currentTouchModal.style.transform = `translateY(${deltaY}px)`;
@@ -1275,7 +971,6 @@
         document.addEventListener('touchend', (e) => {
             if (!currentTouchModal) return;
             const deltaY = e.changedTouches[0].clientY - touchStartY;
-            
             if (deltaY > 100) {
                 const modal = currentTouchModal.closest('.modal-overlay');
                 if (modal) closeModal({ target: modal }, modal.id);
@@ -1285,7 +980,6 @@
             currentTouchModal = null;
         });
 
-        // --- ПОИСК ---
         function openSearchModal() {
             if (navigator.vibrate) navigator.vibrate(20);
             isFavoriteTagsView = false;
@@ -1301,29 +995,21 @@
         function renderTagsList() {
             const tagsList = document.getElementById('tagsList');
             const uniqueTags = [...new Set(allPostsData.map(p => p.tag))].sort();
-            
             tagsList.innerHTML = '';
             let currentLetter = '';
-
             let filteredTags = uniqueTags;
-            if (isFavoriteTagsView) {
-                filteredTags = uniqueTags.filter(tag => likedTags.includes(tag));
-            }
-
+            if (isFavoriteTagsView) filteredTags = uniqueTags.filter(tag => likedTags.includes(tag));
             filteredTags.forEach(tag => {
                 const count = allPostsData.filter(p => p.tag === tag).length;
                 const letter = tag.replace('@', '').charAt(0).toUpperCase();
                 const isTagLiked = likedTags.includes(tag);
-                
                 const tagLikes = allLikesCache.filter(l => l.tag === tag);
                 const uniqueUserLikes = [...new Set(tagLikes.map(l => l.user_id))].length;
                 const countStr = formatCount(uniqueUserLikes);
-
                 if (letter !== currentLetter) {
                     currentLetter = letter;
                     tagsList.innerHTML += `<div class="alphabet-header">${letter}</div>`;
                 }
-
                 tagsList.innerHTML += `
                     <div class="tag-item" data-tag="${tag}">
                         <div class="tag-info" onclick="showTagPhotos('${tag}')">
@@ -1336,17 +1022,12 @@
                                 <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                             </button>
                             <button class="action-btn profile-btn" onclick="event.stopPropagation(); openTelegramLink('${tag}')">
-                                <svg viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <circle cx="12" cy="9" r="3"></circle>
-                                    <path d="M6.5 18.5c1.5-2 3.5-3 5.5-3s4 1 5.5 3"></path>
-                                </svg>
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="9" r="3"></circle><path d="M6.5 18.5c1.5-2 3.5-3 5.5-3s4 1 5.5 3"></path></svg>
                             </button>
                         </div>
                     </div>
                 `;
             });
-
             if (filteredTags.length === 0 && isFavoriteTagsView) {
                 tagsList.innerHTML = `<p style="text-align:center; width:100%; padding: 20px; color:#888;">Нет избранных тегов</p>`;
             }
@@ -1366,11 +1047,7 @@
             const authorGrid = document.getElementById('authorGrid');
             authorGrid.innerHTML = '';
             allPostsData.filter(p => p.tag === tag).forEach(photo => {
-                authorGrid.innerHTML += `
-                    <div class="grid-item" onclick="scrollToPost('${photo.id}', 'searchModal')">
-                        <img src="${photo.img}">
-                    </div>
-                `;
+                authorGrid.innerHTML += `<div class="grid-item" onclick="scrollToPost('${photo.id}', 'searchModal')"><img src="${photo.img}"></div>`;
             });
             document.getElementById('tagsView').style.display = 'none';
             document.getElementById('gridView').style.display = 'block';
@@ -1397,9 +1074,7 @@
             }
         }
 
-        function showTagsList() {
-            handleBackClick(); 
-        }
+        function showTagsList() { handleBackClick(); }
 
         function scrollToPost(id, modalId) {
             closeModal({ target: document.getElementById(modalId) }, modalId);
@@ -1413,24 +1088,16 @@
             if (navigator.vibrate) navigator.vibrate(20);
             let username = tag.trim().replace(/@/g, '');
             const url = `https://t.me/${username}`;
-            
-            if (tg && tg.openLink) {
-                tg.openLink(url);
-            } else {
-                window.open(url, '_blank');
-            }
+            if (tg && tg.openLink) tg.openLink(url);
+            else window.open(url, '_blank');
         }
 
         function scrollToTop() {
             if (navigator.vibrate) navigator.vibrate(20);
             btnDown.classList.add('hidden');
-            feed.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            feed.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Плавное скрытие стрелки, затем с задержкой появление кнопок меню
         function hideArrowThenShowControls() {
             clearTimeout(controlsRevealTimer);
             btnPulseDown.classList.add('hidden');
@@ -1439,7 +1106,6 @@
             }, 350);
         }
 
-        // Плавное скрытие кнопок, затем с задержкой появление стрелки
         function hideControlsThenShowArrow() {
             clearTimeout(controlsRevealTimer);
             bottomControls.classList.add('hidden');
@@ -1448,37 +1114,49 @@
             }, 400);
         }
 
+        // Прокрутка так, чтобы ВЕРХ верхней кнопки CHAT упёрся в ВЕРХНЮЮ границу экрана.
+        // scrollTop = позиция верхней границы CHAT относительно feed.
         function scrollDown() {
             if (navigator.vibrate) navigator.vibrate(20);
 
-            const target = (supportButtonOffset !== null) ? (supportButtonOffset - 20) : 200;
             isProgrammaticScroll = true;
-
             btnPulseDown.classList.add('hidden');
 
-            feed.scrollTo({
-                top: target,
-                behavior: 'smooth'
-            });
+            const chatBtn = document.getElementById('topChatBtn');
+            let target = 0;
+
+            if (chatBtn) {
+                // offsetTop — позиция ВЕРХА CHAT относительно feed.
+                target = chatBtn.offsetTop;
+            } else if (supportButtonOffset !== null) {
+                target = supportButtonOffset;
+            } else {
+                target = 200;
+            }
+
+            const maxScroll = feed.scrollHeight - feed.clientHeight;
+            if (target < 0) target = 0;
+            if (target > maxScroll) target = maxScroll;
+
+            feed.scrollTo({ top: target, behavior: 'smooth' });
 
             clearTimeout(programmaticScrollEndTimer);
             programmaticScrollEndTimer = setTimeout(() => {
                 isProgrammaticScroll = false;
-                if (feed.scrollTop >= target - 5) {
+                if (supportButtonOffset !== null && feed.scrollTop >= supportButtonOffset - 20) {
                     logo.classList.remove('hide');
                 }
                 clearTimeout(controlsRevealTimer);
                 controlsRevealTimer = setTimeout(() => {
                     bottomControls.classList.remove('hidden');
                 }, 100);
-            }, 600);
+            }, 700);
         }
 
-        // --- ОСТАЛЬНОЕ ---
+        btnPulseDown.addEventListener('click', scrollDown);
+
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                loadRealPhotos(false); 
-            }
+            if (document.visibilityState === 'visible') loadRealPhotos(false);
         });
 
         setTimeout(() => {
@@ -1488,7 +1166,6 @@
             if (bottomMask) bottomMask.style.transform = 'translateZ(0)';
         }, 100);
 
-        // --- ОБРАБОТЧИК СКРОЛЛА ---
         feed.addEventListener('scroll', () => {
             if (isProgrammaticScroll) return;
 
@@ -1500,22 +1177,11 @@
             const isAtTop = scrollTop <= 10;
 
             let showLogo = false;
+            if (supportButtonOffset !== null && scrollTop >= supportButtonOffset - 20) showLogo = true;
+            if (isAtBottom) showLogo = false;
 
-            if (supportButtonOffset !== null) {
-                if (scrollTop >= supportButtonOffset - 20) {
-                    showLogo = true;
-                }
-            }
-
-            if (isAtBottom) {
-                showLogo = false;
-            }
-
-            if (showLogo) {
-                logo.classList.remove('hide');
-            } else {
-                logo.classList.add('hide');
-            }
+            if (showLogo) logo.classList.remove('hide');
+            else logo.classList.add('hide');
 
             if (isAtTop) {
                 if (!btnPulseDown.classList.contains('hidden') && bottomControls.classList.contains('hidden')) {
@@ -1531,11 +1197,8 @@
                 }
             }
 
-            if (scrollTop > 200) {
-                btnDown.classList.remove('hidden');
-            } else {
-                btnDown.classList.add('hidden');
-            }
+            if (scrollTop > 200) btnDown.classList.remove('hidden');
+            else btnDown.classList.add('hidden');
 
             logo.classList.add('shrunk');
             bottomControls.classList.add('shrunk');
@@ -1552,7 +1215,6 @@
             }, 1000);
         });
 
-        // --- АДМИН ЛОГИКА ---
         const ADMIN_ID = 424175344;
         if (currentUser && currentUser.id == ADMIN_ID) {
             feed.addEventListener('touchstart', (e) => {
@@ -1561,25 +1223,21 @@
                 e.preventDefault(); 
                 startDeleteTimer(img);
             }, { passive: false });
-
             feed.addEventListener('touchend', (e) => {
                 clearTimeout(pressTimer);
                 const img = e.target.closest('.dynamic-img');
                 if (img) img.classList.remove('long-pressing');
             });
-
             feed.addEventListener('touchmove', (e) => {
                 clearTimeout(pressTimer);
                 const img = e.target.closest('.dynamic-img');
                 if (img) img.classList.remove('long-pressing');
             }, { passive: true });
-
             feed.addEventListener('mousedown', (e) => {
                 const img = e.target.closest('.dynamic-img');
                 if (!img) return;
                 startDeleteTimer(img);
             });
-
             feed.addEventListener('mouseup', (e) => {
                 clearTimeout(pressTimer);
                 const img = e.target.closest('.dynamic-img');
@@ -1605,18 +1263,15 @@
 
         async function confirmDelete() {
             if (!postToDelete) return;
-            
             const postElement = document.getElementById(`post-${postToDelete}`);
             if (postElement) {
                 postElement.classList.add('deleting');
-                
                 try {
                     const res = await fetch('/api/delete', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ photoId: postToDelete })
                     });
-
                     if (res.ok) {
                         setTimeout(() => {
                             postElement.remove();
@@ -1633,7 +1288,6 @@
             }
         }
 
-        // --- ОТПРАВКА ФОТО ---
         function handleFileSelect(input) {
             if (input.files && input.files[0]) {
                 const file = input.files[0];
@@ -1649,7 +1303,6 @@
                         else if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
                         canvas.width = width; canvas.height = height;
                         ctx.drawImage(img, 0, 0, width, height);
-                        
                         canvas.toBlob(function(blob) {
                             currentFileToUpload = new File([blob], "photo.jpg", { type: "image/jpeg" });
                             previewImage.src = URL.createObjectURL(blob);
@@ -1668,15 +1321,12 @@
             const tagInput = document.getElementById('tagInput').value;
             if (!currentFileToUpload) { alert("Выберите файл!"); return; }
             if (tagInput === '@') { alert("Введите тег!"); return; }
-
             const formData = new FormData();
             formData.append('photo', currentFileToUpload);
             formData.append('tag', tagInput);
-
             const btn = document.querySelector('.btn-submit');
             btn.innerText = 'Отправка...';
             btn.disabled = true;
-
             try {
                 const res = await fetch('/api/submit', { method: 'POST', body: formData });
                 if (res.ok) {
