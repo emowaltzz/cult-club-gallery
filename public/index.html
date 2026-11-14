@@ -57,25 +57,31 @@
             pointer-events: none; 
             width: 47%; max-width: 250px; 
             transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.3s ease;
+            opacity: 1;
         }
         .floating-logo img { 
             width: 100%; height: auto; object-fit: contain; 
-            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4)) drop-shadow(0 2px 4px rgba(0,0,0,0.2)); 
+            filter: 
+                drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.15)) 
+                drop-shadow(0px 0px 16px rgba(255, 255, 255, 0.08)) 
+                drop-shadow(0px 0px 24px rgba(255, 255, 255, 0.03))
+                drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); 
             transition: filter 0.3s ease;
         }
         .floating-logo.shrunk { transform: translateX(-50%) scale(0.95); }
         body.modal-open .floating-logo img { filter: blur(10px) drop-shadow(0 8px 16px rgba(0,0,0,0.4)); }
-        .floating-logo.hide-on-bottom { opacity: 0; transform: translateX(-50%) scale(0.9); pointer-events: none; }
+        .floating-logo.hide { opacity: 0; transform: translateX(-50%) scale(0.9); pointer-events: none; }
 
         /* --- ЛЕНТА --- */
         .feed {
-            height: 100vh; overflow-y: scroll; scroll-behavior: smooth;
+            height: 100vh; overflow-y: scroll;
             padding-top: 80px; padding-bottom: 100px; 
             display: flex; flex-direction: column; align-items: center;
             padding-left: 7px; padding-right: 7px;
             scrollbar-width: none; 
             -ms-overflow-style: none; 
             transition: filter 0.3s ease;
+            -webkit-overflow-scrolling: touch;
         }
         .feed::-webkit-scrollbar { width: 0px; display: none; }
         body.modal-open .feed { filter: blur(10px); }
@@ -88,7 +94,7 @@
         .image-container { position: relative; width: 100%; }
         .post img { width: 100%; height: auto; max-height: 80vh; object-fit: cover; background-color: #f0f0f0; border-radius: 8px; display: block; }
 
-        /* --- КНОПКИ ПОД ФОТО (БЕЗ БЛЮРА) --- */
+        /* --- КНОПКИ ПОД ФОТО --- */
         .action-btn {
             width: 40px; height: 40px;
             background: rgba(255, 255, 255, 0.7);
@@ -138,7 +144,6 @@
         .post-tag { color: var(--text-color); text-decoration: none; font-weight: 500; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; padding-bottom: 2px; display: inline-block; }
         .info-divider { color: var(--secondary-text); font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; letter-spacing: 2px; padding: 0 5px; }
         
-        /* Правая часть: Дата + Лайк + Счетчик */
         .info-right { 
             display: flex; 
             align-items: center; 
@@ -155,7 +160,6 @@
             margin-right: 10px; 
         }
         
-        /* --- СЧЕТЧИК ЛАЙКОВ --- */
         .like-count {
             font-size: 12px;
             color: var(--secondary-text);
@@ -172,7 +176,7 @@
             margin-left: 0;
         }
 
-        /* --- НИЖНЯЯ ПАНЕЛЬ (БЕЗ БЛЮРА) --- */
+        /* --- НИЖНЯЯ ПАНЕЛЬ --- */
         .bottom-controls {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(0);
             z-index: 300; display: flex; align-items: center; justify-content: center; gap: 15px;
@@ -210,7 +214,7 @@
         .bottom-controls.shrunk .btn-likes { transform: scale(0.85); }
         .bottom-controls.shrunk .btn-add { transform: scale(0.85); }
 
-        /* --- КНОПКА СТРЕЛКА (БЕЗ БЛЮРА) --- */
+        /* --- КНОПКА СТРЕЛКА ВВЕРХ --- */
         .btn-down {
             position: fixed; bottom: 37px; right: 20px; width: 50px; height: 50px; z-index: 300;
             transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.6s var(--smooth-ease), visibility 0.6s var(--smooth-ease);
@@ -221,7 +225,7 @@
         .btn-down svg { display: block; margin: auto; stroke: #ffffff; width: 24px; height: 24px;}
         .btn-down.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px) scale(0.8); }
 
-        /* --- МОДАЛКИ (БЕЗ БЛЮРА) --- */
+        /* --- МОДАЛКИ --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.2); display: none;
@@ -258,7 +262,7 @@
         }
 
         .modal-body {
-            flex: 1; overflow-y: auto; padding: 0 20px 20px;
+            flex: 1; overflow-y: auto; padding: 0 20px 80px;
             overscroll-behavior: contain; display: flex; flex-direction: column;
         }
         
@@ -345,7 +349,7 @@
 
         /* --- МОДАЛКА ПОИСКА И ЛАЙКОВ --- */
         .search-header { display: flex; align-items: center; justify-content: center; position: relative; }
-        .tags-list { display: flex; flex-direction: column; }
+        .tags-list { display: flex; flex-direction: column; padding-bottom: 13px; }
         
         .alphabet-header { font-size: 15px; font-weight: 600; color: #000; padding: 15px 0 5px 10px; background: transparent; position: relative; z-index: 1; }
 
@@ -362,7 +366,6 @@
         .grid-item:active { opacity: 0.7; }
         .grid-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Кнопка Назад (снизу) */
         .btn-back-floating {
             position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px);
             width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden;
@@ -373,18 +376,17 @@
         .btn-back-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
         .btn-back-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 
-        /* Кнопка Сортировки (в избранном) */
         .btn-sort-floating {
-            position: fixed; bottom: 37px; right: 20px; width: 50px; height: 50px;
+            position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px);
+            width: 50px; height: 50px;
             z-index: 400; opacity: 0; visibility: hidden;
             transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5);
             display: flex; justify-content: center; align-items: center;
         }
-        .btn-sort-floating.active { opacity: 1; visibility: visible; }
+        .btn-sort-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
         .btn-sort-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 
-        /* Кнопка Избранные теги (по центру) */
         .btn-fav-tags-floating {
             position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px);
             width: 50px; height: 50px;
@@ -442,7 +444,7 @@
     <div class="blur-mask-top"></div>
     <div class="blur-mask-bottom"></div>
 
-    <div class="floating-logo" id="logo">
+    <div class="floating-logo hide" id="logo">
         <img src="logo.png" alt="Logo">
     </div>
 
@@ -462,8 +464,8 @@
         </button>
     </div>
 
-    <button class="liquid-glass btn-down hidden" id="btnDown" onclick="scrollToBottom()">
-        <svg viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+    <button class="liquid-glass btn-down hidden" id="btnDown" onclick="scrollToTop()">
+        <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
     </button>
 
     <button class="liquid-glass btn-back-floating" id="btnBackFloating" onclick="handleBackClick()">
@@ -592,13 +594,15 @@
         let currentFileToUpload = null;
         let isLikesSortedAsc = false; 
         let isFavoriteTagsView = false; 
+        let firstPostOffset = null;
+        let lastPostOffset = null;
         
         let scrollTimeout;
         let hideArrowTimeout;
         let pressTimer = null;
         let isLongPress = false;
 
-        // 1. ПРОВЕРКА СЕССИИ (ЛОКАЛЬНО)
+        // 1. ПРОВЕРКА СЕССИИ
         function checkAuth() {
             const savedUser = localStorage.getItem('cult_user');
             if (savedUser) {
@@ -663,16 +667,29 @@
 
             feed.innerHTML = ''; 
             allPostsData = []; 
+            firstPostOffset = null;
+            lastPostOffset = null;
 
-            // СТАТИКА СВЕРХУ: 3.png
             feed.insertAdjacentHTML('afterbegin', `
                 <div class="post static-post">
-                    <div class="image-container"><img src="3.png" alt="Static Top"></div>
+                    <div class="image-container"><img src="1.png" alt="Static Top 1"></div>
+                </div>
+                <div class="post static-post">
+                    <div class="image-container"><img src="2.png" alt="Static Top 2"></div>
+                </div>
+                <div class="support-wrapper">
+                    <a href="https://t.me/ettoveracult?direct" target="_blank" class="support-btn">SUPPORT</a>
+                    <a href="https://t.me/cultclubchatroom" target="_blank" class="chat-btn">CHAT</a>
+                </div>
+                <div class="post static-post">
+                    <div class="image-container"><img src="3.png" alt="Static Top 3"></div>
                 </div>
             `);
 
-            if (data && data.length > 0) {
-                data.forEach((post) => {
+            const reversedData = data ? [...data].reverse() : [];
+
+            if (reversedData.length > 0) {
+                reversedData.forEach((post) => {
                     allPostsData.push({ tag: post.tag, img: post.image_url, id: post.id });
 
                     const isLiked = likedPhotos.includes(post.id);
@@ -720,32 +737,39 @@
                 feed.insertAdjacentHTML('beforeend', `<p style="text-align:center; width:100%; padding: 20px; color:#888;">Пока нет одобренных медиа</p>`);
             }
 
-            // СТАТИКА СНИЗУ: 3.png, 1.png, 2.png
             feed.insertAdjacentHTML('beforeend', `
                 <div class="post static-post">
                     <div class="image-container"><img src="3.png" alt="Static Bottom 3"></div>
                 </div>
-            `);
-
-            [1, 2].forEach(num => {
-                feed.insertAdjacentHTML('beforeend', `
-                    <div class="post static-post" id="bottom-static-${num}">
-                        <div class="image-container"><img src="${num}.png" alt="Static"></div>
-                    </div>
-                `);
-            });
-
-            feed.insertAdjacentHTML('beforeend', `
+                <div class="post static-post" id="bottom-static-1">
+                    <div class="image-container"><img src="1.png" alt="Static"></div>
+                </div>
+                <div class="post static-post" id="bottom-static-2">
+                    <div class="image-container"><img src="2.png" alt="Static"></div>
+                </div>
                 <div class="support-wrapper">
                     <a href="https://t.me/ettoveracult?direct" target="_blank" class="support-btn">SUPPORT</a>
                     <a href="https://t.me/cultclubchatroom" target="_blank" class="chat-btn">CHAT</a>
                 </div>
             `);
 
+            // Вычисляем позиции первого и последнего динамических постов
+            const updatePostOffsets = () => {
+                const dynamicPosts = feed.querySelectorAll('.post[data-id]');
+                if (dynamicPosts.length > 0) {
+                    firstPostOffset = dynamicPosts[0].offsetTop;
+                    lastPostOffset = dynamicPosts[dynamicPosts.length - 1].offsetTop;
+                }
+            };
+            setTimeout(updatePostOffsets, 200);
+            setTimeout(updatePostOffsets, 1000);
+            window.addEventListener('load', updatePostOffsets, { once: true });
+
             if (isInitialLoad) {
                 setTimeout(() => {
-                    feed.scrollTo(0, feed.scrollHeight);
+                    feed.scrollTop = 0;
                     btnDown.classList.add('hidden'); 
+                    logo.classList.add('hide');
                 }, 100);
             }
         }
@@ -757,7 +781,7 @@
             return num.toString();
         }
 
-        // --- ПРОВЕРКИ ДЛЯ ДЕЙСТВИЙ ---
+        // --- ПРОВЕРКИ ---
         function checkAuthOrShowModal() {
             if (!currentUser) {
                 openModal('authModal');
@@ -946,7 +970,7 @@
             });
         }
 
-        // --- ИЗБРАННОЕ (ФОТО) ---
+        // --- ИЗБРАННОЕ ---
         function openLikesModal() {
             const likesGrid = document.getElementById('likesGrid');
             likesGrid.innerHTML = '';
@@ -982,7 +1006,7 @@
             openLikesModal(); 
         }
 
-        // --- МОДАЛКИ (ОБЩАЯ ЛОГИКА) ---
+        // --- МОДАЛКИ ---
         function openModal(id) {
             bottomControls.classList.add('hidden');
             document.body.classList.add('modal-open');
@@ -1051,7 +1075,7 @@
             currentTouchModal = null;
         });
 
-        // --- ПОИСК С АЛФАВИТОМ ---
+        // --- ПОИСК ---
         function openSearchModal() {
             isFavoriteTagsView = false;
             renderTagsList();
@@ -1182,10 +1206,10 @@
             }
         }
 
-        function scrollToBottom() {
+        function scrollToTop() {
             btnDown.classList.add('hidden');
             feed.scrollTo({
-                top: feed.scrollHeight,
+                top: 0,
                 behavior: 'smooth'
             });
         }
@@ -1204,24 +1228,43 @@
             if (bottomMask) bottomMask.style.transform = 'translateZ(0)';
         }, 100);
 
+        // --- ОБРАБОТЧИК СКРОЛЛА: ЛОГОТИП ПО ПЕРВОМУ И ПОСЛЕДНЕМУ ПОСТУ ---
         feed.addEventListener('scroll', () => {
             const scrollTop = feed.scrollTop;
-            const scrollHeight = feed.scrollHeight;
-            const clientHeight = feed.clientHeight;
-            
-            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 50;
-            
-            if (isAtBottom) {
-                logo.classList.add('hide-on-bottom');
-                btnDown.classList.add('hidden');
-            } else {
-                logo.classList.remove('hide-on-bottom');
-                btnDown.classList.remove('hidden'); 
+
+            let showLogo = false;
+
+            if (firstPostOffset !== null) {
+                // Логотип появляется, когда дошли до первого динамического поста
+                if (scrollTop >= firstPostOffset - 20) {
+                    showLogo = true;
+                }
             }
 
+            if (lastPostOffset !== null) {
+                // Логотип скрывается, когда верх последнего динамического поста упёрся в верх экрана
+                if (scrollTop >= lastPostOffset - 20) {
+                    showLogo = false;
+                }
+            }
+
+            if (showLogo) {
+                logo.classList.remove('hide');
+            } else {
+                logo.classList.add('hide');
+            }
+
+            // Стрелка вверх
+            if (scrollTop > 200) {
+                btnDown.classList.remove('hidden');
+            } else {
+                btnDown.classList.add('hidden');
+            }
+
+            // Эффект сжатия
             logo.classList.add('shrunk');
             bottomControls.classList.add('shrunk');
-            
+
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
                 logo.classList.remove('shrunk');
@@ -1230,7 +1273,7 @@
 
             clearTimeout(hideArrowTimeout);
             hideArrowTimeout = setTimeout(() => {
-                if (!isAtBottom) btnDown.classList.add('hidden');
+                if (scrollTop > 200) btnDown.classList.add('hidden');
             }, 1000);
         });
 
