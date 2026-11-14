@@ -25,6 +25,7 @@
             overflow: hidden; position: fixed; width: 100%; height: 100%;
             user-select: none;
             -webkit-font-smoothing: antialiased; 
+            overscroll-behavior: none;
         }
 
         /* --- БЛЮР-МАСКИ --- */
@@ -82,6 +83,7 @@
             -ms-overflow-style: none; 
             transition: filter 0.3s ease;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
         .feed::-webkit-scrollbar { width: 0px; display: none; }
         body.modal-open .feed { filter: blur(10px); }
@@ -231,6 +233,7 @@
             background: rgba(0, 0, 0, 0.2); display: none;
             justify-content: center; align-items: flex-end; z-index: 200; 
             opacity: 0; transition: opacity 0.4s ease;
+            overscroll-behavior: contain;
         }
         .modal-overlay.active { display: flex; opacity: 1; }
         
@@ -320,14 +323,25 @@
         }
         .auth-btn:active { opacity: 0.8; }
 
-        /* --- МОДАЛКА ОТПРАВКИ --- */
-        #submitModal .modal-body { gap: 15px; }
+        /* --- МОДАЛКА ОТПРАВКИ (КАК НА СКРИНШОТЕ) --- */
+        #submitModal .modal-content {
+            height: 85vh; /* Делаем окно высоким, чтобы кнопка ушла вниз */
+        }
+
+        #submitModal .modal-body { 
+            gap: 15px; 
+            justify-content: flex-start;
+            padding-bottom: 20px; /* Убираем огромный отступ снизу, чтобы кнопка прижалась к краю */
+        }
 
         .file-upload-wrapper {
-            position: relative; width: 100%; flex: 1; min-height: 120px; 
+            position: relative; width: 100%; 
+            flex: 1; /* Растягивает блок на все свободное место */
+            min-height: 150px; 
             border: 2px dashed rgba(0,0,0,0.15); border-radius: 16px;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             background: rgba(255, 255, 255, 0.4); cursor: pointer; overflow: hidden;
+            margin-bottom: 0;
         }
         .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
         .upload-icon svg { width: 32px; height: 32px; stroke: #555; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
@@ -344,6 +358,7 @@
             width: 100%; padding: 16px; background: #000; color: #fff; border: none; border-radius: 14px; 
             font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; flex-shrink: 0; transition: opacity 0.2s;
             text-transform: uppercase;
+            margin-top: auto; /* Прижимает кнопку к низу */
         }
         .btn-submit:active { opacity: 0.8; }
 
@@ -594,8 +609,7 @@
         let currentFileToUpload = null;
         let isLikesSortedAsc = false; 
         let isFavoriteTagsView = false; 
-        let firstPostOffset = null;
-        let lastPostOffset = null;
+        let supportButtonOffset = null; 
         
         let scrollTimeout;
         let hideArrowTimeout;
@@ -667,8 +681,7 @@
 
             feed.innerHTML = ''; 
             allPostsData = []; 
-            firstPostOffset = null;
-            lastPostOffset = null;
+            supportButtonOffset = null;
 
             feed.insertAdjacentHTML('afterbegin', `
                 <div class="post static-post">
@@ -677,7 +690,7 @@
                 <div class="post static-post">
                     <div class="image-container"><img src="2.png" alt="Static Top 2"></div>
                 </div>
-                <div class="support-wrapper">
+                <div class="support-wrapper" id="topSupportWrapper">
                     <a href="https://t.me/ettoveracult?direct" target="_blank" class="support-btn">SUPPORT</a>
                     <a href="https://t.me/cultclubchatroom" target="_blank" class="chat-btn">CHAT</a>
                 </div>
@@ -753,17 +766,16 @@
                 </div>
             `);
 
-            // Вычисляем позиции первого и последнего динамических постов
-            const updatePostOffsets = () => {
-                const dynamicPosts = feed.querySelectorAll('.post[data-id]');
-                if (dynamicPosts.length > 0) {
-                    firstPostOffset = dynamicPosts[0].offsetTop;
-                    lastPostOffset = dynamicPosts[dynamicPosts.length - 1].offsetTop;
+            // Вычисляем позицию верхней кнопки SUPPORT для появления логотипа
+            const updateSupportOffset = () => {
+                const topSupport = document.getElementById('topSupportWrapper');
+                if (topSupport) {
+                    supportButtonOffset = topSupport.offsetTop;
                 }
             };
-            setTimeout(updatePostOffsets, 200);
-            setTimeout(updatePostOffsets, 1000);
-            window.addEventListener('load', updatePostOffsets, { once: true });
+            setTimeout(updateSupportOffset, 200);
+            setTimeout(updateSupportOffset, 1000);
+            window.addEventListener('load', updateSupportOffset, { once: true });
 
             if (isInitialLoad) {
                 setTimeout(() => {
@@ -1228,24 +1240,27 @@
             if (bottomMask) bottomMask.style.transform = 'translateZ(0)';
         }, 100);
 
-        // --- ОБРАБОТЧИК СКРОЛЛА: ЛОГОТИП ПО ПЕРВОМУ И ПОСЛЕДНЕМУ ПОСТУ ---
+        // --- ОБРАБОТЧИК СКРОЛЛА: ЛОГОТИП ПО КНОПКЕ SUPPORT И НИЗУ ---
         feed.addEventListener('scroll', () => {
             const scrollTop = feed.scrollTop;
+            const scrollHeight = feed.scrollHeight;
+            const clientHeight = feed.clientHeight;
+
+            // Проверяем, находится ли пользователь в самом низу (с погрешностью 50px)
+            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 50;
 
             let showLogo = false;
 
-            if (firstPostOffset !== null) {
-                // Логотип появляется, когда дошли до первого динамического поста
-                if (scrollTop >= firstPostOffset - 20) {
+            // Логотип появляется, когда доскроллили до кнопки SUPPORT (сверху)
+            if (supportButtonOffset !== null) {
+                if (scrollTop >= supportButtonOffset - 20) {
                     showLogo = true;
                 }
             }
 
-            if (lastPostOffset !== null) {
-                // Логотип скрывается, когда верх последнего динамического поста упёрся в верх экрана
-                if (scrollTop >= lastPostOffset - 20) {
-                    showLogo = false;
-                }
+            // Логотип скрывается, когда доскроллили до самого низа ленты
+            if (isAtBottom) {
+                showLogo = false;
             }
 
             if (showLogo) {
