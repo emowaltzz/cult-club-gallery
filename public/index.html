@@ -105,6 +105,7 @@
             border-radius: 50%; position: relative; cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0;
         }
         .action-btn svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block; }
+        
         .profile-btn svg { width: 22px; height: 22px; fill: black; stroke: none; transition: stroke 0.2s, fill 0.2s; }
         .like-btn svg { width: 19px; height: 19px; stroke: black; stroke-width: 2; fill: transparent; transition: stroke 0.2s, fill 0.2s; }
         .action-btn:active { transform: scale(0.85); }
@@ -131,13 +132,21 @@
         .bottom-controls {
             position: fixed; bottom: 30px; left: 50%; 
             transform: translateX(-50%) translateY(0) scale(1);
-            z-index: 300; display: flex; align-items: center; justify-content: center; gap: 15px;
+            z-index: 100; /* ИСПРАВЛЕНО: z-index ниже, чем у модалки */
+            display: flex; align-items: center; justify-content: center; gap: 15px;
             transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0s;
             opacity: 1; visibility: visible; pointer-events: auto;
         }
         .bottom-controls.hidden { 
             opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(20px) scale(0.9); visibility: hidden;
             transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0.4s;
+        }
+        
+        /* Класс для блокировки кликов во время скролла */
+        .bottom-controls.scrolling,
+        .btn-pulse-down.scrolling,
+        .btn-pulse-up.scrolling {
+            pointer-events: none !important;
         }
 
         .liquid-glass {
@@ -167,7 +176,7 @@
             animation: pulseWhole 2s ease-in-out infinite; /* Анимация на всей кнопке */
             opacity: 1; visibility: visible;
             transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0s;
-            z-index: 299;
+            z-index: 99; /* ИСПРАВЛЕНО: z-index ниже, чем у модалки */
         }
         
         .btn-pulse-down.hidden, .btn-pulse-up.hidden {
@@ -188,7 +197,7 @@
         }
 
         .btn-down {
-            position: fixed; bottom: 37px; right: 20px; width: 50px; height: 50px; z-index: 300;
+            position: fixed; bottom: 37px; right: 20px; width: 50px; height: 50px; z-index: 100; /* Тоже понизил, чтобы не перекрывало модалки */
             transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.2s ease, visibility 0.2s ease;
             background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(255, 255, 255, 0.2);
             display: flex; justify-content: center; align-items: center;
@@ -200,7 +209,7 @@
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.2); display: none;
-            justify-content: center; align-items: flex-end; z-index: 200; 
+            justify-content: center; align-items: flex-end; z-index: 200; /* Выше кнопок */
             opacity: 0; transition: opacity 0.4s ease; overscroll-behavior: contain;
         }
         .modal-overlay.active { display: flex; opacity: 1; }
@@ -781,6 +790,9 @@
 
         function openModal(id) {
             clearTimeout(controlsRevealTimer);
+            clearTimeout(scrollTimeout);     // Защита от ложного появления кнопок
+            clearTimeout(hideArrowTimeout);  // Защита от ложного скрытия стрелки
+            
             bottomControls.classList.add('hidden');
             btnPulseDown.classList.add('hidden');
             btnPulseUp.classList.add('hidden');
@@ -961,8 +973,20 @@
             feed.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Логика скрытия/появления меню и стрелок
+        // Логика скрытия/появления меню и стрелок + защита от кликов во время скролла
         function updateControlsVisibility(scrollTop) {
+            if (document.body.classList.contains('modal-open')) {
+                bottomControls.classList.add('hidden');
+                btnPulseDown.classList.add('hidden');
+                btnPulseUp.classList.add('hidden');
+                return;
+            }
+
+            // Блокируем клики, пока идет скролл
+            bottomControls.classList.add('scrolling');
+            btnPulseDown.classList.add('scrolling');
+            btnPulseUp.classList.add('scrolling');
+
             const scrollHeight = feed.scrollHeight;
             const clientHeight = feed.clientHeight;
 
@@ -1003,6 +1027,10 @@
             scrollTimeout = setTimeout(() => {
                 logo.classList.remove('shrunk');
                 bottomControls.classList.remove('shrunk');
+                // Возвращаем клики после окончания анимации
+                bottomControls.classList.remove('scrolling');
+                btnPulseDown.classList.remove('scrolling');
+                btnPulseUp.classList.remove('scrolling');
             }, 200);
 
             clearTimeout(hideArrowTimeout);
