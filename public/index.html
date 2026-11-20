@@ -27,10 +27,10 @@
             --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
             --skeleton-bg: #e0e0e0;
             --skeleton-shimmer: #f5f5f5;
-            --red: #ff3b30;
-            --orange: #ff9f0a;
-            --yellow: #ffd23f;
-            --green: #34d17a;
+            --red: #000000;
+            --orange: #000000;
+            --yellow: #000000;
+            --green: #000000;
         }
 
 
@@ -74,10 +74,11 @@
 
         .action-btn { width: 40px; height: 40px; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 2px 5px var(--btn-shadow); border-radius: 50%; position: relative; cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0; }
         .action-btn svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block; }
-        .profile-btn svg { width: 22px; height: 22px; fill: var(--icon-color); stroke: none; transition: stroke 0.2s, fill 0.2s; }
+        .profile-btn svg { width: 22px; height: 22px; fill: #000 !important; color: #000 !important; stroke: none; transition: stroke 0.2s, fill 0.2s; }
         .like-btn svg { width: 19px; height: 19px; stroke: var(--icon-color); stroke-width: 2; fill: transparent; transition: stroke 0.2s, fill 0.2s; }
         
-        .comment-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 2px 5px var(--btn-shadow); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0; color: var(--icon-muted); font-size: 22px; line-height: 1; }
+        .comment-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 2px 5px var(--btn-shadow); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0; color: var(--icon-muted); padding: 0; line-height: 1; }
+        .comment-btn svg { width: 18px; height: 18px; display: block; fill: currentColor; flex: none; }
 
         .action-btn:active, .comment-btn:active { transform: scale(0.85); }
         .like-btn.liked svg { stroke: var(--like-color); fill: var(--like-color); }
@@ -105,24 +106,17 @@
         .bottom-controls.shrunk .btn-search, .bottom-controls.shrunk .btn-likes { transform: scale(0.85); }
         .bottom-controls.shrunk .btn-add { transform: scale(0.85); }
 
-        .profile-floating { position: fixed; right: max(calc(25vw - 43px), calc(50vw - 170px)); bottom: 37px; width: 50px; height: 50px; z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 1; visibility: visible; pointer-events: auto; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 4px 10px var(--btn-shadow); transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.4s ease, visibility 0s linear 0s; }
-        .profile-floating svg { width: 24px; height: 24px; stroke: var(--icon-color); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: .85; transition: transform var(--smooth-duration) var(--smooth-ease); }
+        .profile-floating { position: fixed; left: max(12px, calc((100vw - 500px) / 2 + 7px)); right: auto; bottom: 37px; width: 50px; height: 50px; z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 1; visibility: visible; pointer-events: auto; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 4px 10px var(--btn-shadow); transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.4s ease, visibility 0s linear 0s; }
+        .profile-floating svg { width: 24px; height: 24px; stroke: none; stroke-width: 0; fill: #000; color: #000; opacity: 1; transition: transform var(--smooth-duration) var(--smooth-ease); }
         .profile-floating:active { transform: scale(.85); }
         .profile-floating.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px) scale(.8); transition: transform .2s var(--smooth-ease), opacity .2s var(--smooth-ease), visibility 0s linear .2s; }
-        .profile-floating, .profile-username-pill { transition: opacity .2s ease, transform .2s var(--smooth-ease), visibility 0s linear 0s; }
-        .profile-floating.shrunk, .profile-username-pill.shrunk, .profile-floating.shrunk, .profile-username-pill.shrunk { transform: scale(.88); }
+        .profile-floating.shrunk { transform: scale(.88); }
         .btn-pulse-down.shrunk, .btn-pulse-up.shrunk { animation-play-state: paused; }
-        .profile-username-pill { position: fixed; left: max(12px, calc((100vw - 500px) / 2 + 7px)); right: calc(50% + 106.5px); bottom: 43px; width: auto; height: 38px; padding: 0 13px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 22px; background: var(--btn-bg); color: var(--text-color); box-shadow: 0 4px 10px var(--btn-shadow); font: 600 12px var(--font-main); letter-spacing: .1px; white-space: nowrap; overflow: hidden; text-align: center; cursor: pointer; z-index: 90; }
-        .profile-username-pill span { display: block; width: 100%; max-width: 100%; overflow: hidden; white-space: nowrap; text-align: center; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%); }
-        .profile-username-pill.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px) scale(.8); transition: opacity .7s var(--smooth-ease), transform .7s var(--smooth-ease), visibility 0s linear .7s; }
-        .profile-username-pill:not(.hidden) { opacity: 1; visibility: visible; }
-        .profile-username-pill:active { transform: scale(.92); }
         .bottom-controls { gap: 12px; }
         @media (max-width: 380px) {
             .bottom-controls { gap: 7px; }
             .btn-search, .btn-likes { width: 44px; height: 44px; }
             .btn-add { width: 58px; height: 58px; }
-            .profile-username-pill { right: calc(50% + 89px); }
         }
 
 
@@ -138,6 +132,22 @@
 
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.2); display: none; justify-content: center; align-items: flex-end; z-index: 200; opacity: 0; transition: opacity 0.4s ease; overscroll-behavior: contain; }
         .modal-overlay.active { display: flex; opacity: 1; }
+        #profileModal { z-index: 220; }
+        #profileModal .modal-content { z-index: 221; }
+        .profile-search-float { position:absolute; z-index:223; left:50%; bottom:calc(60vh + 12px); transform:translate(-50%, 12px); width:calc(100% - 28px); max-width:460px; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s var(--smooth-ease), transform .45s var(--smooth-ease), visibility 0s linear .35s; }
+        #profileModal.active .profile-search-float { opacity:1; visibility:visible; pointer-events:auto; transform:translate(-50%, 0); transition-delay:0s; }
+        .profile-search-input-wrap { display:flex; align-items:center; gap:9px; padding:11px 15px; border:1px solid var(--border); border-radius:18px; background:var(--modal-bg); box-shadow:0 8px 28px rgba(0,0,0,.16); }
+        .profile-search-input-wrap svg { width:19px; height:19px; flex-shrink:0; stroke:var(--secondary-text); fill:none; stroke-width:2; }
+        .profile-search-input { width:100%; border:0; outline:0; background:transparent; color:var(--text-color); font:inherit; font-size:14px; }
+        .profile-search-results { display:none; max-height:32vh; overflow:auto; margin-top:7px; padding:5px; border:1px solid var(--border); border-radius:15px; background:var(--modal-bg); box-shadow:0 8px 28px rgba(0,0,0,.16); }
+        .profile-search-results.open { display:block; animation:profileSearchIn .22s ease both; }
+        .profile-search-result { display:flex; align-items:center; width:100%; gap:10px; padding:10px; border:0; border-radius:10px; background:transparent; color:var(--text-color); text-align:left; cursor:pointer; }
+        .profile-search-result:active { background:var(--fill-1); }
+        .profile-search-result strong { display:block; font-size:13px; }
+        .profile-search-result small { display:block; color:var(--secondary-text); font-size:12px; margin-top:2px; }
+        .profile-search-avatar { width:34px; height:34px; border-radius:50%; object-fit:cover; background:var(--fill-1); flex-shrink:0; }
+        @keyframes profileSearchIn { from {opacity:0; transform:translateY(-5px) scale(.98)} to {opacity:1; transform:translateY(0) scale(1)} }
+        @media (max-height:650px) { .profile-search-float { bottom:calc(60vh + 8px); } }
         .modal-content { background: var(--modal-bg); border-top: 1px solid var(--border); width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; height: 60vh; display: flex; flex-direction: column; transform: translateY(100%); opacity: 0; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; box-shadow: 0 -10px 40px rgba(0,0,0,0.15); position: relative; z-index: 201; overflow: hidden; }
         .modal-overlay.active .modal-content { transform: translateY(0); opacity: 1; }
         .modal-drag-area { padding: 30px 20px 15px; flex-shrink: 0; cursor: grab; position: relative; touch-action: none; display: flex; align-items: center; justify-content: center; }
@@ -204,6 +214,7 @@
         .tag-name { font-weight: 500; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-color); }
         .tag-count { font-size: 13px; color: var(--secondary-text); font-weight: 400; }
         .tag-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; margin-left: 10px; }
+        .tag-profile-btn { width:40px; height:40px; border-radius:50%; border:1px solid var(--border); background:var(--btn-bg); box-shadow:0 2px 5px var(--btn-shadow); display:flex; align-items:center; justify-content:center; color:var(--text-color); font:600 17px var(--font-main); cursor:pointer; flex-shrink:0; }
 
         .author-grid, .likes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding-bottom: 20px; width: 100%; }
         .grid-item { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 8px; cursor: pointer; background: var(--fill-1); transition: opacity 0.2s; }
@@ -247,22 +258,49 @@
         .comment-replies > .comment-item { flex: 0 0 auto; min-width: min(220px, 72vw); max-width: 80%; }
         .comment-replies .comment-item { background: var(--fill-3); padding: 10px 12px; }
 
-        .carousel-container { width: 100%; max-width: 500px; margin-bottom: 30px; border-radius: 12px; overflow: hidden; background: var(--fill-1); }
-        .carousel-view { height: 400px; position: relative; overflow: hidden; border-radius: 12px; }
-        .carousel-strip { display: flex; height: 100%; will-change: transform; transition: transform 0.72s cubic-bezier(0.22, 1, 0.36, 1); }
-        .carousel-slide { flex: none; width: 100%; height: 100%; position: relative; overflow: hidden; }
-        .carousel-slide::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(to top, rgba(0,0,0,.58), transparent); pointer-events: none; }
-        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .carousel-tag { position: absolute; z-index: 2; left: 16px; bottom: 16px; color: #fff; font-size: 14px; font-weight: 600; text-shadow: 0 1px 8px rgba(0,0,0,.45); max-width: calc(100% - 32px); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-        .carousel-dots { position: relative; display: flex; justify-content: center; gap: 14px; margin: 12px 0; height: 20px; align-items: center; }
-        .carousel-dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: var(--fill-1); cursor: pointer; }
-        .carousel-dots .active-pill { position: absolute; top: 6px; height: 8px; border-radius: 4px; background: var(--text-color); pointer-events: none; transition: transform .45s cubic-bezier(.22,1,.36,1), width .45s cubic-bezier(.22,1,.36,1); }
+
+        .profile-screen { width:100%; max-width:500px; margin:0 auto; padding:4px 0 28px; }
+        .profile-top { display:flex; align-items:flex-start; gap:14px; position:relative; padding:8px 2px 16px; }
+        .profile-avatar-wrap { width:82px; height:82px; flex:none; position:relative; }
+        .profile-avatar { width:82px; height:82px; border-radius:50%; object-fit:cover; background:var(--fill-1); display:block; }
+        .profile-avatar-placeholder { width:82px; height:82px; border-radius:50%; background:var(--fill-1); display:flex; align-items:center; justify-content:center; color:var(--secondary-text); font-size:30px; }
+        .profile-identity { min-width:0; flex:1; padding-top:5px; padding-right:72px; }
+        .profile-display-name { font-size:19px; font-weight:700; line-height:1.2; overflow-wrap:anywhere; }
+        .profile-handle { color:var(--secondary-text); font-size:13px; margin-top:4px; overflow-wrap:anywhere; }
+        .profile-bio { color:var(--text-color); font-size:14px; line-height:1.4; margin:12px 0 16px; white-space:pre-wrap; overflow-wrap:anywhere; }
+        .profile-tools { position:absolute; top:0; right:0; display:flex; flex-direction:column; gap:8px; }
+        .profile-tool-btn { width:38px; height:38px; border-radius:50%; border:1px solid var(--border); background:var(--btn-bg); color:var(--text-color); display:flex; align-items:center; justify-content:center; }
+        .profile-tool-btn svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; }
+        .profile-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:14px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+        .profile-stat { text-align:center; min-width:0; }
+        .profile-stat strong { display:block; font-size:18px; color:var(--text-color); font-weight:700; font-variant-numeric:tabular-nums; }
+        .profile-stat span { display:block; font-size:11px; color:var(--secondary-text); margin-top:3px; line-height:1.2; }
+        .profile-actions { display:flex; gap:10px; margin:16px 0 20px; }
+        .profile-action { flex:1; min-height:42px; border:0; border-radius:14px; background:var(--text-color); color:var(--bg-color); font-size:13px; font-weight:650; padding:0 12px; }
+        .profile-action.secondary { background:var(--fill-1); color:var(--text-color); border:1px solid var(--border); }
+        .profile-action:disabled { opacity:.5; }
+        .profile-section-title { font-size:14px; font-weight:700; margin:18px 0 12px; }
+        .profile-mini-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:3px; }
+        .profile-mini-grid .grid-item { aspect-ratio:1; overflow:hidden; border-radius:5px; background:var(--fill-1); }
+        .profile-mini-grid img { width:100%; height:100%; object-fit:cover; display:block; }
+        .profile-empty { color:var(--secondary-text); font-size:13px; text-align:center; padding:24px 8px; }
+        .profile-dropdown { display:none; position:absolute; right:0; top:84px; z-index:5; min-width:190px; padding:7px; border:1px solid var(--border); border-radius:14px; background:var(--modal-bg); box-shadow:0 8px 28px rgba(0,0,0,.12); }
+        .profile-dropdown.open { display:block; }
+        .profile-dropdown button { display:block; width:100%; border:0; border-radius:9px; padding:11px 10px; text-align:left; background:transparent; color:var(--text-color); font-size:13px; }
+        .profile-edit-form { display:flex; flex-direction:column; gap:10px; margin:8px 0 18px; }
+        .profile-edit-form input,.profile-edit-form textarea,.profile-password-form input,.profile-tag-input { width:100%; border:1px solid var(--border); border-radius:12px; background:var(--fill-1); color:var(--text-color); padding:12px; font:inherit; font-size:14px; outline:none; }
+        .profile-edit-form textarea { min-height:86px; resize:vertical; }
+        .profile-edit-actions { display:flex; gap:8px; }
+        .profile-edit-actions button,.profile-password-form button { flex:1; padding:12px; border:0; border-radius:12px; background:var(--text-color); color:var(--bg-color); font-weight:650; }
+        .profile-tag-chip { border:0; cursor:pointer; display:inline-flex; padding:7px 10px; margin:0 6px 6px 0; border-radius:999px; background:var(--fill-1); color:var(--text-color); font-size:12px; }
+        .profile-password-form { display:flex; flex-direction:column; gap:9px; padding:8px 0; }
+        .profile-following { opacity:.55; }
 
         .lens-btn { position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; background: var(--btn-bg); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 20; transition: transform 0.2s; }
         .lens-btn svg { width: 20px; height: 20px; stroke: var(--icon-color); fill: none; stroke-width: 2; }
         .lens-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15; opacity: 0; transition: opacity 0.3s; overflow: hidden; border-radius: 8px; }
         .lens-container.active { opacity: 1; pointer-events: auto; touch-action: none; }
-        .lens-glass { position: absolute; top: 0; left: 0; width: 160px; height: 160px; border-radius: 50%; overflow: hidden; pointer-events: auto; touch-action: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: #fff; transition: left 140ms cubic-bezier(0.22, 1, 0.36, 1), top 140ms cubic-bezier(0.22, 1, 0.36, 1); will-change: left, top; }
+        .lens-glass { position: absolute; top: 0; left: 0; width: 160px; height: 160px; border-radius: 50%; overflow: hidden; pointer-events: auto; touch-action: none !important; -webkit-user-select: none; user-select: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: #fff; transition: left 140ms cubic-bezier(0.22, 1, 0.36, 1), top 140ms cubic-bezier(0.22, 1, 0.36, 1); will-change: left, top; }
         .lens-glass img { position: absolute; display: block; max-width: none; max-height: none; width: 100%; height: 100%; object-fit: cover; border-radius: 0; transform-origin: 0 0; pointer-events: none; }
         .lens-handle { position: absolute; right: 10px; bottom: 10px; width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,.72); border: 1px solid rgba(0,0,0,.24); box-shadow: 0 1px 5px rgba(0,0,0,.35); z-index: 3; pointer-events: none; }
 
@@ -296,9 +334,8 @@
     </div>
 
     <button class="liquid-glass profile-floating hidden" id="profileFloatingBtn" onclick="handleProfileClick()" aria-label="Профиль пользователя">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><text x="12" y="17" text-anchor="middle" font-size="18" font-weight="700" font-family="Arial, sans-serif" fill="#000">@</text></svg>
     </button>
-    <button class="profile-username-pill hidden" id="profileUsernamePill" onclick="handleProfileClick()" aria-label="Открыть профиль"><span>Войти</span></button>
 
     <button class="btn-pulse-down hidden" id="btnPulseDown">
         <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
@@ -349,6 +386,13 @@
     </div>
 
     <div class="modal-overlay" id="profileModal" onclick="closeModal(event, 'profileModal')">
+        <div class="profile-search-float" onclick="event.stopPropagation()">
+            <div class="profile-search-input-wrap">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
+                <input id="profileSearchInput" class="profile-search-input" type="search" placeholder="Поиск" autocomplete="off" oninput="searchProfiles(this.value)" onkeydown="if(event.key==='Escape'){this.value='';searchProfiles('');this.blur();}">
+            </div>
+            <div id="profileSearchResults" class="profile-search-results"></div>
+        </div>
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-drag-area"><div class="modal-title">Профиль</div></div>
             <div class="modal-body" id="profileModalBody"></div>
@@ -457,7 +501,8 @@
         let allPostsData = []; 
         let likedPhotos = []; 
         let likedTags = [];
-        let allLikesCache = []; 
+        let allLikesCache = [];
+        let tagProfileOwners = {}; 
         let currentFileToUpload = null;
         let isLikesSortedAsc = false; 
         let isFavoriteTagsView = false; 
@@ -475,27 +520,277 @@
         let editingCommentId = null;
         let activeLens = null;
 
-        let carouselInterval = null;
-        let carouselData = [];
-        let carouselIndex = 0;
-
-
-        function checkAuth() {
+function checkAuth() {
             const savedUser = localStorage.getItem('cult_user');
             if (savedUser) currentUser = JSON.parse(savedUser);
             if (!currentUser) { likedPhotos = []; likedTags = []; }
         }
-        function updateProfileUsername() {
-            const pill = document.getElementById('profileUsernamePill');
-            if (pill) { const label = pill.querySelector('span'); if (label) label.textContent = currentUser?.username || 'Войти'; }
-        }
         checkAuth();
-        updateProfileUsername();
         loadRealPhotos(true);
 
         function handleProfileClick() {
             if (!currentUser) { openModal('authModal'); return; }
+            openUserProfile(currentUser.id);
+        }
+
+        let activeProfileUserId = null;
+        let activeProfileTags = [];
+
+        async function openUserProfile(userId) {
+            if (!userId) return;
+            const body = document.getElementById('profileModalBody');
+            body.innerHTML = '<div class="profile-empty">Загрузка профиля…</div>';
             openModal('profileModal');
+
+            const { data: account, error } = await supabaseClient
+                .from('users').select('id, username')
+                .eq('id', userId).single();
+
+            if (error || !account) {
+                body.innerHTML = '<div class="profile-empty">Не удалось загрузить профиль. Проверьте настройки базы данных.</div>';
+                console.error('Profile load error:', error);
+                return;
+            }
+            const { data: profileData, error: profileError } = await supabaseClient
+                .from('user_profiles').select('display_name, bio, avatar_url')
+                .eq('user_id', userId).maybeSingle();
+            if (profileError) {
+                body.innerHTML = '<div class="profile-empty">Не удалось загрузить данные профиля. Примените SQL-файл cult_profile_schema.sql.</div>';
+                console.error('User profile load error:', profileError);
+                return;
+            }
+            const profile = { ...account, ...(profileData || {}) };
+
+            activeProfileUserId = profile.id;
+            const isOwner = currentUser && String(currentUser.id) === String(profile.id);
+            const tagResult = await supabaseClient
+                .from('profile_tags').select('tag').eq('user_id', profile.id);
+
+            if (tagResult.error) {
+                body.innerHTML = '<div class="profile-empty">Для профилей нужно сначала применить файл cult_profile_schema.sql к базе Supabase.</div>';
+                console.error('Profile tags table missing or unavailable:', tagResult.error);
+                return;
+            }
+
+            activeProfileTags = [...new Set((tagResult.data || []).map(x => x.tag).filter(Boolean))];
+            const displayName = profile.display_name || String(profile.username || '').replace(/^@/, '') || 'Пользователь';
+            const avatar = profile.avatar_url
+                ? `<img class="profile-avatar" src="${escapeHtml(profile.avatar_url)}" alt="Аватар">`
+                : `<div class="profile-avatar-placeholder">${escapeHtml((displayName[0] || 'П').toUpperCase())}</div>`;
+            const tagsMarkup = activeProfileTags.map(t => `<button type="button" class="profile-tag-chip" onclick="openProfileTagSearch(decodeURIComponent('${encodeURIComponent(String(t).replace(/^#/, '@'))}'))">@${escapeHtml(String(t).replace(/^[@#]/, ''))}</button>`).join('');
+            const ownTagButton = isOwner
+                ? `<button class="profile-action secondary" onclick="addProfileTags()">Теги</button>`
+                : '';
+
+            body.innerHTML = `
+                <div class="profile-screen">
+                    <div class="profile-top">
+                        <div class="profile-avatar-wrap">${avatar}</div>
+                        <div class="profile-identity">
+                            <div class="profile-display-name">${escapeHtml(displayName)}</div>
+                            <div class="profile-handle">@${escapeHtml(String(profile.username || '').replace(/^@/, ''))}</div>
+                        </div>
+                        ${isOwner ? `
+                        <div class="profile-tools">
+                            <button class="profile-tool-btn" title="Редактировать профиль" onclick="showProfileEditor()" aria-label="Редактировать">
+                                <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
+                            </button>
+                            <button class="profile-tool-btn" title="Выйти из аккаунта" onclick="confirmLogout()" aria-label="Выйти из аккаунта">
+                                <svg viewBox="0 0 24 24"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
+                            </button>
+                        </div>` : ''}
+                    </div>
+                    <div class="profile-bio">${profile.bio ? escapeHtml(profile.bio) : (isOwner ? 'Добавьте описание профиля' : '')}</div>
+                    ${isOwner ? `<div class="profile-actions">${ownTagButton}</div>` : ''}
+                    ${isOwner ? `<input type="file" id="profileAvatarInput" accept="image/*" hidden onchange="uploadProfileAvatar(this)">` : ''}
+                    <div class="profile-section-title">Теги ${activeProfileTags.length ? `(${activeProfileTags.length})` : ''}</div>
+                    <div>${tagsMarkup || '<div class="profile-empty">Пока нет тегов</div>'}</div>
+                </div>
+            `;
+            if (isOwner) {
+                const avatarWrap = body.querySelector('.profile-avatar-wrap');
+                avatarWrap.style.cursor = 'pointer';
+                avatarWrap.title = 'Изменить аватар';
+                avatarWrap.addEventListener('click', () => document.getElementById('profileAvatarInput')?.click());
+            }
+        }
+
+        function normalizeSearchTag(tag) {
+            const clean = String(tag || '').trim().replace(/^#+/, '').replace(/^@+/, '');
+            return clean ? '@' + clean : '';
+        }
+
+        function openProfileTagSearch(tag) {
+            const normalizedTag = normalizeSearchTag(tag);
+            if (!normalizedTag) return;
+            const profileModal = document.getElementById('profileModal');
+            closeModal({ target: profileModal }, 'profileModal');
+            setTimeout(() => {
+                openSearchModal();
+                showTagPhotos(normalizedTag);
+            }, 420);
+        }
+
+        let profileSearchRequest = 0;
+        async function searchProfiles(rawQuery) {
+            const results = document.getElementById('profileSearchResults');
+            const query = String(rawQuery || '').trim().replace(/^@/, '');
+            if (!results) return;
+            if (query.length < 2) {
+                results.classList.remove('open');
+                results.innerHTML = '';
+                return;
+            }
+            const requestId = ++profileSearchRequest;
+            results.innerHTML = '<div class="profile-empty" style="padding:12px;">Поиск…</div>';
+            results.classList.add('open');
+            const escaped = query.replace(/[,%_]/g, ch => '\\' + ch);
+            const [usersResult, profilesResult] = await Promise.all([
+                supabaseClient.from('users').select('id, username').ilike('username', `%${escaped}%`).limit(20),
+                supabaseClient.from('user_profiles').select('user_id, display_name, avatar_url').ilike('display_name', `%${escaped}%`).limit(20)
+            ]);
+            if (requestId !== profileSearchRequest) return;
+            const users = usersResult.data || [];
+            const profiles = profilesResult.data || [];
+            const byId = new Map(users.map(u => [String(u.id), { ...u }]));
+            profiles.forEach(p => {
+                const existing = byId.get(String(p.user_id)) || { id:p.user_id, username:'' };
+                byId.set(String(p.user_id), { ...existing, ...p });
+            });
+            const matches = [...byId.values()].filter(u =>
+                String(u.username || '').toLowerCase().includes(query.toLowerCase()) ||
+                String(u.display_name || '').toLowerCase().includes(query.toLowerCase())
+            ).slice(0, 12);
+            if (!matches.length) {
+                results.innerHTML = '<div class="profile-empty" style="padding:12px;">Профили не найдены</div>';
+                return;
+            }
+            results.innerHTML = matches.map(u => {
+                const name = u.display_name || String(u.username || '').replace(/^@/, '') || 'Пользователь';
+                const handle = u.username ? '@' + String(u.username).replace(/^@/, '') : '';
+                const avatar = u.avatar_url ? `<img class="profile-search-avatar" src="${escapeHtml(u.avatar_url)}" alt="">` : `<div class="profile-search-avatar" style="display:flex;align-items:center;justify-content:center;">${escapeHtml(name.charAt(0).toUpperCase())}</div>`;
+                return `<button type="button" class="profile-search-result" onclick="selectSearchedProfile('${String(u.id).replace(/'/g, '')}')">${avatar}<span><strong>${escapeHtml(name)}</strong><small>${escapeHtml(handle)}</small></span></button>`;
+            }).join('');
+        }
+
+        function selectSearchedProfile(userId) {
+            const input = document.getElementById('profileSearchInput');
+            const results = document.getElementById('profileSearchResults');
+            if (input) input.value = '';
+            if (results) { results.classList.remove('open'); results.innerHTML = ''; }
+            openUserProfile(userId);
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        }
+
+        async function toggleProfileFollow(profileId) {
+            if (!currentUser) { openModal('authModal'); return; }
+            const { data: tags, error } = await supabaseClient.from('profile_tags').select('tag').eq('user_id', profileId);
+            if (error) { alert('Не удалось загрузить привязанные теги.'); return; }
+            const values = [...new Set((tags || []).map(x => x.tag).filter(Boolean))];
+            if (!values.length) { alert('У этого пользователя пока нет привязанных тегов.'); return; }
+            const { data: existing } = await supabaseClient.from('likes').select('tag').eq('user_id', currentUser.id).in('tag', values);
+            const alreadyFollowing = values.every(t => (existing || []).some(x => x.tag === t));
+            if (alreadyFollowing) {
+                const { error: delError } = await supabaseClient.from('likes').delete().eq('user_id', currentUser.id).in('tag', values);
+                if (delError) { alert('Не удалось отменить подписку.'); return; }
+            } else {
+                const missing = values.filter(t => !(existing || []).some(x => x.tag === t));
+                const { error: addError } = await supabaseClient.from('likes').insert(missing.map(tag => ({ user_id: currentUser.id, tag })));
+                if (addError) { alert('Не удалось подписаться: ' + addError.message); return; }
+            }
+            await openUserProfile(profileId);
+        }
+
+        async function addProfileTags() {
+            if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
+            const input = prompt('Введите один или несколько тегов через запятую:');
+            if (input === null) return;
+            const tags = [...new Set(input.split(',').map(t => { const clean = t.trim().replace(/^#+/, ''); return clean ? (clean.startsWith('@') ? clean : '@' + clean) : ''; }).filter(Boolean))];
+            if (!tags.length) return;
+            const { error } = await supabaseClient.from('profile_tags').upsert(
+                tags.map(tag => ({ user_id: currentUser.id, tag })),
+                { onConflict: 'user_id,tag', ignoreDuplicates: true }
+            );
+            if (error) { alert('Не удалось сохранить теги: ' + error.message); return; }
+            await openUserProfile(currentUser.id);
+        }
+
+        function showProfileEditor() {
+            if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
+            const body = document.getElementById('profileModalBody');
+            const name = body.querySelector('.profile-display-name')?.textContent || currentUser.username?.replace(/^@/, '') || '';
+            const bio = body.querySelector('.profile-bio')?.textContent || '';
+            body.querySelector('.profile-screen').insertAdjacentHTML('afterbegin', `
+                <form class="profile-edit-form" id="profileEditForm" onsubmit="saveProfileEdits(event)">
+                    <input id="profileEditName" maxlength="60" placeholder="Ник" value="${escapeHtml(name)}" required>
+                    <textarea id="profileEditBio" maxlength="280" placeholder="Описание профиля">${escapeHtml(bio === 'Добавьте описание профиля' ? '' : bio)}</textarea>
+                    <div class="profile-edit-actions"><button type="submit">Сохранить</button><button type="button" onclick="openUserProfile(currentUser.id)">Отмена</button></div>
+                </form>
+            `);
+        }
+
+        async function saveProfileEdits(event) {
+            event.preventDefault();
+            if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
+            const display_name = document.getElementById('profileEditName').value.trim();
+            const bio = document.getElementById('profileEditBio').value.trim();
+            if (!display_name) { alert('Укажите ник.'); return; }
+            const { error } = await supabaseClient.from('user_profiles').upsert(
+                { user_id: currentUser.id, display_name, bio },
+                { onConflict: 'user_id' }
+            );
+            if (error) { alert('Не удалось сохранить профиль: ' + error.message); return; }
+            currentUser = { ...currentUser, display_name, bio };
+            localStorage.setItem('cult_user', JSON.stringify(currentUser));
+            await openUserProfile(currentUser.id);
+        }
+
+        async function uploadProfileAvatar(input) {
+            const file = input.files?.[0];
+            if (!file || !currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
+            try {
+                const bitmap = await createImageBitmap(file);
+                const canvas = document.createElement('canvas');
+                canvas.width = 500; canvas.height = 500;
+                const ctx = canvas.getContext('2d');
+                const side = Math.min(bitmap.width, bitmap.height);
+                const sx = (bitmap.width - side) / 2, sy = (bitmap.height - side) / 2;
+                ctx.drawImage(bitmap, sx, sy, side, side, 0, 0, 500, 500);
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.88));
+                if (!blob) throw new Error('Не удалось обработать изображение');
+                const path = `${currentUser.id}/${Date.now()}.jpg`;
+                const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(path, blob, { contentType: 'image/jpeg', upsert: true });
+                if (uploadError) throw uploadError;
+                const { data: publicData } = supabaseClient.storage.from('avatars').getPublicUrl(path);
+                const { error } = await supabaseClient.from('user_profiles').upsert(
+                    { user_id: currentUser.id, avatar_url: publicData.publicUrl },
+                    { onConflict: 'user_id' }
+                );
+                if (error) throw error;
+                currentUser = { ...currentUser, avatar_url: publicData.publicUrl };
+                localStorage.setItem('cult_user', JSON.stringify(currentUser));
+                await openUserProfile(currentUser.id);
+            } catch (err) {
+                console.error(err);
+                alert('Не удалось загрузить аватар. Проверьте настройки хранилища avatars в Supabase.');
+            }
+        }
+
+        function confirmLogout() {
+            if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
+            if (!confirm('Вы действительно хотите выйти из аккаунта?')) return;
+            logoutUser();
+        }
+
+        function logoutUser() {
+            localStorage.removeItem('cult_user');
+            currentUser = null;
+            likedPhotos = [];
+            likedTags = [];
+            closeModal({ target: document.getElementById('profileModal') }, 'profileModal');
         }
 
         async function loadRealPhotos(isInitialLoad = false) {
@@ -506,8 +801,13 @@
             const { data, error } = await supabaseClient.from('photos').select('*').eq('status', 'approved').order('created_at', { ascending: true });
             if (error) { console.error("Ошибка загрузки фото:", error); return; }
 
-            const { data: allLikes } = await supabaseClient.from('likes').select('photo_id, tag, user_id');
+            const [{ data: allLikes }, { data: profileTagRows }] = await Promise.all([
+                supabaseClient.from('likes').select('photo_id, tag, user_id'),
+                supabaseClient.from('profile_tags').select('user_id, tag')
+            ]);
             allLikesCache = allLikes || [];
+            tagProfileOwners = {};
+            (profileTagRows || []).forEach(row => { if (row.tag && !tagProfileOwners[row.tag]) tagProfileOwners[row.tag] = row.user_id; });
 
             let myLikes = null;
             if (currentUser && allLikesCache) myLikes = allLikesCache.filter(l => l.user_id == currentUser.id);
@@ -539,10 +839,6 @@
             const img4 = '4.png';
 
             feed.insertAdjacentHTML('afterbegin', `
-                <div class="carousel-container" id="carouselContainer">
-                    <div class="carousel-view"><div class="carousel-strip" id="carouselStrip"></div></div>
-                    <div class="carousel-dots" id="carouselDots"><span class="active-pill" id="carouselPill"></span></div>
-                </div>
                 <div class="post static-post"><div class="image-container"><img src="${img1}" alt="Static Top 1"></div></div>
                 <div class="post static-post"><div class="image-container"><img src="${img2}" alt="Static Top 2"></div></div>
                 <div class="support-wrapper" id="topSupportWrapper">
@@ -583,12 +879,12 @@
                             <div class="post-info">
                                 <div class="info-left">
                                     <button class="action-btn profile-btn" onclick="openTelegramLink('${post.tag}')">
-                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.2 18.4 19c-.24 1.05-.86 1.31-1.74.82l-4.8-3.54-2.32 2.23c-.26.26-.48.48-.98.48l.35-4.9 8.92-8.06c.39-.35-.08-.54-.6-.19L6.2 12.8l-4.66-1.46c-1.01-.32-1.03-1.01.21-1.5L20 3.1c.84-.31 1.58.2 1.6 1.1Z" fill="currentColor" stroke="none"/></svg>
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.2 18.4 19c-.24 1.05-.86 1.31-1.74.82l-4.8-3.54-2.32 2.23c-.26.26-.48.48-.98.48l.35-4.9 8.92-8.06c.39-.35-.08-.54-.6-.19L6.2 12.8l-4.66-1.46c-1.01-.32-1.03-1.01.21-1.5L20 3.1c.84-.31 1.58.2 1.6 1.1Z" fill="#000000" stroke="none"/></svg>
                                     </button>
                                     <div class="tag-wrapper"><span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span></div>
                                 </div>
                                 <div class="info-middle">
-                                    <button class="comment-btn" onclick="openComments('${post.id}', '${post.description || ''}')">•••</button>
+                                    <button class="comment-btn" onclick="openComments('${post.id}', '${post.description || ''}')" aria-label="Комментарии"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
                                 </div>
                                 <div class="info-right">
                                     <span class="post-date">${dateStr}</span>
@@ -605,7 +901,6 @@
 
                 const lastDynamicPost = feed.querySelector('.post[data-id]');
                 if (lastDynamicPost) lastDynamicPost.classList.add('last-published');
-                setTimeout(() => initCarousel(), 100);
 
             } else {
                 feed.insertAdjacentHTML('beforeend', `<p style="text-align:center; width:100%; padding: 20px; color:var(--secondary-text);">Пока нет одобренных медиа</p>`);
@@ -633,98 +928,6 @@
                     feed.scrollTop = 0;
                     updateControlsVisibility(0);
                 }, 100);
-            }
-        }
-
-        let carouselDirection = 1;
-        let carouselPreviousIds = [];
-
-        function initCarousel() {
-            const strip = document.getElementById('carouselStrip');
-            const dots = document.getElementById('carouselDots');
-            const pill = document.getElementById('carouselPill');
-            if (!strip || !dots || !pill) return;
-
-            const availablePhotos = allPostsData.filter(p => p.img);
-            if (!availablePhotos.length) {
-                const container = document.getElementById('carouselContainer');
-                if (container) container.remove();
-                return;
-            }
-
-            // Up to five unique random photos; prefer a new batch on each full cycle.
-            let pool = availablePhotos.filter(p => !carouselPreviousIds.includes(String(p.id)));
-            if (pool.length < Math.min(5, availablePhotos.length)) pool = availablePhotos.slice();
-            const shuffled = [...pool].sort(() => Math.random() - 0.5);
-            carouselData = shuffled.slice(0, Math.min(5, availablePhotos.length));
-            carouselPreviousIds = carouselData.map(p => String(p.id));
-
-            strip.innerHTML = '';
-            dots.innerHTML = '<span class="active-pill" id="carouselPill"></span>';
-            carouselData.forEach((photo, i) => {
-                const slide = document.createElement('div');
-                slide.className = 'carousel-slide';
-                const img = document.createElement('img');
-                img.src = photo.img;
-                img.alt = photo.tag ? `Фото ${photo.tag}` : 'Фото из ленты';
-                img.loading = i === 0 ? 'eager' : 'lazy';
-                slide.appendChild(img);
-                const tag = document.createElement('div');
-                tag.className = 'carousel-tag';
-                tag.textContent = photo.tag || '';
-                slide.appendChild(tag);
-                strip.appendChild(slide);
-
-                const dot = document.createElement('button');
-                dot.type = 'button';
-                dot.setAttribute('aria-label', `Фото ${i + 1}`);
-                dot.addEventListener('click', () => {
-                    const previousIndex = carouselIndex;
-                    carouselIndex = i;
-                    carouselDirection = carouselIndex >= previousIndex ? 1 : -1;
-                    updateCarousel();
-                });
-                dots.appendChild(dot);
-            });
-
-            carouselIndex = 0;
-            carouselDirection = 1;
-            updateCarousel();
-            if (carouselInterval) clearInterval(carouselInterval);
-            carouselInterval = setInterval(() => {
-                if (!carouselData.length || document.body.classList.contains('modal-open')) return;
-                if (document.activeElement && ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-                const lastIndex = carouselData.length - 1;
-                if (lastIndex === 0) return;
-
-                if (carouselDirection > 0) {
-                    if (carouselIndex < lastIndex) carouselIndex++;
-                    else { carouselDirection = -1; carouselIndex--; }
-                } else if (carouselIndex > 0) {
-                    carouselIndex--;
-                } else {
-                    // Once the carousel has returned to slide one, choose the next batch.
-                    initCarousel();
-                    return;
-                }
-                updateCarousel();
-            }, 1700);
-        }
-
-        function updateCarousel() {
-            const strip = document.getElementById('carouselStrip');
-            const dots = document.querySelectorAll('#carouselDots button');
-            const pill = document.getElementById('carouselPill');
-            if (!strip || !pill || !dots.length) return;
-            strip.style.transform = `translateX(-${carouselIndex * 100}%)`;
-            dots.forEach((dot, i) => {
-                dot.style.background = i === carouselIndex ? 'transparent' : '';
-                dot.setAttribute('aria-selected', i === carouselIndex ? 'true' : 'false');
-            });
-            const activeDot = dots[carouselIndex];
-            if (activeDot) {
-                pill.style.transform = `translateX(${activeDot.offsetLeft - 6}px)`;
-                pill.style.width = '20px';
             }
         }
 
@@ -756,26 +959,42 @@
             let isDragging = false;
             let grabOffsetX = 0;
             let grabOffsetY = 0;
-            lens.onpointerdown = (ev) => {
-                const rect = container.getBoundingClientRect();
-                const lensRect = lens.getBoundingClientRect();
-                isDragging = true;
-                grabOffsetX = ev.clientX - lensRect.left - lensRect.width / 2;
-                grabOffsetY = ev.clientY - lensRect.top - lensRect.height / 2;
-                lens.setPointerCapture(ev.pointerId);
+            const stopGesture = ev => {
                 ev.preventDefault();
                 ev.stopPropagation();
+                if (typeof ev.stopImmediatePropagation === 'function') ev.stopImmediatePropagation();
+            };
+
+            lens.onpointerdown = (ev) => {
+                stopGesture(ev);
+                isDragging = true;
+                const rect = container.getBoundingClientRect();
+                const lensRect = lens.getBoundingClientRect();
+                grabOffsetX = ev.clientX - lensRect.left - lensRect.width / 2;
+                grabOffsetY = ev.clientY - lensRect.top - lensRect.height / 2;
+                try { lens.setPointerCapture(ev.pointerId); } catch (_) {}
+                try { tg.disableVerticalSwipes(); } catch (_) {}
             };
             lens.onpointermove = (ev) => {
                 if (!isDragging) return;
+                stopGesture(ev);
                 const rect = container.getBoundingClientRect();
                 moveLens(lens, img, ev.clientX - rect.left - grabOffsetX, ev.clientY - rect.top - grabOffsetY, rect.width, rect.height);
             };
-            lens.onpointerup = (ev) => {
+            const finishLensDrag = (ev) => {
+                if (ev) stopGesture(ev);
                 isDragging = false;
-                if (lens.hasPointerCapture(ev.pointerId)) lens.releasePointerCapture(ev.pointerId);
+                if (ev && lens.hasPointerCapture && lens.hasPointerCapture(ev.pointerId)) {
+                    try { lens.releasePointerCapture(ev.pointerId); } catch (_) {}
+                }
+                try { tg.disableVerticalSwipes(); } catch (_) {}
             };
-            lens.onpointercancel = () => { isDragging = false; };
+            lens.onpointerup = finishLensDrag;
+            lens.onpointercancel = finishLensDrag;
+            lens.ondragstart = ev => stopGesture(ev);
+            lens.addEventListener('touchstart', stopGesture, { passive: false });
+            lens.addEventListener('touchmove', stopGesture, { passive: false });
+            lens.addEventListener('touchend', stopGesture, { passive: false });
         }
 
         function moveLens(lens, img, x, y, w, h) {
@@ -798,7 +1017,7 @@
         }
 
         function handleSingleTap(e, postId) {
-            if (e.target.closest('.action-btn') || e.target.closest('.post-info') || e.target.closest('.lens-btn')) return;
+            if (e.target.closest('.action-btn') || e.target.closest('.post-info') || e.target.closest('.lens-btn') || e.target.closest('.lens-container')) return;
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTap;
             if (tapLength < 300 && tapLength > 0) {
@@ -811,6 +1030,7 @@
         }
 
         function handleDoubleTap(e, postId) {
+            if (e?.target?.closest('.lens-container')) { e.preventDefault(); return; }
             if (!currentUser) { openModal('authModal'); return; }
             if (navigator.vibrate) navigator.vibrate(50);
             const heart = document.getElementById(`heart-${postId}`);
@@ -921,8 +1141,7 @@
                     if (existingUser.password === password) {
                         currentUser = existingUser;
                         localStorage.setItem('cult_user', JSON.stringify(existingUser));
-                        updateProfileUsername();
-                        closeModal({ target: authModal }, 'authModal');
+                                        closeModal({ target: authModal }, 'authModal');
                         loadRealPhotos(true);
                     } else { alert("Неверный пароль!"); }
                 } else {
@@ -930,8 +1149,7 @@
                     if (newUser) {
                         currentUser = newUser;
                         localStorage.setItem('cult_user', JSON.stringify(newUser));
-                        updateProfileUsername();
-                        closeModal({ target: authModal }, 'authModal');
+                                        closeModal({ target: authModal }, 'authModal');
                         loadRealPhotos(true);
                     } else { alert("Ошибка: " + insertError.message); }
                 }
@@ -1078,7 +1296,7 @@
                     <div class="comment-item" id="comment-${c.id}">
                         ${actionButtons}
                         <div class="comment-header">
-                            <span class="comment-author">@${c.users?.username || 'unknown'}</span>
+                            <span class="comment-author" style="cursor:pointer;" onclick="openUserProfile('${c.user_id}')">@${c.users?.username || 'unknown'}</span>
                             <span class="comment-text" id="comment-text-${c.id}">${c.text}</span>
                         </div>
                         <span class="comment-date">${dateStr}</span>
@@ -1239,6 +1457,12 @@
             if (e.target === document.getElementById(id) || !e.target) {
                 const modal = document.getElementById(id);
                 const content = modal.querySelector('.modal-content');
+                if (id === 'profileModal') {
+                    const searchInput = document.getElementById('profileSearchInput');
+                    const searchResults = document.getElementById('profileSearchResults');
+                    if (searchInput) searchInput.value = '';
+                    if (searchResults) { searchResults.classList.remove('open'); searchResults.innerHTML = ''; }
+                }
                 modal.classList.remove('active');
                 document.body.classList.remove('modal-open');
                 btnBackFloating.classList.remove('active');
@@ -1331,7 +1555,7 @@
                 tagsList.innerHTML += `
                     <div class="tag-item" data-tag="${tag}">
                         <div class="tag-info" onclick="showTagPhotos('${tag}')">
-                            <span class="tag-name">${tag}</span>
+                            <span class="tag-name">@${String(tag).replace(/^[@#]/, '')}</span>
                             <span class="tag-count">${count} фото</span>
                         </div>
                         <div class="tag-actions">
@@ -1340,8 +1564,9 @@
                                 <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                             </button>
                             <button class="action-btn profile-btn" onclick="event.stopPropagation(); openTelegramLink('${tag}')">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.2 18.4 19c-.24 1.05-.86 1.31-1.74.82l-4.8-3.54-2.32 2.23c-.26.26-.48.48-.98.48l.35-4.9 8.92-8.06c.39-.35-.08-.54-.6-.19L6.2 12.8l-4.66-1.46c-1.01-.32-1.03-1.01.21-1.5L20 3.1c.84-.31 1.58.2 1.6 1.1Z" fill="currentColor" stroke="none"/></svg>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.2 18.4 19c-.24 1.05-.86 1.31-1.74.82l-4.8-3.54-2.32 2.23c-.26.26-.48.48-.98.48l.35-4.9 8.92-8.06c.39-.35-.08-.54-.6-.19L6.2 12.8l-4.66-1.46c-1.01-.32-1.03-1.01.21-1.5L20 3.1c.84-.31 1.58.2 1.6 1.1Z" fill="#000000" stroke="none"/></svg>
                             </button>
+                            ${tagProfileOwners[tag] ? `<button class="tag-profile-btn" aria-label="Открыть профиль" title="Профиль" onclick="event.stopPropagation(); openUserProfile('${tagProfileOwners[tag]}')">@</button>` : ''}
                         </div>
                     </div>
                 `;
@@ -1362,14 +1587,16 @@
 
         function showTagPhotos(tag) {
             if (navigator.vibrate) navigator.vibrate(20);
+            const normalizedTag = normalizeSearchTag(tag);
+            const matches = allPostsData.filter(p => normalizeSearchTag(p.tag) === normalizedTag);
             const authorGrid = document.getElementById('authorGrid');
             authorGrid.innerHTML = '';
-            allPostsData.filter(p => p.tag === tag).forEach(photo => {
-                authorGrid.innerHTML += `<div class="grid-item" onclick="scrollToPost('${photo.id}', 'searchModal')"><img src="${photo.img}"></div>`;
+            matches.forEach(photo => {
+                authorGrid.innerHTML += `<div class="grid-item" onclick="scrollToPost('${photo.id}', 'searchModal')"><img src="${photo.img}" loading="lazy"></div>`;
             });
             document.getElementById('tagsView').style.display = 'none';
             document.getElementById('gridView').style.display = 'block';
-            document.getElementById('searchTitle').innerText = tag;
+            document.getElementById('searchTitle').innerText = normalizedTag;
             btnBackFloating.classList.add('active');
             btnFavTagsFloating.classList.remove('active');
         }
@@ -1470,7 +1697,6 @@
             if (document.body.classList.contains('modal-open')) {
                 bottomControls.classList.add('hidden');
                 document.getElementById('profileFloatingBtn').classList.add('hidden');
-                document.getElementById('profileUsernamePill').classList.add('hidden');
                 btnPulseDown.classList.add('hidden');
                 btnPulseUp.classList.add('hidden');
                 return;
@@ -1504,7 +1730,6 @@
             } else if (isAtBottom) {
                 bottomControls.classList.add('hidden');
                 document.getElementById('profileFloatingBtn').classList.add('hidden');
-                document.getElementById('profileUsernamePill').classList.add('hidden');
                 btnPulseDown.classList.add('hidden');
                 btnPulseUp.classList.remove('hidden');
             } else {
@@ -1516,17 +1741,14 @@
             if (scrollTop > 200 && !isAtBottom) {
                 btnDown.classList.remove('hidden');
                 document.getElementById('profileFloatingBtn').classList.remove('hidden');
-                document.getElementById('profileUsernamePill').classList.remove('hidden');
             } else {
                 btnDown.classList.add('hidden');
                 document.getElementById('profileFloatingBtn').classList.add('hidden');
-                document.getElementById('profileUsernamePill').classList.add('hidden');
             }
 
             logo.classList.add('shrunk');
             bottomControls.classList.add('shrunk');
             document.getElementById('profileFloatingBtn').classList.add('shrunk');
-            document.getElementById('profileUsernamePill').classList.add('shrunk');
             btnPulseDown.classList.add('shrunk');
             btnPulseUp.classList.add('shrunk');
             btnDown.classList.add('shrunk');
@@ -1536,7 +1758,6 @@
                 logo.classList.remove('shrunk');
                 bottomControls.classList.remove('shrunk');
                 document.getElementById('profileFloatingBtn').classList.remove('shrunk');
-                document.getElementById('profileUsernamePill').classList.remove('shrunk');
                 btnPulseDown.classList.remove('shrunk');
                 btnPulseUp.classList.remove('shrunk');
                 btnDown.classList.remove('shrunk');
@@ -1550,7 +1771,6 @@
                 if (scrollTop > 200 && !isAtBottom) {
                     btnDown.classList.add('hidden');
                     document.getElementById('profileFloatingBtn').classList.add('hidden');
-                document.getElementById('profileUsernamePill').classList.add('hidden');
                 }
             }, 1000);
         }
