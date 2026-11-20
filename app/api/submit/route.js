@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+// Настройки
 const supabaseUrl = 'https://asoljhfvsrxmeniwsvel.supabase.co';
 const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
+
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = '424175344';
 
@@ -16,16 +18,10 @@ try {
 const data = await request.formData();
 
 const file = data.get('photo');
-const tag = String(data.get('tag') || '').trim();
-const description = String(
-  data.get('description') || ''
-).slice(0, 250);
+const tag = data.get('tag');
+const description = String(data.get('description') || '').trim();
 
-if (
-  !file ||
-  typeof file.arrayBuffer !== 'function' ||
-  !tag
-) {
+if (!file || typeof file.arrayBuffer !== 'function' || !tag) {
   return NextResponse.json(
     { error: 'Нет файла или тега' },
     { status: 400 }
@@ -36,70 +32,67 @@ if (!supabaseSecretKey || !BOT_TOKEN) {
   throw new Error('Не настроены секретные ключи сервера');
 }
 
-// 1. Загружаем изображение
+// 1. Конвертируем файл
 const bytes = await file.arrayBuffer();
 const buffer = Buffer.from(bytes);
 
-const extension = file.type === 'image/png'
-  ? 'png'
-  : file.type === 'image/webp'
-    ? 'webp'
-    : 'jpg';
-
 const fileName =
-  `${Date.now()}-${Math.floor(Math.random() * 1000)}.${extension}`;
+  ${Date.now()}-${Math.floor(Math.random() * 1000)}.jpg;
 
+// 2. Загружаем изображение в Supabase Storage
 const { error: uploadError } = await supabaseAdmin.storage
   .from('photos')
   .upload(fileName, buffer, {
-    contentType: file.type || 'image/jpeg',
-    cacheControl: '3600'
+    contentType: file.type,
+    cacheControl: '3600',
   });
 
 if (uploadError) {
-  throw new Error('Ошибка Storage: ' + uploadError.message);
+  throw new Error(
+    'Ошибка загрузки в Storage: ' + uploadError.message
+  );
 }
 
-// 2. Получаем публичную ссылку
+// 3. Получаем публичную ссылку
 const { data: urlData } = supabaseAdmin.storage
   .from('photos')
   .getPublicUrl(fileName);
 
 const publicUrl = urlData.publicUrl;
 
-// 3. Сохраняем публикацию вместе с описанием
+// 4. Сохраняем публикацию вместе с описанием
 const { data: dbData, error: dbError } = await supabaseAdmin
   .from('photos')
   .insert([{
     image_url: publicUrl,
-    tag,
-    description,
+    tag: tag,
+    description: description,
     status: 'pending'
   }])
   .select()
   .single();
 
 if (dbError) {
-  throw new Error('Ошибка базы данных: ' + dbError.message);
+  throw new Error(
+    'Ошибка базы данных: ' + dbError.message
+  );
 }
 
-// 4. Отправляем фотографию в Telegram на модерацию
+// 5. Отправляем фото в Telegram на модерацию
 const telegramFormData = new FormData();
 
 telegramFormData.append('chat_id', CHAT_ID);
-telegramFormData.append('photo', file, fileName);
+telegramFormData.append('photo', file);
 
 telegramFormData.append(
   'caption',
- ;
+ жаем изображение в Supabase Storage
+const { error: uploadError } = await supabaseAdmin.sto);
 
-const extension = file.type === 'image/png'
-  ? 'png'
-  : file.type === 'i);
-
-const replyMarkup = {
-  inline_keyboard: [[
-    {
+telegramFormData.append(
+'caption',
+Новая публикация\nТег: ${tag}\nОписание: ${description || 'Нет описания'}
+);
       text: '✅ Опубликовать',
       callback_data: approve_${dbData.id}
     },
@@ -119,7 +112,7 @@ const telegramResponse = await fetch(
   https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto,
   {
     method: 'POST',
-    body: telegramFormData
+    body: telegramFormData,
   }
 );
 
@@ -136,7 +129,7 @@ return NextResponse.json({
   description: dbData.description
 });
 } catch (error) {
-console.error('Server Error:', error);
+console.error('Server Error:', error.message);
 
 return NextResponse.json(
   { error: error.message },
