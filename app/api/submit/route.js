@@ -1,46 +1,42 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Настройки
-const supabaseUrl = 'https://asoljhfvsrxmeniwsvel.supabase.co';
-const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const CHAT_ID = '424175344';
+export const runtime = 'nodejs';
 
-const supabaseAdmin = createClient(
-supabaseUrl,
-supabaseSecretKey || ''
-);
+const SUPABASE_URL = 'https://asoljhfvsrxmeniwsvel.supabase.co';
+const CHAT_ID = '424175344';
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_DESCRIPTION_LENGTH = 250;
 
 export async function POST(request) {
 try {
-// Проверяем настройки сервера
-if (!supabaseSecretKey || !BOT_TOKEN) {
-throw new Error('Не настроены секретные ключи сервера');
+const supabaseSecretKey = process.env.SUPABASE_SECRET_KEY;
+const botToken = process.env.TELEGRAM_BOT_TOKEN;
+
+if (!supabaseSecretKey || !botToken) {
+  return NextResponse.json(
+    {
+      error: 'На сервере не настроены SUPABASE_SECRET_KEY или TELEGRAM_BOT_TOKEN',
+    },
+    { status: 500 }
+  );
 }
 
-// Получаем данные формы
-const data = await request.formData();
+const formData = await request.formData();
+const file = formData.get('photo');
+const tag = String(formData.get('tag') || '').trim();
 
-const file = data.get('photo');
-const tag = String(data.get('tag') || '').trim();
-const description = String(
-  data.get('description') || ''
-).slice(0, 250).trim();
+const description = String(formData.get('description') || '')
+  .trim()
+  .slice(0, MAX_DESCRIPTION_LENGTH);
 
-// Проверяем файл и тег
-if (
-  !file ||
-  typeof file.arrayBuffer !== 'function' ||
-  !tag
-) {
+if (!file || typeof file.arrayBuffer !== 'function' || !tag) {
   return NextResponse.json(
-    { error: 'Нет файла или тега' },
+    { error: 'Необходимо выбрать изображение и указать тег' },
     { status: 400 }
   );
 }
 
-// Проверяем, что загружено изображение
 if (!file.type || !file.type.startsWith('image/')) {
   return NextResponse.json(
     { error: 'Можно загружать только изображения' },
@@ -48,21 +44,40 @@ if (!file.type || !file.type.startsWith('image/')) {
   );
 }
 
-// 1. Конвертируем файл
-const bytes = await file.arrayBuffer();
-const buffer = Buffer.from(bytes);
+if (file.size > MAX_IMAGE_SIZE) {
+  return NextResponse.json(
+    { error: 'Размер изображения не должен превышать 10 МБ' },
+    { status: 400 }
+  );
+}
 
-const extension = file.type === 'image/png'
-  ? 'png'
-  : file.type === 'image/webp'
-    ? 'webp'
-    : 'jpg';
+const supabaseAdmin = createClient(
+  SUPABASE_URL,
+  supabaseSecretKey
+);
 
-const fileName = `${Date.now()}-${Math.floor(
-  Math.random() * 1000
-)}.${extension}`;
+const extensionByMimeType = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+};
 
-// 2. Загружаем изображение в Supabase Storage
+const extension = extensionByMimeType[file.type];
+
+if (!extension) {
+  return NextResponse.json(
+    { error: 'Поддерживаются JPEG, PNG, WEBP и GIF' },
+    { status: 400 }
+  );
+}
+
+const fileName =ption') || '')
+  .trim()
+  .slice(0, MAX_DESCRIPTION_
+const buffer = Buffer.from(await file.arrayBuffer());
+
+// 1. Загружаем изображение в Supabase Storage
 const { error: uploadError } = await supabaseAdmin.storage
   .from('photos')
   .upload(fileName, buffer, {
@@ -73,42 +88,47 @@ const { error: uploadError } = await supabaseAdmin.storage
 
 if (uploadError) {
   throw new Error(
-    'Ошибка загрузки в Storage: ' + uploadError.message
+    Ошибка загрузки в Supabase Storage: ${uploadError.message}
   );
 }
 
-// 3. Получаем публичную ссылку
-const { data: urlData } = supabaseAdmin.storage
+// 2. Получаем публичную ссылку
+const { data: publicUrlData } = supabaseAdmin.storage
   .from('photos')
   .getPublicUrl(fileName);
 
-const publicUrl = urlData.publicUrl;
+const publicUrl = publicUrlData.publicUrl;
 
-// 4. Сохраняем публикацию вместе с описанием
+// 3. Сохраняем публикацию и описание в базе данных
 const { data: dbData, error: dbError } = await supabaseAdmin
   .from('photos')
-  .insert([
-    {
-      image_url: publicUrl,
-      tag: tag,
-      description: description,
-      status: 'pending',
-    },
-  ])
-  .select()
+  .insert({
+    image_url: publicUrl,
+    tag,
+    description,
+    status: 'pending',
+  })
+  .select('id, description')
   .single();
 
 if (dbError) {
   throw new Error(
-    'Ошибка базы данных: ' + dbError.message
-  );
+   ey || !botToken) {
+  return NextResponse.json(
+    {
+    );
 }
 
-// 5. Отправляем фото в Telegram на модерацию
+// 4. Отправляем публикацию в Telegram на модерацию
 const telegramFormData = new FormData();
 
 telegramFormData.append('chat_id', CHAT_ID);
-telegramFormData.append('photo', file);
+
+telegramFormData.append(
+  'photo',
+  file,
+  file.name || photo.${extension}
+);
 
 telegramFormData.append(
   'caption',
@@ -122,7 +142,7 @@ const replyMarkup = {
     [
       {
         text: '✅ Опубликовать',
-        callback_data: `approve_${dbData.id}`,
+        callback_data: approve_${dbData.id},
       },
       {
         text: '❌ Удалить',
@@ -138,7 +158,7 @@ telegramFormData.append(
 );
 
 const telegramResponse = await fetch(
-  https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto,
+  https://api.telegram.org/bot${botToken}/sendPhoto,
   {
     method: 'POST',
     body: telegramFormData,
@@ -147,22 +167,33 @@ const telegramResponse = await fetch(
 
 const telegramResult = await telegramResponse.json();
 
-if (!telegramResult.ok) {
-  console.error('Telegram Error:', telegramResult);
+if (!telegramResponse.ok || !telegramResult.ok) {
+  console.error(
+    'Telegram sendPhoto error:',
+    telegramResult
+  );
 }
 
-// 6. Возвращаем результат
+// 5. Возвращаем результат
 return NextResponse.json({
   success: true,
-  url: publicUrl,
   id: dbData.id,
+  url: publicUrl,
   description: dbData.description,
+  telegramSent: Boolean(
+    telegramResponse.ok && telegramResult.ok
+  ),
 });
 } catch (error) {
-console.error('Server Error:', error);
+console.error('Submit API error:', error);
 
 return NextResponse.json(
-  { error: error.message || 'Внутренняя ошибка сервера' },
+  {
+    error:
+      error instanceof Error
+        ? error.message
+        : 'Внутренняя ошибка сервера',
+  },
   { status: 500 }
 );
 }
