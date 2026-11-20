@@ -243,7 +243,7 @@
         .btn-fav-tags-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
         .btn-fav-tags-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: var(--icon-color); fill: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-        .post-description { background: var(--fill-2); border-radius: 14px; padding: 16px; font-size: 15px; line-height: 1.5; color: var(--text-color); margin-bottom: 16px; flex-shrink: 0; }
+        .post-description { background: var(--fill-2); border-radius: 14px; padding: 16px; font-size: 15px; line-height: 1.5; color: var(--text-color); margin-bottom: 16px; flex-shrink: 0; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; unicode-bidi: plaintext; }
         .add-comment-box { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; flex-shrink: 0; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
         .reply-indicator { display: none; background: var(--fill-1); padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 8px; color: var(--secondary-text); align-items: center; justify-content: space-between; }
         .reply-indicator.active { display: flex; }
@@ -279,8 +279,9 @@
         .profile-handle { color:var(--secondary-text); font-size:13px; margin-top:4px; overflow-wrap:anywhere; }
         .profile-bio { color:var(--text-color); font-size:14px; line-height:1.4; margin:12px 0 16px; white-space:pre-wrap; overflow-wrap:anywhere; }
         .profile-tools { position:absolute; top:0; right:0; display:flex; flex-direction:column; gap:8px; }
-        .profile-tool-btn { width:38px; height:38px; border-radius:50%; border:1px solid var(--border); background:var(--btn-bg); color:var(--text-color); display:flex; align-items:center; justify-content:center; }
-        .profile-tool-btn svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; }
+        .profile-tool-btn, .profile-tag-edit, .profile-tag-delete, .profile-avatar-remove { box-sizing:border-box; padding:0; display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:0; }
+        .profile-tool-btn { width:38px; height:38px; border-radius:50%; border:1px solid var(--border); background:var(--btn-bg); color:var(--text-color); }
+        .profile-tool-btn svg, .profile-tag-edit svg { width:18px; height:18px; display:block; flex:none; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
         .profile-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:14px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
         .profile-stat { text-align:center; min-width:0; }
         .profile-stat strong { display:block; font-size:18px; color:var(--text-color); font-weight:700; font-variant-numeric:tabular-nums; }
@@ -304,9 +305,9 @@
         .profile-edit-actions button,.profile-password-form button { flex:1; padding:12px; border:0; border-radius:12px; background:var(--text-color); color:var(--bg-color); font-weight:650; }
         .profile-tag-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:0 0 7px; }
         .profile-tag-chip { border:0; cursor:pointer; display:inline-flex; padding:7px 10px; border-radius:999px; background:var(--fill-1); color:var(--text-color); font-size:12px; }
-        .profile-tag-edit, .profile-tag-delete { width:30px; height:30px; border:1px solid var(--border); border-radius:50%; background:var(--btn-bg); color:var(--text-color); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; font-size:15px; }
+        .profile-tag-edit, .profile-tag-delete { width:30px; height:30px; border:1px solid var(--border); border-radius:50%; background:var(--btn-bg); color:var(--text-color); cursor:pointer; font-size:15px; }
         .profile-avatar-wrap { position:relative; }
-        .profile-avatar-remove { position:absolute; right:-5px; bottom:-5px; width:27px; height:27px; border:1px solid var(--border); border-radius:50%; background:var(--modal-bg); color:var(--text-color); font-size:19px; line-height:1; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.18); }
+        .profile-avatar-remove { position:absolute; right:-5px; bottom:-5px; width:27px; height:27px; border:1px solid var(--border); border-radius:50%; background:var(--modal-bg); color:var(--text-color); font-size:19px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.18); }
         .profile-password-form { display:flex; flex-direction:column; gap:9px; padding:8px 0; }
         .profile-following { opacity:.55; }
 
@@ -403,7 +404,7 @@
         <div class="profile-search-float" onclick="event.stopPropagation()">
             <div class="profile-search-input-wrap">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-                <input id="profileSearchInput" class="profile-search-input" type="search" placeholder="Поиск профиля" autocomplete="off" oninput="searchProfiles(this.value)" onkeydown="if(event.key==='Escape'){this.value='';searchProfiles('');this.blur();}">
+                <input id="profileSearchInput" class="profile-search-input" type="search" placeholder="Поиск" autocomplete="off" oninput="searchProfiles(this.value)" onkeydown="if(event.key==='Escape'){this.value='';searchProfiles('');this.blur();}">
             </div>
             <div id="profileSearchResults" class="profile-search-results"></div>
         </div>
@@ -428,9 +429,9 @@
                 </div>
                 
                 <div class="desc-wrapper">
-                    <textarea id="descInput" class="desc-area" placeholder="Добавьте описание (необязательно)" maxlength="250"></textarea>
+                    <textarea id="descInput" class="desc-area" maxlength="250" placeholder="Добавьте описание (необязательно)" spellcheck="true"></textarea>
                     <div class="desc-footer">
-                        <div class="desc-count" id="descCount">250</div>
+                        <div class="desc-count" id="descCount">0 символов</div>
                     </div>
                 </div>
 
@@ -467,16 +468,16 @@
             <div class="modal-drag-area"><div class="modal-title">Описание</div></div>
             <div class="modal-body">
                 <div id="commentModalBody">
+                    <div class="post-description" id="commentPostDesc" style="display:none;"></div>
+
                     <div class="add-comment-box">
                         <div class="reply-indicator" id="replyIndicator">
                             Ответ <span id="replyToName"></span>...
                             <button class="cancel-reply" onclick="cancelReply()">×</button>
                         </div>
-                        <textarea class="add-comment-input" id="newCommentInput" placeholder="Написать комментарий..." rows="2"></textarea>
+                        <textarea class="add-comment-input" id="newCommentInput" maxlength="250" placeholder="Написать комментарий..." rows="2"></textarea>
                         <button class="add-comment-btn" onclick="submitComment()">Отправить</button>
                     </div>
-
-                    <div class="post-description" id="commentPostDesc" style="display:none;"></div>
 
                     <div class="comments-list" id="commentsList"></div>
                 </div>
@@ -593,7 +594,7 @@ function checkAuth() {
                 : `<div class="profile-avatar-placeholder">${escapeHtml((displayName[0] || 'П').toUpperCase())}</div>`;
             const tagsMarkup = activeProfileTags.map(t => {
                 const encoded = encodeURIComponent(String(t));
-                return `<div class="profile-tag-row"><button type="button" class="profile-tag-chip" onclick="openProfileTagSearch(decodeURIComponent('${encoded}'))">${escapeHtml(normalizeSearchTag(t))}</button>${isOwner ? `<button type="button" class="profile-tag-edit" title="Изменить тег" aria-label="Изменить тег" onclick="event.stopPropagation();editProfileTag(decodeURIComponent('${encoded}'))">✎</button><button type="button" class="profile-tag-delete" title="Удалить тег" aria-label="Удалить тег" onclick="event.stopPropagation();deleteProfileTag(decodeURIComponent('${encoded}'))">×</button>` : ''}</div>`;
+                return `<div class="profile-tag-row"><button type="button" class="profile-tag-chip" onclick="openProfileTagSearch(decodeURIComponent('${encoded}'))">${escapeHtml(normalizeSearchTag(t))}</button>${isOwner ? `<button type="button" class="profile-tag-edit" title="Изменить тег" aria-label="Изменить тег" onclick="event.stopPropagation();editProfileTag(decodeURIComponent('${encoded}'))"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></button><button type="button" class="profile-tag-delete" title="Удалить тег" aria-label="Удалить тег" onclick="event.stopPropagation();deleteProfileTag(decodeURIComponent('${encoded}'))">×</button>` : ''}</div>`;
             }).join('');
             const ownTagButton = isOwner
                 ? `<button class="profile-action secondary" onclick="addProfileTags()">Теги</button>`
@@ -950,7 +951,7 @@ function checkAuth() {
                                     <div class="tag-wrapper"><span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span></div>
                                 </div>
                                 <div class="info-middle">
-                                    <button class="comment-btn" onclick="openComments('${post.id}', '${post.description || ''}')" aria-label="Комментарии"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+                                    <button class="comment-btn" onclick="openComments('${post.id}')"" aria-label="Комментарии"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
                                 </div>
                                 <div class="info-right">
                                     <span class="post-date">${dateStr}</span>
@@ -1297,19 +1298,22 @@ function checkAuth() {
             });
         }
 
-        async function openComments(photoId, description) {
+        async function openComments(photoId) {
             if (navigator.vibrate) navigator.vibrate(20);
             currentCommentPhotoId = photoId;
             replyToId = null;
             editingCommentId = null;
             document.getElementById('newCommentInput').value = '';
             document.getElementById('replyIndicator').classList.remove('active');
-            
+
+            const post = allPostsData.find(item => String(item.id) === String(photoId));
+            const description = post && post.description != null ? String(post.description) : '';
             const descBlock = document.getElementById('commentPostDesc');
-            if (description && description.trim().length > 0 && description !== 'null') {
+            if (description.length > 0 && description !== 'null') {
                 descBlock.textContent = description;
                 descBlock.style.display = 'block';
             } else {
+                descBlock.textContent = '';
                 descBlock.style.display = 'none';
             }
 
@@ -1477,15 +1481,14 @@ function checkAuth() {
         }
 
         document.getElementById('descInput').addEventListener('input', function() {
-            const count = 250 - this.value.length;
             const el = document.getElementById('descCount');
-            el.textContent = count;
-            el.className = 'desc-count' + (count < 20 ? ' near' : '') + (count === 0 ? ' full' : '');
+            el.textContent = `${Array.from(this.value).length} символов`;
+            el.className = 'desc-count';
         });
 
         async function submitPhoto() {
             const tagInput = document.getElementById('tagInput').value;
-            const descInput = document.getElementById('descInput').value.trim();
+            const descInput = document.getElementById('descInput').value;
             if (!currentFileToUpload) { alert("Выберите файл!"); return; }
             if (tagInput === '@') { alert("Введите тег!"); return; }
             if (/[а-яА-ЯёЁ]/.test(tagInput)) { alert("Тег должен содержать только латиницу!"); return; }
@@ -1493,7 +1496,7 @@ function checkAuth() {
             const formData = new FormData();
             formData.append('photo', currentFileToUpload);
             formData.append('tag', tagInput);
-            if (descInput) formData.append('description', descInput);
+            formData.append('description', descInput);
 
             const btn = document.querySelector('.btn-submit');
             btn.innerText = 'Отправка...'; btn.disabled = true;
@@ -1507,7 +1510,7 @@ function checkAuth() {
                     document.getElementById('uploadIcon').style.display = 'flex';
                     document.getElementById('replaceFileBtn').style.display = 'none';
                     document.getElementById('descInput').value = '';
-                    document.getElementById('descCount').textContent = '250';
+                    document.getElementById('descCount').textContent = '0 символов';
                     currentFileToUpload = null;
                     closeModal({target: submitModal}, 'submitModal');
                 } else {
