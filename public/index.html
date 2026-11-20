@@ -182,7 +182,13 @@
 
         #submitModal .modal-content { height: 85vh; }
         #submitModal .modal-body { gap: 12px; justify-content: flex-start; padding-bottom: 20px; }
-        #commentsModal .modal-body { justify-content:flex-start; padding-bottom:20px; }
+        #commentsModal .modal-body { justify-content:flex-start; padding:0 20px 12px; overflow:hidden; min-height:0; }
+        #commentsModal #commentModalBody { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; height:100%; gap:0; }
+        #commentsModal #commentPostDesc { order:0; flex:0 0 auto; max-height:20vh; overflow-y:auto; margin:0 0 10px; }
+        #commentsModal #commentsList { order:1; flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; padding:2px 2px 12px 0; }
+        #commentsModal .add-comment-box { order:2; flex:0 0 auto; margin:10px 0 0; padding:10px 0 0; border-bottom:0; border-top:1px solid var(--border); background:var(--modal-bg); }
+        #commentsModal .add-comment-input { max-height:110px; min-height:54px; }
+        #commentsModal .add-comment-btn { flex:0 0 auto; }
         
         .file-upload-wrapper { position: relative; width: 100%; flex: 1; min-height: 150px; border: 2px dashed var(--border); border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--fill-3); cursor: pointer; overflow: hidden; margin-bottom: 0; }
         .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
@@ -1317,8 +1323,10 @@ function checkAuth() {
                 descBlock.style.display = 'none';
             }
 
-            await loadComments(photoId);
+            const commentsList = document.getElementById('commentsList');
+            commentsList.innerHTML = '<div style="text-align:center;padding:20px;color:var(--secondary-text);">Загрузка...</div>';
             openModal('commentsModal');
+            loadComments(photoId);
         }
 
         async function loadComments(photoId) {
@@ -1330,7 +1338,11 @@ function checkAuth() {
                 .eq('photo_id', photoId)
                 .order('created_at', { ascending: false });
 
-            if (error) { console.error(error); return; }
+            if (error) {
+                console.error('Ошибка загрузки комментариев:', error);
+                list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--secondary-text);">Не удалось загрузить комментарии</div>';
+                return;
+            }
 
             const commentUserIds = [...new Set((data || []).map(c => c.user_id).filter(Boolean))];
             let commentAvatars = {};
