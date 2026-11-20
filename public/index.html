@@ -107,7 +107,7 @@
         .bottom-controls.shrunk .btn-add { transform: scale(0.85); }
 
         .profile-floating { position: fixed; left: max(12px, calc((100vw - 500px) / 2 + 7px)); right: auto; bottom: 37px; width: 50px; height: 50px; z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 1; visibility: visible; pointer-events: auto; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 4px 10px var(--btn-shadow); transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.4s ease, visibility 0s linear 0s; }
-        .profile-floating svg { width: 24px; height: 24px; stroke: none; stroke-width: 0; fill: #000; color: #000; opacity: 1; transition: transform var(--smooth-duration) var(--smooth-ease); }
+        .profile-floating svg { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); display:block; width:24px; height:24px; stroke:var(--icon-color); stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; fill:none; color:var(--icon-color); opacity:1; transition:transform var(--smooth-duration) var(--smooth-ease); pointer-events:none; }
         .profile-floating:active { transform: scale(.85); }
         .profile-floating.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px) scale(.8); transition: transform .2s var(--smooth-ease), opacity .2s var(--smooth-ease), visibility 0s linear .2s; }
         .profile-floating.shrunk { transform: scale(.88); }
@@ -133,8 +133,12 @@
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.2); display: none; justify-content: center; align-items: flex-end; z-index: 200; opacity: 0; transition: opacity 0.4s ease; overscroll-behavior: contain; }
         .modal-overlay.active { display: flex; opacity: 1; }
         #profileModal { z-index: 220; }
+        #searchModal { z-index: 230; }
+        .modal-overlay, .modal-content, .modal-body { overscroll-behavior: contain; }
+        .modal-content { touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+        .modal-body { touch-action: pan-y; }
         #profileModal .modal-content { z-index: 221; }
-        .profile-search-float { position:absolute; z-index:223; left:50%; bottom:calc(60vh + 12px); transform:translate(-50%, 12px); width:calc(100% - 28px); max-width:460px; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s var(--smooth-ease), transform .45s var(--smooth-ease), visibility 0s linear .35s; }
+        .profile-search-float { position:absolute; z-index:223; left:50%; bottom:calc(70vh + 12px); transform:translate(-50%, 12px); width:calc(100% - 28px); max-width:460px; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s var(--smooth-ease), transform .45s var(--smooth-ease), visibility 0s linear .35s; }
         #profileModal.active .profile-search-float { opacity:1; visibility:visible; pointer-events:auto; transform:translate(-50%, 0); transition-delay:0s; }
         .profile-search-input-wrap { display:flex; align-items:center; gap:9px; padding:11px 15px; border:1px solid var(--border); border-radius:18px; background:var(--modal-bg); box-shadow:0 8px 28px rgba(0,0,0,.16); }
         .profile-search-input-wrap svg { width:19px; height:19px; flex-shrink:0; stroke:var(--secondary-text); fill:none; stroke-width:2; }
@@ -147,8 +151,8 @@
         .profile-search-result small { display:block; color:var(--secondary-text); font-size:12px; margin-top:2px; }
         .profile-search-avatar { width:34px; height:34px; border-radius:50%; object-fit:cover; background:var(--fill-1); flex-shrink:0; }
         @keyframes profileSearchIn { from {opacity:0; transform:translateY(-5px) scale(.98)} to {opacity:1; transform:translateY(0) scale(1)} }
-        @media (max-height:650px) { .profile-search-float { bottom:calc(60vh + 8px); } }
-        .modal-content { background: var(--modal-bg); border-top: 1px solid var(--border); width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; height: 60vh; display: flex; flex-direction: column; transform: translateY(100%); opacity: 0; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; box-shadow: 0 -10px 40px rgba(0,0,0,0.15); position: relative; z-index: 201; overflow: hidden; }
+        @media (max-height:650px) { .profile-search-float { bottom:calc(70vh + 8px); } }
+        .modal-content { background: var(--modal-bg); border-top: 1px solid var(--border); width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; height: 70vh; display: flex; flex-direction: column; transform: translateY(100%); opacity: 0; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; box-shadow: 0 -10px 40px rgba(0,0,0,0.15); position: relative; z-index: 201; overflow: hidden; }
         .modal-overlay.active .modal-content { transform: translateY(0); opacity: 1; }
         .modal-drag-area { padding: 30px 20px 15px; flex-shrink: 0; cursor: grab; position: relative; touch-action: none; display: flex; align-items: center; justify-content: center; }
         .modal-content::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: var(--fill-1); border-radius: 2px; }
@@ -178,6 +182,7 @@
 
         #submitModal .modal-content { height: 85vh; }
         #submitModal .modal-body { gap: 12px; justify-content: flex-start; padding-bottom: 20px; }
+        #commentsModal .modal-body { justify-content:flex-start; padding-bottom:20px; }
         
         .file-upload-wrapper { position: relative; width: 100%; flex: 1; min-height: 150px; border: 2px dashed var(--border); border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--fill-3); cursor: pointer; overflow: hidden; margin-bottom: 0; }
         .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
@@ -214,7 +219,12 @@
         .tag-name { font-weight: 500; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-color); }
         .tag-count { font-size: 13px; color: var(--secondary-text); font-weight: 400; }
         .tag-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; margin-left: 10px; }
-        .tag-profile-btn { width:40px; height:40px; border-radius:50%; border:1px solid var(--border); background:var(--btn-bg); box-shadow:0 2px 5px var(--btn-shadow); display:flex; align-items:center; justify-content:center; color:var(--text-color); font:600 17px var(--font-main); cursor:pointer; flex-shrink:0; }
+        .tag-profile-btn { width:40px; height:40px; min-width:40px; padding:0; position:relative; border-radius:50%; border:1px solid var(--border); background:var(--btn-bg); box-shadow:0 2px 5px var(--btn-shadow); display:flex; align-items:center; justify-content:center; color:var(--icon-color); cursor:pointer; flex-shrink:0; line-height:0; }
+        .tag-profile-btn svg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:block; width:20px; height:20px; fill:transparent !important; stroke:var(--icon-color); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; pointer-events:none; }
+        .comment-author-wrap { display:inline-flex; align-items:center; gap:6px; min-width:0; flex:none; vertical-align:middle; }
+        .comment-header .comment-author-avatar, .comment-header .comment-author-avatar-placeholder { display:inline-flex; align-self:center; }
+        .comment-author-avatar { width:24px; height:24px; border-radius:50%; object-fit:cover; flex:none; background:var(--fill-1); border:1px solid var(--border); }
+        .comment-author-avatar-placeholder { width:24px; height:24px; border-radius:50%; flex:none; display:inline-flex; align-items:center; justify-content:center; background:var(--fill-1); color:var(--secondary-text); font-size:11px; font-weight:600; }
 
         .author-grid, .likes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding-bottom: 20px; width: 100%; }
         .grid-item { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 8px; cursor: pointer; background: var(--fill-1); transition: opacity 0.2s; }
@@ -245,9 +255,9 @@
         
         .comments-list { display: flex; flex-direction: column; gap: 12px; }
         .comment-item { background: var(--fill-2); border-radius: 12px; padding: 12px 16px; position: relative; }
-        .comment-header { display: flex; align-items: flex-start; gap: 4px; font-size: 14px; line-height: 1.4; margin-bottom: 4px; flex-wrap: wrap; padding-right: 60px; }
+        .comment-header { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; font-size: 14px; line-height: 1.4; margin-bottom: 4px; padding-right: 60px; }
         .comment-author { color: var(--secondary-text); font-weight: 500; white-space: nowrap; }
-        .comment-text { color: var(--text-color); word-break: break-word; }
+        .comment-text { display: block; width: 100%; color: var(--text-color); word-break: break-word; }
         .comment-date { font-size: 12px; color: var(--secondary-text); text-align: right; display: block; margin-top: 4px; }
         .comment-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; opacity: 0.6; }
         .comment-act-btn { background: none; border: none; cursor: pointer; color: var(--secondary-text); font-size: 12px; padding: 4px; font-weight: 600; }
@@ -292,7 +302,11 @@
         .profile-edit-form textarea { min-height:86px; resize:vertical; }
         .profile-edit-actions { display:flex; gap:8px; }
         .profile-edit-actions button,.profile-password-form button { flex:1; padding:12px; border:0; border-radius:12px; background:var(--text-color); color:var(--bg-color); font-weight:650; }
-        .profile-tag-chip { border:0; cursor:pointer; display:inline-flex; padding:7px 10px; margin:0 6px 6px 0; border-radius:999px; background:var(--fill-1); color:var(--text-color); font-size:12px; }
+        .profile-tag-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:0 0 7px; }
+        .profile-tag-chip { border:0; cursor:pointer; display:inline-flex; padding:7px 10px; border-radius:999px; background:var(--fill-1); color:var(--text-color); font-size:12px; }
+        .profile-tag-edit, .profile-tag-delete { width:30px; height:30px; border:1px solid var(--border); border-radius:50%; background:var(--btn-bg); color:var(--text-color); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; font-size:15px; }
+        .profile-avatar-wrap { position:relative; }
+        .profile-avatar-remove { position:absolute; right:-5px; bottom:-5px; width:27px; height:27px; border:1px solid var(--border); border-radius:50%; background:var(--modal-bg); color:var(--text-color); font-size:19px; line-height:1; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.18); }
         .profile-password-form { display:flex; flex-direction:column; gap:9px; padding:8px 0; }
         .profile-following { opacity:.55; }
 
@@ -334,7 +348,7 @@
     </div>
 
     <button class="liquid-glass profile-floating hidden" id="profileFloatingBtn" onclick="handleProfileClick()" aria-label="Профиль пользователя">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><text x="12" y="17" text-anchor="middle" font-size="18" font-weight="700" font-family="Arial, sans-serif" fill="#000">@</text></svg>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 14.8 8.5l6.3.9-4.55 4.43 1.08 6.27L12 17.15l-5.63 2.95 1.08-6.27L2.9 9.4l6.3-.9L12 2.8Z"/></svg>
     </button>
 
     <button class="btn-pulse-down hidden" id="btnPulseDown">
@@ -389,7 +403,7 @@
         <div class="profile-search-float" onclick="event.stopPropagation()">
             <div class="profile-search-input-wrap">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path></svg>
-                <input id="profileSearchInput" class="profile-search-input" type="search" placeholder="Поиск" autocomplete="off" oninput="searchProfiles(this.value)" onkeydown="if(event.key==='Escape'){this.value='';searchProfiles('');this.blur();}">
+                <input id="profileSearchInput" class="profile-search-input" type="search" placeholder="Поиск профиля" autocomplete="off" oninput="searchProfiles(this.value)" onkeydown="if(event.key==='Escape'){this.value='';searchProfiles('');this.blur();}">
             </div>
             <div id="profileSearchResults" class="profile-search-results"></div>
         </div>
@@ -450,7 +464,7 @@
 
     <div class="modal-overlay" id="commentsModal" onclick="closeModal(event, 'commentsModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-drag-area"><div class="modal-title">Комментарии</div></div>
+            <div class="modal-drag-area"><div class="modal-title">Описание</div></div>
             <div class="modal-body">
                 <div id="commentModalBody">
                     <div class="add-comment-box">
@@ -577,7 +591,10 @@ function checkAuth() {
             const avatar = profile.avatar_url
                 ? `<img class="profile-avatar" src="${escapeHtml(profile.avatar_url)}" alt="Аватар">`
                 : `<div class="profile-avatar-placeholder">${escapeHtml((displayName[0] || 'П').toUpperCase())}</div>`;
-            const tagsMarkup = activeProfileTags.map(t => `<button type="button" class="profile-tag-chip" onclick="openProfileTagSearch(decodeURIComponent('${encodeURIComponent(String(t).replace(/^#/, '@'))}'))">@${escapeHtml(String(t).replace(/^[@#]/, ''))}</button>`).join('');
+            const tagsMarkup = activeProfileTags.map(t => {
+                const encoded = encodeURIComponent(String(t));
+                return `<div class="profile-tag-row"><button type="button" class="profile-tag-chip" onclick="openProfileTagSearch(decodeURIComponent('${encoded}'))">${escapeHtml(normalizeSearchTag(t))}</button>${isOwner ? `<button type="button" class="profile-tag-edit" title="Изменить тег" aria-label="Изменить тег" onclick="event.stopPropagation();editProfileTag(decodeURIComponent('${encoded}'))">✎</button><button type="button" class="profile-tag-delete" title="Удалить тег" aria-label="Удалить тег" onclick="event.stopPropagation();deleteProfileTag(decodeURIComponent('${encoded}'))">×</button>` : ''}</div>`;
+            }).join('');
             const ownTagButton = isOwner
                 ? `<button class="profile-action secondary" onclick="addProfileTags()">Теги</button>`
                 : '';
@@ -585,7 +602,7 @@ function checkAuth() {
             body.innerHTML = `
                 <div class="profile-screen">
                     <div class="profile-top">
-                        <div class="profile-avatar-wrap">${avatar}</div>
+                        <div class="profile-avatar-wrap">${avatar}${isOwner && profile.avatar_url ? `<button type="button" class="profile-avatar-remove" title="Удалить аватар" aria-label="Удалить аватар" onclick="event.stopPropagation();removeProfileAvatar()">×</button>` : ''}</div>
                         <div class="profile-identity">
                             <div class="profile-display-name">${escapeHtml(displayName)}</div>
                             <div class="profile-handle">@${escapeHtml(String(profile.username || '').replace(/^@/, ''))}</div>
@@ -625,10 +642,12 @@ function checkAuth() {
             if (!normalizedTag) return;
             const profileModal = document.getElementById('profileModal');
             closeModal({ target: profileModal }, 'profileModal');
+            const searchModal = document.getElementById('searchModal');
+            if (searchModal) searchModal.style.zIndex = '230';
             setTimeout(() => {
                 openSearchModal();
                 showTagPhotos(normalizedTag);
-            }, 420);
+            }, 430);
         }
 
         let profileSearchRequest = 0;
@@ -715,6 +734,53 @@ function checkAuth() {
                 { onConflict: 'user_id,tag', ignoreDuplicates: true }
             );
             if (error) { alert('Не удалось сохранить теги: ' + error.message); return; }
+            await openUserProfile(currentUser.id);
+        }
+
+        async function editProfileTag(oldTag) {
+            if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
+            const input = prompt('Изменить тег:', normalizeSearchTag(oldTag));
+            if (input === null) return;
+            const newTag = normalizeSearchTag(input);
+            if (!newTag) { alert('Укажите тег.'); return; }
+            if (newTag === oldTag) return;
+            const { error } = await supabaseClient.from('profile_tags').update({ tag: newTag })
+                .eq('user_id', currentUser.id).eq('tag', oldTag);
+            if (error) { alert('Не удалось изменить тег: ' + error.message); return; }
+            if (tagProfileOwners[oldTag] === currentUser.id) delete tagProfileOwners[oldTag];
+            tagProfileOwners[newTag] = currentUser.id;
+            await openUserProfile(currentUser.id);
+        }
+
+        async function deleteProfileTag(tag) {
+            if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
+            if (!confirm(`Удалить тег ${normalizeSearchTag(tag)} из профиля?`)) return;
+            const { error } = await supabaseClient.from('profile_tags').delete()
+                .eq('user_id', currentUser.id).eq('tag', tag);
+            if (error) { alert('Не удалось удалить тег: ' + error.message); return; }
+            if (tagProfileOwners[tag] === currentUser.id) delete tagProfileOwners[tag];
+            await openUserProfile(currentUser.id);
+        }
+
+        async function removeProfileAvatar() {
+            if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
+            if (!confirm('Удалить аватар профиля?')) return;
+            const oldUrl = document.querySelector('#profileModalBody .profile-avatar')?.src || currentUser.avatar_url || '';
+            const { error } = await supabaseClient.from('user_profiles').upsert(
+                { user_id: currentUser.id, avatar_url: null }, { onConflict: 'user_id' }
+            );
+            if (error) { alert('Не удалось удалить аватар: ' + error.message); return; }
+            // Удаление файла из Storage необязательно для снятия аватара; пробуем очистить его, если URL принадлежит bucket avatars.
+            try {
+                const marker = '/storage/v1/object/public/avatars/';
+                const at = oldUrl.indexOf(marker);
+                if (at >= 0) {
+                    const path = decodeURIComponent(oldUrl.slice(at + marker.length).split('?')[0]);
+                    if (path) await supabaseClient.storage.from('avatars').remove([path]);
+                }
+            } catch (storageError) { console.warn('Avatar storage cleanup failed:', storageError); }
+            currentUser = { ...currentUser, avatar_url: null };
+            localStorage.setItem('cult_user', JSON.stringify(currentUser));
             await openUserProfile(currentUser.id);
         }
 
@@ -1261,6 +1327,16 @@ function checkAuth() {
                 .order('created_at', { ascending: false });
 
             if (error) { console.error(error); return; }
+
+            const commentUserIds = [...new Set((data || []).map(c => c.user_id).filter(Boolean))];
+            let commentAvatars = {};
+            if (commentUserIds.length) {
+                const { data: profileRows, error: avatarError } = await supabaseClient
+                    .from('user_profiles').select('user_id, avatar_url').in('user_id', commentUserIds);
+                if (!avatarError) {
+                    commentAvatars = Object.fromEntries((profileRows || []).map(row => [String(row.user_id), row.avatar_url]));
+                }
+            }
             list.innerHTML = '';
             
             if (!data || data.length === 0) {
@@ -1292,11 +1368,17 @@ function checkAuth() {
                     repliesHTML = `<div class="comment-replies">${replies.map(r => renderComment(r, false)).join('')}</div>`;
                 }
 
+                const authorName = c.users?.username || 'unknown';
+                const authorAvatar = commentAvatars[String(c.user_id)];
+                const avatarMarkup = authorAvatar
+                    ? `<img class="comment-author-avatar" src="${escapeHtml(authorAvatar)}" alt="Аватар ${escapeHtml(authorName)}" loading="lazy">`
+                    : `<span class="comment-author-avatar-placeholder" aria-hidden="true">${escapeHtml((authorName[0] || '?').toUpperCase())}</span>`;
+
                 return `
                     <div class="comment-item" id="comment-${c.id}">
                         ${actionButtons}
                         <div class="comment-header">
-                            <span class="comment-author" style="cursor:pointer;" onclick="openUserProfile('${c.user_id}')">@${c.users?.username || 'unknown'}</span>
+                            <span class="comment-author-wrap" style="cursor:pointer;" onclick="openUserProfile('${c.user_id}')">${avatarMarkup}<span class="comment-author">@${escapeHtml(authorName)}</span></span>
                             <span class="comment-text" id="comment-text-${c.id}">${c.text}</span>
                         </div>
                         <span class="comment-date">${dateStr}</span>
@@ -1438,6 +1520,7 @@ function checkAuth() {
         }
 
         function openModal(id) {
+            try { tg.disableVerticalSwipes(); } catch (_) {}
             clearTimeout(controlsRevealTimer);
             clearTimeout(scrollTimeout);     
             clearTimeout(hideArrowTimeout);  
@@ -1487,6 +1570,9 @@ function checkAuth() {
         let touchStartY = 0;
         let currentTouchModal = null;
         document.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.modal-overlay')) {
+                try { tg.disableVerticalSwipes(); } catch (_) {}
+            }
             const dragArea = e.target.closest('.modal-drag-area');
             if (dragArea) {
                 currentTouchModal = dragArea.closest('.modal-content');
@@ -1566,7 +1652,7 @@ function checkAuth() {
                             <button class="action-btn profile-btn" onclick="event.stopPropagation(); openTelegramLink('${tag}')">
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.2 18.4 19c-.24 1.05-.86 1.31-1.74.82l-4.8-3.54-2.32 2.23c-.26.26-.48.48-.98.48l.35-4.9 8.92-8.06c.39-.35-.08-.54-.6-.19L6.2 12.8l-4.66-1.46c-1.01-.32-1.03-1.01.21-1.5L20 3.1c.84-.31 1.58.2 1.6 1.1Z" fill="#000000" stroke="none"/></svg>
                             </button>
-                            ${tagProfileOwners[tag] ? `<button class="tag-profile-btn" aria-label="Открыть профиль" title="Профиль" onclick="event.stopPropagation(); openUserProfile('${tagProfileOwners[tag]}')">@</button>` : ''}
+                            ${tagProfileOwners[tag] ? `<button class="tag-profile-btn" aria-label="Открыть профиль" title="Профиль" onclick="event.stopPropagation(); openUserProfile('${tagProfileOwners[tag]}')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.8 5.7 6.3.9-4.55 4.43 1.08 6.27L12 17.15l-5.63 2.95 1.08-6.27L2.9 9.4l6.3-.9L12 2.8Z"/></svg></button>` : ''}
                         </div>
                     </div>
                 `;
