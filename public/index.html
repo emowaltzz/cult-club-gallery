@@ -11,13 +11,28 @@
             --bg-color: #ffffff;
             --text-color: #000000;
             --secondary-text: #888888;
+            --border: rgba(0, 0, 0, 0.1);
+            --fill-1: rgba(0, 0, 0, 0.05);
+            --fill-2: rgba(0, 0, 0, 0.03);
+            --fill-3: rgba(0, 0, 0, 0.015);
+            --btn-bg: rgba(255, 255, 255, 0.7);
+            --btn-shadow: rgba(0, 0, 0, 0.1);
+            --icon-color: #000000;
+            --icon-muted: rgba(0, 0, 0, 0.4);
+            --mask-bg: rgba(255, 255, 255, 0.01);
+            --modal-bg: rgba(255, 255, 255, 0.98);
             --smooth-ease: cubic-bezier(0.25, 1, 0.5, 1);
             --smooth-duration: 0.6s;
-            --like-color: #000000; /* Сердечки черные */
+            --like-color: #000000;
             --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
             --skeleton-bg: #e0e0e0;
             --skeleton-shimmer: #f5f5f5;
+            --red: #ff3b30;
+            --orange: #ff9f0a;
+            --yellow: #ffd23f;
+            --green: #34d17a;
         }
+
 
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -26,296 +41,234 @@
             background-color: var(--bg-color); color: var(--text-color);
             overflow: hidden; position: fixed; width: 100%; height: 100%;
             user-select: none; -webkit-font-smoothing: antialiased; overscroll-behavior: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .blur-mask-top {
-            position: fixed; top: 0; left: 0; right: 0; height: 180px; z-index: 150;
-            pointer-events: none; background: rgba(255, 255, 255, 0.01); 
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            -webkit-mask-image: linear-gradient(to bottom, black 10%, transparent 90%);
-            mask-image: linear-gradient(to bottom, black 10%, transparent 90%);
-            transform: translateZ(0); will-change: backdrop-filter;
-        }
-        .blur-mask-bottom {
-            position: fixed; bottom: 0; left: 0; right: 0; height: 200px; z-index: 90;
-            pointer-events: none; background: rgba(255, 255, 255, 0.01);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            -webkit-mask-image: linear-gradient(to top, black 10%, transparent 90%);
-            mask-image: linear-gradient(to top, black 10%, transparent 90%);
-            transform: translateZ(0); will-change: backdrop-filter;
-        }
+        .blur-mask-top { position: fixed; top: 0; left: 0; right: 0; height: 180px; z-index: 150; pointer-events: none; background: var(--mask-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); -webkit-mask-image: linear-gradient(to bottom, black 10%, transparent 90%); mask-image: linear-gradient(to bottom, black 10%, transparent 90%); transform: translateZ(0); will-change: backdrop-filter; }
+        .blur-mask-bottom { position: fixed; bottom: 0; left: 0; right: 0; height: 200px; z-index: 90; pointer-events: none; background: var(--mask-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); -webkit-mask-image: linear-gradient(to top, black 10%, transparent 90%); mask-image: linear-gradient(to top, black 10%, transparent 90%); transform: translateZ(0); will-change: backdrop-filter; }
 
-        .floating-logo {
-            position: fixed; top: 15px; left: 50%; transform: translateX(-50%) scale(1);
-            z-index: 9999; pointer-events: none; width: 47%; max-width: 250px; 
-            transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.3s ease;
-            opacity: 1;
-        }
-        .floating-logo img { 
-            width: 100%; height: auto; object-fit: contain; 
-            filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.15)) drop-shadow(0px 0px 16px rgba(255, 255, 255, 0.08)) drop-shadow(0px 0px 24px rgba(255, 255, 255, 0.03)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); 
-            transition: filter 0.3s ease;
-        }
+        .floating-logo { position: fixed; top: 15px; left: 50%; transform: translateX(-50%) scale(1); z-index: 9999; pointer-events: none; width: 47%; max-width: 250px; transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.3s ease; opacity: 1; }
+        .floating-logo img { width: 100%; height: auto; object-fit: contain; filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.15)) drop-shadow(0px 0px 16px rgba(255, 255, 255, 0.08)) drop-shadow(0px 0px 24px rgba(255, 255, 255, 0.03)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); transition: filter 0.3s ease; }
         .floating-logo.shrunk { transform: translateX(-50%) scale(0.95); }
         body.modal-open .floating-logo img { filter: blur(10px) drop-shadow(0 8px 16px rgba(0,0,0,0.4)); }
         .floating-logo.hide { opacity: 0; transform: translateX(-50%) scale(0.9); pointer-events: none; }
 
-        .feed {
-            height: 100vh; overflow-y: scroll; padding-top: 80px; padding-bottom: 100px; 
-            display: flex; flex-direction: column; align-items: center;
-            padding-left: 7px; padding-right: 7px;
-            scrollbar-width: none; -ms-overflow-style: none; 
-            transition: filter 0.3s ease; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
-            position: relative;
-        }
+        .feed { height: 100vh; overflow-y: scroll; padding-top: 80px; padding-bottom: 100px; display: flex; flex-direction: column; align-items: center; padding-left: 7px; padding-right: 7px; scrollbar-width: none; -ms-overflow-style: none; transition: filter 0.3s ease; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; position: relative; }
         .feed::-webkit-scrollbar { width: 0px; display: none; }
         body.modal-open .feed { filter: blur(10px); }
 
         .post { width: 100%; max-width: 500px; margin-bottom: 30px; display: flex; flex-direction: column; position: relative; }
-        .image-container { position: relative; width: 100%; }
-        .post img { width: 100%; height: auto; max-height: 80vh; object-fit: cover; background-color: #f0f0f0; border-radius: 8px; display: block; }
+        .image-container { position: relative; width: 100%; touch-action: pan-y; }
+        .post img { width: 100%; height: auto; max-height: 80vh; object-fit: cover; background-color: var(--fill-1); border-radius: 8px; display: block; }
 
         .post.last-published { position: relative; }
-        .post.last-published .image-container {
-            position: relative; border-radius: 8px;
-            box-shadow: 0 -15px 30px -5px rgba(0, 0, 0, 0.20), 0 15px 25px -10px rgba(0, 0, 0, 0.02);
-            transition: box-shadow 0.3s ease;
-        }
+        .post.last-published .image-container { position: relative; border-radius: 8px; box-shadow: 0 -15px 30px -5px rgba(0, 0, 0, 0.20), 0 15px 25px -10px rgba(0, 0, 0, 0.02); transition: box-shadow 0.3s ease; }
 
-        .skeleton-loading {
-            width: 100%; max-width: 500px; height: 400px; border-radius: 8px; margin-bottom: 30px;
-            background: linear-gradient(90deg, var(--skeleton-bg) 25%, var(--skeleton-shimmer) 50%, var(--skeleton-bg) 75%);
-            background-size: 200% 100%; animation: shimmer 1.5s infinite;
-        }
+        .skeleton-loading { width: 100%; max-width: 500px; height: 400px; border-radius: 8px; margin-bottom: 30px; background: linear-gradient(90deg, var(--skeleton-bg) 25%, var(--skeleton-shimmer) 50%, var(--skeleton-bg) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-        .double-tap-heart {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            width: 80px; height: 80px; z-index: 10; pointer-events: none; opacity: 0;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
-            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
-        }
+        .double-tap-heart { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); width: 80px; height: 80px; z-index: 10; pointer-events: none; opacity: 0; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3)); }
         .double-tap-heart svg { width: 100%; height: 100%; fill: var(--like-color); stroke: white; stroke-width: 2; }
         .double-tap-heart.animate { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
         .double-tap-heart.fade-out { transform: translate(-50%, -50%) scale(1.5); opacity: 0; transition: transform 0.4s ease, opacity 0.4s ease; }
 
-        .action-btn {
-            width: 40px; height: 40px; background: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border-radius: 50%; position: relative; cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0;
-        }
+        .action-btn { width: 40px; height: 40px; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 2px 5px var(--btn-shadow); border-radius: 50%; position: relative; cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0; }
         .action-btn svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block; }
+        .profile-btn svg { width: 22px; height: 22px; fill: var(--icon-color); stroke: none; transition: stroke 0.2s, fill 0.2s; }
+        .like-btn svg { width: 19px; height: 19px; stroke: var(--icon-color); stroke-width: 2; fill: transparent; transition: stroke 0.2s, fill 0.2s; }
         
-        .profile-btn svg { width: 22px; height: 22px; fill: black; stroke: none; transition: stroke 0.2s, fill 0.2s; }
-        .like-btn svg { width: 19px; height: 19px; stroke: black; stroke-width: 2; fill: transparent; transition: stroke 0.2s, fill 0.2s; }
-        .action-btn:active { transform: scale(0.85); }
+        .comment-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 2px 5px var(--btn-shadow); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.2s ease; flex-shrink: 0; color: var(--icon-muted); font-size: 22px; line-height: 1; }
+
+        .action-btn:active, .comment-btn:active { transform: scale(0.85); }
         .like-btn.liked svg { stroke: var(--like-color); fill: var(--like-color); }
 
-        .post-info { 
-            display: flex; align-items: center; padding-top: 15px; padding-left: 7px; padding-right: 7px;
-            font-size: 13px; font-weight: 400; letter-spacing: -0.2px; position: relative; z-index: 100; width: 100%; gap: 0; 
-        }
+        .post-info { display: flex; align-items: center; padding-top: 15px; padding-left: 7px; padding-right: 7px; font-size: 13px; font-weight: 400; letter-spacing: -0.2px; position: relative; z-index: 100; width: 100%; gap: 0; }
         .info-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
-        .tag-wrapper {
-            flex: 1; min-width: 0; overflow: hidden; display: flex; align-items: center;
-            -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
-            mask-image: linear-gradient(to right, black 80%, transparent 100%);
-        }
+        .tag-wrapper { flex: 1; min-width: 0; overflow: hidden; display: flex; align-items: center; -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%); mask-image: linear-gradient(to right, black 80%, transparent 100%); }
         .post-tag { color: var(--text-color); text-decoration: none; font-weight: 500; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; padding-bottom: 2px; display: inline-block; }
-        .info-divider { color: var(--secondary-text); font-size: 20px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; letter-spacing: 2px; padding: 0 5px; }
+        
+        .info-middle { display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0 10px; }
         .info-right { display: flex; align-items: center; flex: 1; min-width: 0; justify-content: flex-end; }
         .post-date { color: var(--secondary-text); font-size: 13px; white-space: nowrap; flex-shrink: 0; margin-right: 10px; }
         .like-count { font-size: 12px; color: var(--secondary-text); font-weight: 500; margin-left: 10px; white-space: nowrap; min-width: 15px; text-align: left; flex-shrink: 0; }
         .tag-item .like-count { margin-right: 8px; margin-left: 0; }
 
-        /* --- НИЖНИЕ КНОПКИ (МЕНЮ И СТРЕЛКИ) --- */
-        .bottom-controls {
-            position: fixed; bottom: 30px; left: 50%; 
-            transform: translateX(-50%) translateY(0) scale(1);
-            z-index: 100;
-            display: flex; align-items: center; justify-content: center; gap: 15px;
-            transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0s;
-            opacity: 1; visibility: visible; pointer-events: auto;
-        }
-        .bottom-controls.hidden { 
-            opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(20px) scale(0.9); visibility: hidden;
-            transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0.4s;
-        }
-        
-        .bottom-controls.scrolling, .btn-pulse-down.scrolling, .btn-pulse-up.scrolling {
-            pointer-events: none !important;
-        }
+        .bottom-controls { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(0) scale(1); z-index: 100; display: flex; align-items: center; justify-content: center; gap: 15px; transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0s; opacity: 1; visibility: visible; pointer-events: auto; }
+        .bottom-controls.hidden { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(20px) scale(0.9); visibility: hidden; transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0.4s; }
+        .bottom-controls.scrolling, .btn-pulse-down.scrolling, .btn-pulse-up.scrolling { pointer-events: none !important; }
 
-        .liquid-glass {
-            background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); border-radius: 50%; 
-            position: relative; cursor: pointer; transition: transform var(--smooth-duration) var(--smooth-ease);
-        }
-        .liquid-glass svg { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            display: block; width: 24px; height: 24px; 
-            stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.8; 
-        }
+        .liquid-glass { background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 4px 10px var(--btn-shadow); border-radius: 50%; position: relative; cursor: pointer; transition: transform var(--smooth-duration) var(--smooth-ease), background 0.3s ease, border 0.3s ease; }
+        .liquid-glass svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block; width: 24px; height: 24px; stroke: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.8; }
+        
         .btn-search, .btn-likes { width: 50px; height: 50px; }
         .btn-add { width: 65px; height: 65px; }
         .bottom-controls.shrunk .btn-search, .bottom-controls.shrunk .btn-likes { transform: scale(0.85); }
         .bottom-controls.shrunk .btn-add { transform: scale(0.85); }
 
-        /* ВЕРХНЯЯ И НИЖНЯЯ СТРЕЛКИ */
-        .btn-pulse-down, .btn-pulse-up {
-            position: fixed; bottom: 30px; left: 50%; 
-            transform: translateX(-50%) translateY(0) scale(1);
-            width: 65px; height: 65px;
-            background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.1);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; pointer-events: auto;
-            animation: pulseWhole 2s ease-in-out infinite;
-            opacity: 1; visibility: visible;
-            transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0s;
-            z-index: 99;
-        }
-        
-        .btn-pulse-down.hidden, .btn-pulse-up.hidden {
-            opacity: 0; visibility: hidden; pointer-events: none;
-            animation-play-state: paused;
-            transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0.35s;
-        }
-
-        .btn-pulse-down svg, .btn-pulse-up svg {
-            width: 24px; height: 24px;
-            stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.8;
-            display: block;
+        .profile-floating { position: fixed; right: max(calc(25vw - 43px), calc(50vw - 170px)); bottom: 37px; width: 50px; height: 50px; z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 1; visibility: visible; pointer-events: auto; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 4px 10px var(--btn-shadow); transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.4s ease, visibility 0s linear 0s; }
+        .profile-floating svg { width: 24px; height: 24px; stroke: var(--icon-color); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: .85; transition: transform var(--smooth-duration) var(--smooth-ease); }
+        .profile-floating:active { transform: scale(.85); }
+        .profile-floating.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px) scale(.8); transition: transform .2s var(--smooth-ease), opacity .2s var(--smooth-ease), visibility 0s linear .2s; }
+        .profile-floating, .profile-username-pill { transition: opacity .2s ease, transform .2s var(--smooth-ease), visibility 0s linear 0s; }
+        .profile-floating.shrunk, .profile-username-pill.shrunk, .profile-floating.shrunk, .profile-username-pill.shrunk { transform: scale(.88); }
+        .btn-pulse-down.shrunk, .btn-pulse-up.shrunk { animation-play-state: paused; }
+        .profile-username-pill { position: fixed; left: max(12px, calc((100vw - 500px) / 2 + 7px)); right: calc(50% + 106.5px); bottom: 43px; width: auto; height: 38px; padding: 0 13px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 22px; background: var(--btn-bg); color: var(--text-color); box-shadow: 0 4px 10px var(--btn-shadow); font: 600 12px var(--font-main); letter-spacing: .1px; white-space: nowrap; overflow: hidden; text-align: center; cursor: pointer; z-index: 90; }
+        .profile-username-pill span { display: block; width: 100%; max-width: 100%; overflow: hidden; white-space: nowrap; text-align: center; -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%); mask-image: linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%); }
+        .profile-username-pill.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px) scale(.8); transition: opacity .7s var(--smooth-ease), transform .7s var(--smooth-ease), visibility 0s linear .7s; }
+        .profile-username-pill:not(.hidden) { opacity: 1; visibility: visible; }
+        .profile-username-pill:active { transform: scale(.92); }
+        .bottom-controls { gap: 12px; }
+        @media (max-width: 380px) {
+            .bottom-controls { gap: 7px; }
+            .btn-search, .btn-likes { width: 44px; height: 44px; }
+            .btn-add { width: 58px; height: 58px; }
+            .profile-username-pill { right: calc(50% + 89px); }
         }
 
-        @keyframes pulseWhole {
-            0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
-            50% { transform: translateX(-50%) translateY(-8px) scale(1); }
-        }
 
-        .btn-down {
-            position: fixed; bottom: 37px; right: 20px; width: 50px; height: 50px; z-index: 100;
-            transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.2s ease, visibility 0.2s ease;
-            background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(255, 255, 255, 0.2);
-            display: flex; justify-content: center; align-items: center;
-        }
-        .btn-down svg { display: block; margin: auto; stroke: #ffffff; width: 24px; height: 24px;}
+        .btn-pulse-down, .btn-pulse-up { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(0) scale(1); width: 65px; height: 65px; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 4px 10px var(--btn-shadow); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; animation: pulseWhole 2s ease-in-out infinite; opacity: 1; visibility: visible; transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0s; z-index: 99; }
+        .btn-pulse-down.hidden, .btn-pulse-up.hidden { opacity: 0; visibility: hidden; pointer-events: none; animation-play-state: paused; transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0.35s; }
+        .btn-pulse-down svg, .btn-pulse-up svg { width: 24px; height: 24px; stroke: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.8; display: block; }
+        @keyframes pulseWhole { 0%, 100% { transform: translateX(-50%) translateY(0) scale(1); } 50% { transform: translateX(-50%) translateY(-8px) scale(1); } }
+
+        .btn-down { position: fixed; bottom: 37px; right: max(12px, calc((100vw - 500px) / 2 + 7px)); width: 50px; height: 50px; z-index: 100; transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.2s ease, visibility 0.2s ease; background: var(--text-color); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; }
+        .btn-down svg { display: block; margin: auto; stroke: var(--bg-color); width: 24px; height: 24px;}
+        .btn-down.shrunk { transform: scale(.88); }
         .btn-down.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px) scale(0.8); }
 
-        /* --- ОСТАЛЬНОЕ (МОДАЛКИ И ПРОЧЕЕ) --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.2); display: none;
-            justify-content: center; align-items: flex-end; z-index: 200;
-            opacity: 0; transition: opacity 0.4s ease; overscroll-behavior: contain;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.2); display: none; justify-content: center; align-items: flex-end; z-index: 200; opacity: 0; transition: opacity 0.4s ease; overscroll-behavior: contain; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .modal-content {
-            background: rgba(255, 255, 255, 0.98); border-top: 1px solid rgba(0, 0, 0, 0.1); 
-            width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; height: 60vh; 
-            display: flex; flex-direction: column;
-            transform: translateY(100%); opacity: 0; 
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; 
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
-            position: relative; z-index: 201; overflow: hidden;
-        }
+        .modal-content { background: var(--modal-bg); border-top: 1px solid var(--border); width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; height: 60vh; display: flex; flex-direction: column; transform: translateY(100%); opacity: 0; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; box-shadow: 0 -10px 40px rgba(0,0,0,0.15); position: relative; z-index: 201; overflow: hidden; }
         .modal-overlay.active .modal-content { transform: translateY(0); opacity: 1; }
-        .modal-drag-area { padding: 30px 20px 15px; flex-shrink: 0; cursor: grab; position: relative; touch-action: none; }
-        .modal-content::before {
-            content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-            width: 40px; height: 4px; background: rgba(0,0,0,0.1); border-radius: 2px;
-        }
+        .modal-drag-area { padding: 30px 20px 15px; flex-shrink: 0; cursor: grab; position: relative; touch-action: none; display: flex; align-items: center; justify-content: center; }
+        .modal-content::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 40px; height: 4px; background: var(--fill-1); border-radius: 2px; }
         .modal-body { flex: 1; overflow-y: auto; padding: 0 20px 80px; overscroll-behavior: contain; display: flex; flex-direction: column; }
         .modal-body::-webkit-scrollbar { width: 0px; display: none; }
         .modal-body { scrollbar-width: none; -ms-overflow-style: none; }
-        .modal-title { font-size: 18px; font-weight: 600; text-align: center; color: #000; margin: 0; }
+        .modal-title { font-size: 18px; font-weight: 600; text-align: center; color: var(--text-color); margin: 0; }
 
         .auth-modal .modal-body { gap: 12px; justify-content: space-between; align-items: center; padding-top: 5px; padding-bottom: 20px; }
         .auth-subtitle { font-size: 13px; color: var(--secondary-text); text-align: center; line-height: 1.4; padding: 0 10px; margin-bottom: 5px; }
-        .auth-input { width: 100%; padding: 16px; border: 1px solid rgba(0,0,0,0.1); background: rgba(255, 255, 255, 0.6); border-radius: 14px; font-size: 16px; outline: none; font-family: inherit; flex-shrink: 0; }
-        .auth-btn { width: 100%; padding: 16px; background: #000; color: #fff; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; flex-shrink: 0; transition: opacity 0.2s; text-transform: uppercase; margin-top: auto; margin-bottom: 0; }
+        .auth-input { width: 100%; padding: 16px; border: 1px solid var(--border); background: var(--fill-2); border-radius: 14px; font-size: 16px; outline: none; font-family: inherit; flex-shrink: 0; color: var(--text-color); }
+        .auth-input::placeholder { color: var(--secondary-text); }
+        
+        .password-wrapper { position: relative; width: 100%; }
+        .password-wrapper .auth-input { padding-right: 48px; }
+        .eye-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border: none; background: transparent; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+        .eye-btn svg { width: 20px; height: 20px; fill: none; stroke: var(--secondary-text); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        
+        .pw-strength-wrap { display: none; flex-direction: column; gap: 6px; margin-top: 4px; width: 100%; }
+        .pw-strength-bars { display: flex; gap: 6px; height: 4px; width: 100%; }
+        .pw-strength-bars i { flex: 1; height: 100%; border-radius: 2px; background: var(--fill-1); overflow: hidden; }
+        .pw-strength-bars i b { display: block; height: 100%; width: 0%; border-radius: 2px; transition: width 0.3s ease, background-color 0.3s ease; }
+        .pw-strength-text { font-size: 12px; color: var(--secondary-text); font-weight: 500; }
+        
+        .auth-btn { width: 100%; padding: 16px; background: var(--text-color); color: var(--bg-color); border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; flex-shrink: 0; transition: opacity 0.2s; text-transform: uppercase; margin-top: auto; margin-bottom: 0; }
         .auth-btn:active { opacity: 0.8; }
 
         #submitModal .modal-content { height: 85vh; }
-        #submitModal .modal-body { gap: 15px; justify-content: flex-start; padding-bottom: 20px; }
+        #submitModal .modal-body { gap: 12px; justify-content: flex-start; padding-bottom: 20px; }
         
-        .file-upload-wrapper {
-            position: relative; width: 100%; flex: 1; min-height: 150px; 
-            border: 2px dashed rgba(0,0,0,0.15); border-radius: 16px;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: rgba(255, 255, 255, 0.4); cursor: pointer; overflow: hidden; margin-bottom: 0;
-        }
+        .file-upload-wrapper { position: relative; width: 100%; flex: 1; min-height: 150px; border: 2px dashed var(--border); border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--fill-3); cursor: pointer; overflow: hidden; margin-bottom: 0; }
         .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        .upload-icon svg { width: 32px; height: 32px; stroke: #555; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
-        .upload-text { font-size: 14px; color: #555; font-weight: 400; }
+        .upload-icon svg { width: 32px; height: 32px; stroke: var(--secondary-text); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
+        .upload-text { font-size: 14px; color: var(--secondary-text); font-weight: 400; }
         .preview-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; z-index: 2; }
         
-        /* Кнопка замены файла */
-        .replace-file-btn {
-            display: none;
-            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 20px;
-            padding: 8px 16px; font-size: 13px; font-weight: 600; z-index: 3; cursor: pointer;
-            transition: background 0.2s;
-        }
+        .replace-file-btn { display: none; position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 20px; padding: 8px 16px; font-size: 13px; font-weight: 600; z-index: 3; cursor: pointer; transition: background 0.2s; }
         .replace-file-btn:active { background: rgba(0,0,0,0.9); }
 
-        .modal-content input[type="text"] {
-            width: 100%; padding: 16px; border: 1px solid rgba(0,0,0,0.1); 
-            background: rgba(255, 255, 255, 0.6); border-radius: 14px; font-size: 16px; outline: none; font-family: inherit; flex-shrink: 0;
-        }
-        .btn-submit { width: 100%; padding: 16px; background: #000; color: #fff; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; flex-shrink: 0; transition: opacity 0.2s; text-transform: uppercase; margin-top: auto; }
+        .desc-wrapper { position: relative; width: 100%; margin-bottom: 0; }
+        .desc-area { width: 100%; min-height: 80px; max-height: 140px; padding: 16px; border: 1px solid var(--border); background: var(--fill-2); border-radius: 14px; font-size: 15px; outline: none; font-family: inherit; resize: none; line-height: 1.4; color: var(--text-color); }
+        .desc-area::placeholder { color: var(--secondary-text); }
+        .desc-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding: 0 4px; }
+        .desc-count { font-size: 12px; color: var(--secondary-text); font-weight: 500; }
+        .desc-count.near { color: var(--orange); }
+        .desc-count.full { color: var(--red); }
+
+        .modal-content input[type="text"] { width: 100%; padding: 16px; border: 1px solid var(--border); background: var(--fill-2); border-radius: 14px; font-size: 16px; outline: none; font-family: inherit; flex-shrink: 0; color: var(--text-color); }
+        .modal-content input[type="text"]::placeholder { color: var(--secondary-text); }
+        .btn-submit { width: 100%; padding: 16px; background: var(--text-color); color: var(--bg-color); border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; flex-shrink: 0; transition: opacity 0.2s; text-transform: uppercase; margin-top: auto; }
         .btn-submit:active { opacity: 0.8; }
 
+        /* Поиск */
+        .search-header-row { display: flex; justify-content: center; margin-top: 15px; margin-bottom: 15px; }
+        .btn-feed-link { display: inline-flex; align-items: center; justify-content: center; padding: 10px 30px; background: var(--btn-bg); color: var(--text-color); text-decoration: none; border: 1px solid var(--border); border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: transform 0.2s; }
+        .btn-feed-link:active { transform: scale(0.95); }
+
         .tags-list { display: flex; flex-direction: column; padding-bottom: 13px; }
-        .alphabet-header { font-size: 15px; font-weight: 600; color: #000; padding: 15px 0 5px 10px; background: transparent; position: relative; z-index: 1; }
-        .tag-item { padding: 12px 15px; background: rgba(0, 0, 0, 0.05); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; transition: background 0.2s; }
-        .tag-item:active { background: rgba(0, 0, 0, 0.1); }
+        .alphabet-header { font-size: 15px; font-weight: 600; color: var(--text-color); padding: 15px 0 5px 10px; background: transparent; position: relative; z-index: 1; }
+        .tag-item { padding: 12px 15px; background: var(--fill-1); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; transition: background 0.2s; }
+        .tag-item:active { background: var(--fill-2); }
         .tag-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
-        .tag-name { font-weight: 500; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .tag-name { font-weight: 500; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-color); }
         .tag-count { font-size: 13px; color: var(--secondary-text); font-weight: 400; }
         .tag-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; margin-left: 10px; }
 
         .author-grid, .likes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding-bottom: 20px; width: 100%; }
-        .grid-item { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 8px; cursor: pointer; background: #eee; transition: opacity 0.2s; }
+        .grid-item { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 8px; cursor: pointer; background: var(--fill-1); transition: opacity 0.2s; }
         .grid-item:active { opacity: 0.7; }
         .grid-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        .btn-back-floating {
-            position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px);
-            width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden;
-            transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5);
-            display: flex; justify-content: center; align-items: center;
-        }
+        .btn-back-floating { position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px); width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden; transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5); display: flex; justify-content: center; align-items: center; background: var(--bg-color); border-radius: 50%; border: none; cursor: pointer; }
         .btn-back-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
-        .btn-back-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        .btn-back-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 
-        .btn-sort-floating {
-            position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px);
-            width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden;
-            transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5);
-            display: flex; justify-content: center; align-items: center;
-        }
+        .btn-sort-floating { position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px); width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden; transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5); display: flex; justify-content: center; align-items: center; background: var(--bg-color); border-radius: 50%; border: none; cursor: pointer; }
         .btn-sort-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
-        .btn-sort-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        .btn-sort-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 
-        .btn-fav-tags-floating {
-            position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px);
-            width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden;
-            transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5);
-            display: flex; justify-content: center; align-items: center;
-        }
+        .btn-fav-tags-floating { position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px); width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden; transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5); display: flex; justify-content: center; align-items: center; background: var(--bg-color); border-radius: 50%; border: none; cursor: pointer; }
         .btn-fav-tags-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
-        .btn-fav-tags-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: black; fill: black; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .btn-fav-tags-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: var(--icon-color); fill: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        .post-description { background: var(--fill-2); border-radius: 14px; padding: 16px; font-size: 15px; line-height: 1.5; color: var(--text-color); margin-bottom: 16px; flex-shrink: 0; }
+        .add-comment-box { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; flex-shrink: 0; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+        .reply-indicator { display: none; background: var(--fill-1); padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 8px; color: var(--secondary-text); align-items: center; justify-content: space-between; }
+        .reply-indicator.active { display: flex; }
+        .reply-indicator span { color: var(--text-color); font-weight: 500; }
+        .cancel-reply { background: none; border: none; color: var(--text-color); font-size: 16px; cursor: pointer; padding: 0 4px; }
+        .add-comment-input { width: 100%; padding: 14px 16px; border: 1px solid var(--border); background: var(--fill-2); border-radius: 14px; font-size: 15px; outline: none; font-family: inherit; resize: none; color: var(--text-color); }
+        .add-comment-input::placeholder { color: var(--secondary-text); }
+        .add-comment-btn { width: 100%; padding: 14px; background: var(--text-color); color: var(--bg-color); border: none; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; text-transform: uppercase; }
+        
+        .comments-list { display: flex; flex-direction: column; gap: 12px; }
+        .comment-item { background: var(--fill-2); border-radius: 12px; padding: 12px 16px; position: relative; }
+        .comment-header { display: flex; align-items: flex-start; gap: 4px; font-size: 14px; line-height: 1.4; margin-bottom: 4px; flex-wrap: wrap; padding-right: 60px; }
+        .comment-author { color: var(--secondary-text); font-weight: 500; white-space: nowrap; }
+        .comment-text { color: var(--text-color); word-break: break-word; }
+        .comment-date { font-size: 12px; color: var(--secondary-text); text-align: right; display: block; margin-top: 4px; }
+        .comment-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; opacity: 0.6; }
+        .comment-act-btn { background: none; border: none; cursor: pointer; color: var(--secondary-text); font-size: 12px; padding: 4px; font-weight: 600; }
+        .comment-act-btn:active { color: var(--text-color); }
+        
+        .comment-replies { margin-left: 16px; margin-top: 8px; display: flex; flex-direction: row; flex-wrap: nowrap; align-items: stretch; gap: 8px; border-left: 2px solid var(--fill-1); padding-left: 10px; overflow-x: auto; scrollbar-width: none; }
+        .comment-replies::-webkit-scrollbar { display: none; }
+        .comment-replies > .comment-item { flex: 0 0 auto; min-width: min(220px, 72vw); max-width: 80%; }
+        .comment-replies .comment-item { background: var(--fill-3); padding: 10px 12px; }
+
+        .carousel-container { width: 100%; max-width: 500px; margin-bottom: 30px; border-radius: 12px; overflow: hidden; background: var(--fill-1); }
+        .carousel-view { height: 400px; position: relative; overflow: hidden; border-radius: 12px; }
+        .carousel-strip { display: flex; height: 100%; will-change: transform; transition: transform 0.72s cubic-bezier(0.22, 1, 0.36, 1); }
+        .carousel-slide { flex: none; width: 100%; height: 100%; position: relative; overflow: hidden; }
+        .carousel-slide::after { content: ""; position: absolute; inset: 45% 0 0; background: linear-gradient(to top, rgba(0,0,0,.58), transparent); pointer-events: none; }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .carousel-tag { position: absolute; z-index: 2; left: 16px; bottom: 16px; color: #fff; font-size: 14px; font-weight: 600; text-shadow: 0 1px 8px rgba(0,0,0,.45); max-width: calc(100% - 32px); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .carousel-dots { position: relative; display: flex; justify-content: center; gap: 14px; margin: 12px 0; height: 20px; align-items: center; }
+        .carousel-dots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: var(--fill-1); cursor: pointer; }
+        .carousel-dots .active-pill { position: absolute; top: 6px; height: 8px; border-radius: 4px; background: var(--text-color); pointer-events: none; transition: transform .45s cubic-bezier(.22,1,.36,1), width .45s cubic-bezier(.22,1,.36,1); }
+
+        .lens-btn { position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; background: var(--btn-bg); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 20; transition: transform 0.2s; }
+        .lens-btn svg { width: 20px; height: 20px; stroke: var(--icon-color); fill: none; stroke-width: 2; }
+        .lens-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15; opacity: 0; transition: opacity 0.3s; overflow: hidden; border-radius: 8px; }
+        .lens-container.active { opacity: 1; pointer-events: auto; touch-action: none; }
+        .lens-glass { position: absolute; top: 0; left: 0; width: 160px; height: 160px; border-radius: 50%; overflow: hidden; pointer-events: auto; touch-action: none; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: #fff; transition: left 140ms cubic-bezier(0.22, 1, 0.36, 1), top 140ms cubic-bezier(0.22, 1, 0.36, 1); will-change: left, top; }
+        .lens-glass img { position: absolute; display: block; max-width: none; max-height: none; width: 100%; height: 100%; object-fit: cover; border-radius: 0; transform-origin: 0 0; pointer-events: none; }
+        .lens-handle { position: absolute; right: 10px; bottom: 10px; width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,.72); border: 1px solid rgba(0,0,0,.24); box-shadow: 0 1px 5px rgba(0,0,0,.35); z-index: 3; pointer-events: none; }
 
         .support-wrapper { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 10px; margin-bottom: 30px; }
-        .support-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 30px; background: #000; color: #fff; text-decoration: none; border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s ease, opacity 0.2s; cursor: pointer; width: 160px; }
-        .support-btn:active { transform: scale(0.95); opacity: 0.8; }
-        .chat-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 30px; background: rgba(255, 255, 255, 0.7); color: #000; text-decoration: none; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: transform 0.2s ease, opacity 0.2s; cursor: pointer; width: 160px; }
-        .chat-btn:active { transform: scale(0.95); opacity: 0.8; }
+        .support-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 30px; background: var(--text-color); color: var(--bg-color); text-decoration: none; border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px; width: 160px; }
+        .chat-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 30px; background: var(--btn-bg); color: var(--text-color); text-decoration: none; border: 1px solid var(--border); border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px; width: 160px; }
     </style>
 </head>
 <body>
@@ -324,34 +277,35 @@
     <div class="blur-mask-bottom"></div>
 
     <div class="floating-logo hide" id="logo">
-        <img src="logo.png" alt="Logo">
+        <img src="logo.png" alt="Logo" id="logoImg">
     </div>
 
     <main class="feed" id="feed"></main>
 
-    <!-- Кнопки меню -->
+    <!-- Нижнее меню -->
     <div class="bottom-controls hidden" id="bottomControls">
-        <button class="liquid-glass btn-search" onclick="openSearchModal()">
+        <button class="liquid-glass btn-search" onclick="openSearchModal()" aria-label="Поиск по тегам">
             <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </button>
-        <button class="liquid-glass btn-add" onclick="handleAddClick()">
-            <svg class="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        <button class="liquid-glass btn-add" id="mainAddBtn" onclick="handleAddClick()" aria-label="Загрузить медиа">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
         </button>
-        <button class="liquid-glass btn-likes" onclick="handleLikesClick()">
+        <button class="liquid-glass btn-likes" onclick="handleLikesClick()" aria-label="Избранное">
             <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
         </button>
     </div>
 
-    <!-- Верхняя стрелка -->
+    <button class="liquid-glass profile-floating hidden" id="profileFloatingBtn" onclick="handleProfileClick()" aria-label="Профиль пользователя">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>
+    </button>
+    <button class="profile-username-pill hidden" id="profileUsernamePill" onclick="handleProfileClick()" aria-label="Открыть профиль"><span>Войти</span></button>
+
     <button class="btn-pulse-down hidden" id="btnPulseDown">
         <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
     </button>
-
-    <!-- Нижняя стрелка -->
     <button class="btn-pulse-up hidden" id="btnPulseUp">
         <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
     </button>
-
     <button class="liquid-glass btn-down hidden" id="btnDown" onclick="scrollToTop()">
         <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
     </button>
@@ -359,25 +313,45 @@
     <button class="liquid-glass btn-back-floating" id="btnBackFloating" onclick="handleBackClick()">
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
     </button>
-
     <button class="liquid-glass btn-sort-floating" id="btnSortFloating" onclick="toggleSort()">
         <svg viewBox="0 0 24 24"><path d="M7 15l5 5 5-5M7 9l5-5 5 5"/></svg>
     </button>
-
     <button class="liquid-glass btn-fav-tags-floating" id="btnFavTagsFloating" onclick="showFavoriteTags()">
         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
     </button>
 
-    <!-- Модалки -->
+
+
     <div class="modal-overlay" id="authModal" onclick="closeModal(event, 'authModal')">
         <div class="modal-content auth-modal" onclick="event.stopPropagation()">
             <div class="modal-drag-area"><div class="modal-title">Вход</div></div>
             <div class="modal-body">
                 <div class="auth-subtitle">Введите логин и пароль.<br>Если вы здесь впервые, аккаунт создастся автоматически.</div>
                 <input type="text" id="authUsername" class="auth-input" placeholder="Логин" autocomplete="off">
-                <input type="password" id="authPassword" class="auth-input" placeholder="Пароль" autocomplete="off">
+                
+                <div class="password-wrapper">
+                    <input type="password" id="authPassword" class="auth-input" placeholder="Пароль" autocomplete="off">
+                    <button class="eye-btn" id="togglePwBtn" onclick="togglePasswordVisibility()">
+                        <svg viewBox="0 0 24 24" id="eyeSvg"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.8"/><path d="M4.5 4.5l15 15" id="eyeSlash" style="display:none"/></svg>
+                    </button>
+                </div>
+                
+                <div class="pw-strength-wrap" id="pwStrengthWrap">
+                    <div class="pw-strength-bars">
+                        <i><b id="pwBar1"></b></i><i><b id="pwBar2"></b></i><i><b id="pwBar3"></b></i><i><b id="pwBar4"></b></i>
+                    </div>
+                    <div class="pw-strength-text" id="pwStrengthText">Слишком короткий</div>
+                </div>
+
                 <button class="auth-btn" onclick="submitAuth()">Продолжить</button>
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="profileModal" onclick="closeModal(event, 'profileModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-drag-area"><div class="modal-title">Профиль</div></div>
+            <div class="modal-body" id="profileModalBody"></div>
         </div>
     </div>
 
@@ -392,10 +366,16 @@
                         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                     </div>
                     <div class="upload-text" id="uploadText">Нажмите, чтобы выбрать файл</div>
-                    <!-- Кнопка для замены файла -->
                     <button class="replace-file-btn" id="replaceFileBtn" onclick="document.getElementById('fileInput').click()">Заменить файл</button>
                 </div>
-                <!-- Блокируем ввод русских букв в теге -->
+                
+                <div class="desc-wrapper">
+                    <textarea id="descInput" class="desc-area" placeholder="Добавьте описание (необязательно)" maxlength="250"></textarea>
+                    <div class="desc-footer">
+                        <div class="desc-count" id="descCount">250</div>
+                    </div>
+                </div>
+
                 <input type="text" id="tagInput" placeholder="Ваш тег (например, @username)" value="@" oninput="this.value = this.value.replace(/[а-яА-ЯёЁ]/g, '')">
                 <button class="btn-submit" onclick="submitPhoto()">Отправить</button>
             </div>
@@ -406,7 +386,12 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-drag-area"><div class="modal-title" id="searchTitle">Поиск по тегам</div></div>
             <div class="modal-body">
-                <div id="tagsView"><div class="tags-list" id="tagsList"></div></div>
+                <div id="tagsView">
+                    <div class="search-header-row">
+                        <button class="btn-feed-link" onclick="showFeedMiniatures()">Лента</button>
+                    </div>
+                    <div class="tags-list" id="tagsList"></div>
+                </div>
                 <div id="gridView" style="display:none;"><div class="author-grid" id="authorGrid"></div></div>
             </div>
         </div>
@@ -416,6 +401,28 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-drag-area"><div class="modal-title">Избранное</div></div>
             <div class="modal-body"><div class="likes-grid" id="likesGrid"></div></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="commentsModal" onclick="closeModal(event, 'commentsModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-drag-area"><div class="modal-title">Комментарии</div></div>
+            <div class="modal-body">
+                <div id="commentModalBody">
+                    <div class="add-comment-box">
+                        <div class="reply-indicator" id="replyIndicator">
+                            Ответ <span id="replyToName"></span>...
+                            <button class="cancel-reply" onclick="cancelReply()">×</button>
+                        </div>
+                        <textarea class="add-comment-input" id="newCommentInput" placeholder="Написать комментарий..." rows="2"></textarea>
+                        <button class="add-comment-btn" onclick="submitComment()">Отправить</button>
+                    </div>
+
+                    <div class="post-description" id="commentPostDesc" style="display:none;"></div>
+
+                    <div class="comments-list" id="commentsList"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -440,9 +447,11 @@
         const btnSortFloating = document.getElementById('btnSortFloating');
         const btnFavTagsFloating = document.getElementById('btnFavTagsFloating');
         const logo = document.getElementById('logo');
+        const logoImg = document.getElementById('logoImg');
         const submitModal = document.getElementById('submitModal');
         const previewImage = document.getElementById('previewImage');
         const authModal = document.getElementById('authModal');
+        const mainAddBtn = document.getElementById('mainAddBtn');
 
         let currentUser = null;
         let allPostsData = []; 
@@ -457,18 +466,37 @@
         let scrollTimeout;
         let hideArrowTimeout;
         let lastTap = 0;
-
         let controlsRevealTimer = null;
         let isProgrammaticScroll = false;
         let programmaticScrollEndTimer = null;
+
+        let currentCommentPhotoId = null;
+        let replyToId = null;
+        let editingCommentId = null;
+        let activeLens = null;
+
+        let carouselInterval = null;
+        let carouselData = [];
+        let carouselIndex = 0;
+
 
         function checkAuth() {
             const savedUser = localStorage.getItem('cult_user');
             if (savedUser) currentUser = JSON.parse(savedUser);
             if (!currentUser) { likedPhotos = []; likedTags = []; }
         }
+        function updateProfileUsername() {
+            const pill = document.getElementById('profileUsernamePill');
+            if (pill) { const label = pill.querySelector('span'); if (label) label.textContent = currentUser?.username || 'Войти'; }
+        }
         checkAuth();
+        updateProfileUsername();
         loadRealPhotos(true);
+
+        function handleProfileClick() {
+            if (!currentUser) { openModal('authModal'); return; }
+            openModal('profileModal');
+        }
 
         async function loadRealPhotos(isInitialLoad = false) {
             if (isInitialLoad) {
@@ -506,27 +534,29 @@
             allPostsData = []; 
             supportButtonOffset = null;
 
+            const img1 = '1.png';
+            const img2 = '2.png';
+            const img4 = '4.png';
+
             feed.insertAdjacentHTML('afterbegin', `
-                <div class="post static-post">
-                    <div class="image-container"><img src="1.png" alt="Static Top 1"></div>
+                <div class="carousel-container" id="carouselContainer">
+                    <div class="carousel-view"><div class="carousel-strip" id="carouselStrip"></div></div>
+                    <div class="carousel-dots" id="carouselDots"><span class="active-pill" id="carouselPill"></span></div>
                 </div>
-                <div class="post static-post">
-                    <div class="image-container"><img src="2.png" alt="Static Top 2"></div>
-                </div>
+                <div class="post static-post"><div class="image-container"><img src="${img1}" alt="Static Top 1"></div></div>
+                <div class="post static-post"><div class="image-container"><img src="${img2}" alt="Static Top 2"></div></div>
                 <div class="support-wrapper" id="topSupportWrapper">
                     <a href="https://t.me/ettoveracult?direct" target="_blank" class="support-btn">SUPPORT</a>
                     <a href="https://t.me/cultclubchatroom" target="_blank" class="chat-btn" id="topChatBtn">CHAT</a>
                 </div>
-                <div class="post static-post">
-                    <div class="image-container"><img src="4.png" alt="Static Top 3"></div>
-                </div>
+                <div class="post static-post"><div class="image-container"><img src="${img4}" alt="Static Top 3"></div></div>
             `);
 
             const reversedData = data ? [...data].reverse() : [];
-
+    
             if (reversedData.length > 0) {
                 reversedData.forEach((post) => {
-                    allPostsData.push({ tag: post.tag, img: post.image_url, id: post.id });
+                    allPostsData.push({ tag: post.tag, img: post.image_url, id: post.id, description: post.description });
                     const isLiked = likedPhotos.includes(post.id);
                     const postLikes = allLikesCache.filter(l => l.photo_id === post.id);
                     const uniqueUserLikes = [...new Set(postLikes.map(l => l.user_id))].length;
@@ -535,24 +565,31 @@
                                     new Date(post.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
                     feed.insertAdjacentHTML('beforeend', `
-                        <div class="post" id="post-${post.id}" data-id="${post.id}">
+                        <div class="post" id="post-${post.id}" data-id="${post.id}" data-tag="${post.tag}" data-desc="${post.description || ''}">
                             <div class="image-container" ondblclick="handleDoubleTap(event, '${post.id}')" onclick="handleSingleTap(event, '${post.id}')">
                                 <img src="${post.image_url}" alt="Photo" class="dynamic-img">
                                 <div class="double-tap-heart" id="heart-${post.id}">
                                     <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                                 </div>
+                                <button class="lens-btn" onclick="toggleLens(event, '${post.id}', '${post.image_url}')">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle></svg>
+                                </button>
+                                <div class="lens-container" id="lens-container-${post.id}">
+                                    <div class="lens-glass" id="lens-${post.id}">
+                                        <img src="${post.image_url}" id="lens-img-${post.id}" alt="Lens"><span class="lens-handle" aria-hidden="true"></span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="post-info">
                                 <div class="info-left">
                                     <button class="action-btn profile-btn" onclick="openTelegramLink('${post.tag}')">
-                                        <svg viewBox="0 0 24 24">
-                                            <circle cx="12" cy="8" r="4.5" fill="black" stroke="none"></circle>
-                                            <rect x="5" y="14" width="14" height="8" rx="4" fill="black" stroke="none"></rect>
-                                        </svg>
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.2 18.4 19c-.24 1.05-.86 1.31-1.74.82l-4.8-3.54-2.32 2.23c-.26.26-.48.48-.98.48l.35-4.9 8.92-8.06c.39-.35-.08-.54-.6-.19L6.2 12.8l-4.66-1.46c-1.01-.32-1.03-1.01.21-1.5L20 3.1c.84-.31 1.58.2 1.6 1.1Z" fill="currentColor" stroke="none"/></svg>
                                     </button>
                                     <div class="tag-wrapper"><span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span></div>
                                 </div>
-                                <div class="info-divider">•••</div>
+                                <div class="info-middle">
+                                    <button class="comment-btn" onclick="openComments('${post.id}', '${post.description || ''}')">•••</button>
+                                </div>
                                 <div class="info-right">
                                     <span class="post-date">${dateStr}</span>
                                     <button class="action-btn like-btn ${isLiked ? 'liked' : ''}" onclick="handleLikeClick(event, '${post.id}')">
@@ -563,21 +600,20 @@
                             </div>
                         </div>
                     `);
+
                 });
 
                 const lastDynamicPost = feed.querySelector('.post[data-id]');
                 if (lastDynamicPost) lastDynamicPost.classList.add('last-published');
+                setTimeout(() => initCarousel(), 100);
+
             } else {
-                feed.insertAdjacentHTML('beforeend', `<p style="text-align:center; width:100%; padding: 20px; color:#888;">Пока нет одобренных медиа</p>`);
+                feed.insertAdjacentHTML('beforeend', `<p style="text-align:center; width:100%; padding: 20px; color:var(--secondary-text);">Пока нет одобренных медиа</p>`);
             }
 
             feed.insertAdjacentHTML('beforeend', `
-                <div class="post static-post" id="bottom-static-1">
-                    <div class="image-container"><img src="1.png" alt="Static"></div>
-                </div>
-                <div class="post static-post" id="bottom-static-2">
-                    <div class="image-container"><img src="2.png" alt="Static"></div>
-                </div>
+                <div class="post static-post" id="bottom-static-1"><div class="image-container"><img src="${img1}" alt="Static"></div></div>
+                <div class="post static-post" id="bottom-static-2"><div class="image-container"><img src="${img2}" alt="Static"></div></div>
                 <div class="support-wrapper">
                     <a href="https://t.me/ettoveracult?direct" target="_blank" class="support-btn">SUPPORT</a>
                     <a href="https://t.me/cultclubchatroom" target="_blank" class="chat-btn">CHAT</a>
@@ -600,13 +636,169 @@
             }
         }
 
+        let carouselDirection = 1;
+        let carouselPreviousIds = [];
+
+        function initCarousel() {
+            const strip = document.getElementById('carouselStrip');
+            const dots = document.getElementById('carouselDots');
+            const pill = document.getElementById('carouselPill');
+            if (!strip || !dots || !pill) return;
+
+            const availablePhotos = allPostsData.filter(p => p.img);
+            if (!availablePhotos.length) {
+                const container = document.getElementById('carouselContainer');
+                if (container) container.remove();
+                return;
+            }
+
+            // Up to five unique random photos; prefer a new batch on each full cycle.
+            let pool = availablePhotos.filter(p => !carouselPreviousIds.includes(String(p.id)));
+            if (pool.length < Math.min(5, availablePhotos.length)) pool = availablePhotos.slice();
+            const shuffled = [...pool].sort(() => Math.random() - 0.5);
+            carouselData = shuffled.slice(0, Math.min(5, availablePhotos.length));
+            carouselPreviousIds = carouselData.map(p => String(p.id));
+
+            strip.innerHTML = '';
+            dots.innerHTML = '<span class="active-pill" id="carouselPill"></span>';
+            carouselData.forEach((photo, i) => {
+                const slide = document.createElement('div');
+                slide.className = 'carousel-slide';
+                const img = document.createElement('img');
+                img.src = photo.img;
+                img.alt = photo.tag ? `Фото ${photo.tag}` : 'Фото из ленты';
+                img.loading = i === 0 ? 'eager' : 'lazy';
+                slide.appendChild(img);
+                const tag = document.createElement('div');
+                tag.className = 'carousel-tag';
+                tag.textContent = photo.tag || '';
+                slide.appendChild(tag);
+                strip.appendChild(slide);
+
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.setAttribute('aria-label', `Фото ${i + 1}`);
+                dot.addEventListener('click', () => {
+                    const previousIndex = carouselIndex;
+                    carouselIndex = i;
+                    carouselDirection = carouselIndex >= previousIndex ? 1 : -1;
+                    updateCarousel();
+                });
+                dots.appendChild(dot);
+            });
+
+            carouselIndex = 0;
+            carouselDirection = 1;
+            updateCarousel();
+            if (carouselInterval) clearInterval(carouselInterval);
+            carouselInterval = setInterval(() => {
+                if (!carouselData.length || document.body.classList.contains('modal-open')) return;
+                if (document.activeElement && ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+                const lastIndex = carouselData.length - 1;
+                if (lastIndex === 0) return;
+
+                if (carouselDirection > 0) {
+                    if (carouselIndex < lastIndex) carouselIndex++;
+                    else { carouselDirection = -1; carouselIndex--; }
+                } else if (carouselIndex > 0) {
+                    carouselIndex--;
+                } else {
+                    // Once the carousel has returned to slide one, choose the next batch.
+                    initCarousel();
+                    return;
+                }
+                updateCarousel();
+            }, 1700);
+        }
+
+        function updateCarousel() {
+            const strip = document.getElementById('carouselStrip');
+            const dots = document.querySelectorAll('#carouselDots button');
+            const pill = document.getElementById('carouselPill');
+            if (!strip || !pill || !dots.length) return;
+            strip.style.transform = `translateX(-${carouselIndex * 100}%)`;
+            dots.forEach((dot, i) => {
+                dot.style.background = i === carouselIndex ? 'transparent' : '';
+                dot.setAttribute('aria-selected', i === carouselIndex ? 'true' : 'false');
+            });
+            const activeDot = dots[carouselIndex];
+            if (activeDot) {
+                pill.style.transform = `translateX(${activeDot.offsetLeft - 6}px)`;
+                pill.style.width = '20px';
+            }
+        }
+
+        function toggleLens(e, postId, imgUrl) {
+            if (e) { e.stopPropagation(); e.preventDefault(); }
+            if (navigator.vibrate) navigator.vibrate(20);
+            const container = document.getElementById(`lens-container-${postId}`);
+            const lens = document.getElementById(`lens-${postId}`);
+            const img = document.getElementById(`lens-img-${postId}`);
+
+            if (activeLens && activeLens !== container) activeLens.classList.remove('active');
+            if (container.classList.contains('active')) {
+                container.classList.remove('active');
+                activeLens = null;
+                return;
+            }
+            activeLens = container;
+            container.classList.add('active');
+
+            const sourceImage = container.parentElement.querySelector('.dynamic-img');
+            const containerRect = container.getBoundingClientRect();
+            const sourceRect = sourceImage.getBoundingClientRect();
+            const startX = sourceRect.left - containerRect.left + sourceRect.width / 2;
+            const startY = sourceRect.top - containerRect.top + sourceRect.height / 2;
+            img.style.width = `${containerRect.width}px`;
+            img.style.height = `${containerRect.height}px`;
+            moveLens(lens, img, startX, startY, containerRect.width, containerRect.height);
+
+            let isDragging = false;
+            let grabOffsetX = 0;
+            let grabOffsetY = 0;
+            lens.onpointerdown = (ev) => {
+                const rect = container.getBoundingClientRect();
+                const lensRect = lens.getBoundingClientRect();
+                isDragging = true;
+                grabOffsetX = ev.clientX - lensRect.left - lensRect.width / 2;
+                grabOffsetY = ev.clientY - lensRect.top - lensRect.height / 2;
+                lens.setPointerCapture(ev.pointerId);
+                ev.preventDefault();
+                ev.stopPropagation();
+            };
+            lens.onpointermove = (ev) => {
+                if (!isDragging) return;
+                const rect = container.getBoundingClientRect();
+                moveLens(lens, img, ev.clientX - rect.left - grabOffsetX, ev.clientY - rect.top - grabOffsetY, rect.width, rect.height);
+            };
+            lens.onpointerup = (ev) => {
+                isDragging = false;
+                if (lens.hasPointerCapture(ev.pointerId)) lens.releasePointerCapture(ev.pointerId);
+            };
+            lens.onpointercancel = () => { isDragging = false; };
+        }
+
+        function moveLens(lens, img, x, y, w, h) {
+            const lensSize = 160;
+            const zoom = 2.5;
+            const radius = lensSize / 2;
+            x = Math.max(radius, Math.min(w - radius, x));
+            y = Math.max(radius, Math.min(h - radius, y));
+            lens.style.left = `${x - radius}px`;
+            lens.style.top = `${y - radius}px`;
+            img.style.width = `${w}px`;
+            img.style.height = `${h}px`;
+            img.style.transform = `translate(${radius - x * zoom}px, ${radius - y * zoom}px) scale(${zoom})`;
+            img.style.transformOrigin = '0 0';
+        }
+
         function formatCount(num) {
             if (num >= 1000) return (num / 1000).toFixed(1).replace('.0', '') + 'К';
             return num.toString();
         }
 
         function handleSingleTap(e, postId) {
-            if (e.target.closest('.action-btn') || e.target.closest('.post-info')) return;
+            if (e.target.closest('.action-btn') || e.target.closest('.post-info') || e.target.closest('.lens-btn')) return;
             const currentTime = new Date().getTime();
             const tapLength = currentTime - lastTap;
             if (tapLength < 300 && tapLength > 0) {
@@ -657,6 +849,60 @@
             toggleLike(e, postId);
         }
 
+        const checkUsernameExists = async (username) => {
+            const { data } = await supabaseClient.from('users').select('id').eq('username', username).single();
+            return !!data;
+        };
+
+        async function onUsernameInput() {
+            const username = document.getElementById('authUsername').value.trim();
+            const pwWrap = document.getElementById('pwStrengthWrap');
+            if (!username || /[а-яА-ЯёЁ]/.test(username)) {
+                pwWrap.style.display = 'none';
+                return;
+            }
+            const exists = await checkUsernameExists(username);
+            pwWrap.style.display = exists ? 'none' : 'flex';
+            updatePasswordStrength();
+        }
+
+        function updatePasswordStrength() {
+            const pw = document.getElementById('authPassword').value;
+            const bars = [document.getElementById('pwBar1'), document.getElementById('pwBar2'), document.getElementById('pwBar3'), document.getElementById('pwBar4')];
+            const text = document.getElementById('pwStrengthText');
+            
+            let score = 0;
+            if (pw.length >= 6) score = 1;
+            if (pw.length >= 8 && /[a-z]/.test(pw) && /[A-Z]/.test(pw)) score = 2;
+            if (/\d/.test(pw)) score = 3;
+            if (/[^A-Za-z0-9]/.test(pw) && pw.length >= 10) score = 4;
+
+            const colors = ['var(--red)', 'var(--orange)', 'var(--yellow)', 'var(--green)'];
+            const labels = ['Слишком короткий', 'Слабый', 'Средний', 'Хороший', 'Надежный'];
+
+            bars.forEach((bar, i) => {
+                if (i < score) {
+                    bar.style.width = '100%';
+                    bar.style.backgroundColor = colors[Math.min(score - 1, 3)];
+                } else {
+                    bar.style.width = '0%';
+                }
+            });
+
+            text.textContent = labels[score];
+            text.style.color = score > 0 ? colors[Math.min(score - 1, 3)] : 'var(--secondary-text)';
+        }
+
+        function togglePasswordVisibility() {
+            const input = document.getElementById('authPassword');
+            const slash = document.getElementById('eyeSlash');
+            if (input.type === 'password') { input.type = 'text'; slash.style.display = 'block'; }
+            else { input.type = 'password'; slash.style.display = 'none'; }
+        }
+
+        document.getElementById('authUsername').addEventListener('input', onUsernameInput);
+        document.getElementById('authPassword').addEventListener('input', updatePasswordStrength);
+
         async function submitAuth() {
             const usernameInput = document.getElementById('authUsername');
             const passwordInput = document.getElementById('authPassword');
@@ -664,50 +910,34 @@
             const password = passwordInput.value.trim();
             
             if (!username || !password) { alert("Заполните оба поля!"); return; }
-            
-            // Проверка на кириллицу
-            if (/[а-яА-ЯёЁ]/.test(username)) {
-                alert("Логин должен содержать только латиницу, цифры и спецсимволы (без русских букв)!");
-                return;
-            }
-            if (/[а-яА-ЯёЁ]/.test(password)) {
-                alert("Пароль должен содержать только латиницу, цифры и спецсимволы (без русских букв)!");
-                return;
-            }
+            if (/[а-яА-ЯёЁ]/.test(username)) { alert("Логин должен содержать только латиницу!"); return; }
+            if (/[а-яА-ЯёЁ]/.test(password)) { alert("Пароль должен содержать только латиницу!"); return; }
 
             const btn = document.querySelector('.auth-btn');
-            btn.innerText = 'Проверка...';
-            btn.disabled = true;
+            btn.innerText = 'Проверка...'; btn.disabled = true;
             try {
                 const { data: existingUser } = await supabaseClient.from('users').select('*').eq('username', username).single();
                 if (existingUser) {
                     if (existingUser.password === password) {
                         currentUser = existingUser;
                         localStorage.setItem('cult_user', JSON.stringify(existingUser));
+                        updateProfileUsername();
                         closeModal({ target: authModal }, 'authModal');
                         loadRealPhotos(true);
-                    } else {
-                        alert("Неверный пароль!");
-                    }
+                    } else { alert("Неверный пароль!"); }
                 } else {
                     const { data: newUser, error: insertError } = await supabaseClient.from('users').insert([{ username, password }]).select().single();
                     if (newUser) {
                         currentUser = newUser;
                         localStorage.setItem('cult_user', JSON.stringify(newUser));
+                        updateProfileUsername();
                         closeModal({ target: authModal }, 'authModal');
                         loadRealPhotos(true);
-                    } else {
-                        alert("Ошибка при создании аккаунта: " + insertError.message);
-                    }
+                    } else { alert("Ошибка: " + insertError.message); }
                 }
-            } catch (err) {
-                console.error(err);
-                alert("Ошибка сети");
-            } finally {
-                btn.innerText = 'Продолжить';
-                btn.disabled = false;
-                usernameInput.value = '';
-                passwordInput.value = '';
+            } catch (err) { alert("Ошибка сети"); } finally {
+                btn.innerText = 'Продолжить'; btn.disabled = false;
+                usernameInput.value = ''; passwordInput.value = '';
             }
         }
 
@@ -751,9 +981,7 @@
                 setTimeout(() => { openModal('authModal'); }, 450);
                 return;
             }
-            if (navigator.vibrate) navigator.vibrate(20);
-            const btn = e.currentTarget;
-            btn.disabled = true;
+            const btn = e.currentTarget; btn.disabled = true;
             if (likedTags.includes(tag)) {
                 const { error } = await supabaseClient.from('likes').delete().eq('tag', tag).eq('user_id', currentUser.id);
                 if (!error) {
@@ -785,31 +1013,210 @@
             });
         }
 
-        function openLikesModal() {
-            const likesGrid = document.getElementById('likesGrid');
-            likesGrid.innerHTML = '';
-            let uniqueLikedIds = [...new Set(likedPhotos)];
-            if (!isLikesSortedAsc) uniqueLikedIds = uniqueLikedIds.reverse();
-            if (uniqueLikedIds.length === 0) {
-                likesGrid.innerHTML = `<p style="grid-column: span 3; text-align: center; color: #888;">Пока пусто</p>`;
+        async function openComments(photoId, description) {
+            if (navigator.vibrate) navigator.vibrate(20);
+            currentCommentPhotoId = photoId;
+            replyToId = null;
+            editingCommentId = null;
+            document.getElementById('newCommentInput').value = '';
+            document.getElementById('replyIndicator').classList.remove('active');
+            
+            const descBlock = document.getElementById('commentPostDesc');
+            if (description && description.trim().length > 0 && description !== 'null') {
+                descBlock.textContent = description;
+                descBlock.style.display = 'block';
             } else {
-                uniqueLikedIds.forEach(id => {
-                    const photo = allPostsData.find(p => p.id.toString() === id.toString());
-                    if (photo) {
-                        likesGrid.innerHTML += `<div class="grid-item" onclick="scrollToPost('${id}', 'likesModal')"><img src="${photo.img}"></div>`;
-                    }
-                });
+                descBlock.style.display = 'none';
             }
-            openModal('likesModal');
-            btnSortFloating.classList.add('active');
-            btnBackFloating.classList.remove('active');
-            btnFavTagsFloating.classList.remove('active');
+
+            await loadComments(photoId);
+            openModal('commentsModal');
         }
 
-        function toggleSort() {
-            if (navigator.vibrate) navigator.vibrate(20);
-            isLikesSortedAsc = !isLikesSortedAsc;
-            openLikesModal(); 
+        async function loadComments(photoId) {
+            const list = document.getElementById('commentsList');
+            list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--secondary-text);">Загрузка...</div>';
+            
+            const { data, error } = await supabaseClient.from('comments')
+                .select(`*, users(username)`)
+                .eq('photo_id', photoId)
+                .order('created_at', { ascending: false });
+
+            if (error) { console.error(error); return; }
+            list.innerHTML = '';
+            
+            if (!data || data.length === 0) {
+                list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--secondary-text);">Нет комментариев</div>';
+                return;
+            }
+
+            const rootComments = data.filter(c => !c.parent_id);
+            
+            const renderComment = (c, includeReplies = true) => {
+                const dateStr = new Date(c.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + 
+                                new Date(c.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                
+                const isMyComment = currentUser && currentUser.id == c.user_id;
+                const replies = includeReplies ? data.filter(r => r.parent_id === c.id) : [];
+
+                let actionButtons = '';
+                if (isMyComment) {
+                    actionButtons = `
+                        <div class="comment-actions">
+                            <button class="comment-act-btn" onclick="editComment('${c.id}', '${c.text.replace(/'/g, "\\'")}')">Изменить</button>
+                            <button class="comment-act-btn" onclick="deleteComment('${c.id}')">Удалить</button>
+                        </div>
+                    `;
+                }
+
+                let repliesHTML = '';
+                if (replies.length > 0) {
+                    repliesHTML = `<div class="comment-replies">${replies.map(r => renderComment(r, false)).join('')}</div>`;
+                }
+
+                return `
+                    <div class="comment-item" id="comment-${c.id}">
+                        ${actionButtons}
+                        <div class="comment-header">
+                            <span class="comment-author">@${c.users?.username || 'unknown'}</span>
+                            <span class="comment-text" id="comment-text-${c.id}">${c.text}</span>
+                        </div>
+                        <span class="comment-date">${dateStr}</span>
+                        ${repliesHTML}
+                    </div>
+                `;
+            };
+
+            rootComments.forEach(c => { list.innerHTML += renderComment(c); });
+        }
+
+        function prepareReply(commentId, username) {
+            replyToId = commentId;
+            document.getElementById('replyIndicator').classList.add('active');
+            document.getElementById('replyToName').textContent = username;
+            document.getElementById('newCommentInput').focus();
+        }
+
+        function cancelReply() {
+            replyToId = null;
+            document.getElementById('replyIndicator').classList.remove('active');
+        }
+
+        function editComment(commentId, currentText) {
+            editingCommentId = commentId;
+            document.getElementById('newCommentInput').value = currentText;
+            document.getElementById('newCommentInput').focus();
+            document.querySelector('.add-comment-btn').textContent = 'Сохранить';
+        }
+
+        async function deleteComment(commentId) {
+            if (!confirm('Удалить комментарий?')) return;
+            const { error } = await supabaseClient.from('comments').delete().eq('id', commentId).eq('user_id', currentUser.id);
+            if (!error) {
+                loadComments(currentCommentPhotoId);
+            } else {
+                alert('Ошибка удаления');
+            }
+        }
+
+        async function submitComment() {
+            if (!currentUser) { openModal('authModal'); return; }
+            const input = document.getElementById('newCommentInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            if (editingCommentId) {
+                const { error } = await supabaseClient.from('comments').update({ text }).eq('id', editingCommentId).eq('user_id', currentUser.id);
+                if (!error) {
+                    editingCommentId = null;
+                    input.value = '';
+                    document.querySelector('.add-comment-btn').textContent = 'Отправить';
+                    loadComments(currentCommentPhotoId);
+                }
+            } else {
+                const payload = { photo_id: currentCommentPhotoId, user_id: currentUser.id, text: text, parent_id: replyToId };
+                const { error } = await supabaseClient.from('comments').insert([payload]);
+                if (!error) {
+                    input.value = '';
+                    cancelReply();
+                    loadComments(currentCommentPhotoId);
+                } else {
+                    alert('Ошибка: ' + error.message);
+                }
+            }
+        }
+
+        function handleFileSelect(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.getElementById('compressCanvas');
+                        const ctx = canvas.getContext('2d');
+                        let width = img.width, height = img.height;
+                        const MAX_SIZE = 1080;
+                        if (width > height && width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+                        else if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+                        canvas.width = width; canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob(function(blob) {
+                            currentFileToUpload = new File([blob], "photo.jpg", { type: "image/jpeg" });
+                            previewImage.src = URL.createObjectURL(blob);
+                            previewImage.style.display = 'block';
+                            document.getElementById('uploadText').innerText = 'Файл выбран';
+                            document.getElementById('uploadIcon').style.display = 'none';
+                            document.getElementById('replaceFileBtn').style.display = 'block';
+                        }, 'image/jpeg', 0.8);
+                    }
+                    img.src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('descInput').addEventListener('input', function() {
+            const count = 250 - this.value.length;
+            const el = document.getElementById('descCount');
+            el.textContent = count;
+            el.className = 'desc-count' + (count < 20 ? ' near' : '') + (count === 0 ? ' full' : '');
+        });
+
+        async function submitPhoto() {
+            const tagInput = document.getElementById('tagInput').value;
+            const descInput = document.getElementById('descInput').value.trim();
+            if (!currentFileToUpload) { alert("Выберите файл!"); return; }
+            if (tagInput === '@') { alert("Введите тег!"); return; }
+            if (/[а-яА-ЯёЁ]/.test(tagInput)) { alert("Тег должен содержать только латиницу!"); return; }
+
+            const formData = new FormData();
+            formData.append('photo', currentFileToUpload);
+            formData.append('tag', tagInput);
+            if (descInput) formData.append('description', descInput);
+
+            const btn = document.querySelector('.btn-submit');
+            btn.innerText = 'Отправка...'; btn.disabled = true;
+            try {
+                const res = await fetch('/api/submit', { method: 'POST', body: formData });
+                if (res.ok) {
+                    alert('Успешно отправлено!');
+                    document.getElementById('fileInput').value = '';
+                    previewImage.style.display = 'none';
+                    document.getElementById('uploadText').innerText = 'Нажмите, чтобы выбрать файл';
+                    document.getElementById('uploadIcon').style.display = 'flex';
+                    document.getElementById('replaceFileBtn').style.display = 'none';
+                    document.getElementById('descInput').value = '';
+                    document.getElementById('descCount').textContent = '250';
+                    currentFileToUpload = null;
+                    closeModal({target: submitModal}, 'submitModal');
+                } else {
+                    const data = await res.json();
+                    alert('Ошибка: ' + data.error);
+                }
+            } catch (err) { alert('Ошибка сети'); } finally {
+                btn.innerText = 'Отправить'; btn.disabled = false;
+            }
         }
 
         function openModal(id) {
@@ -838,6 +1245,13 @@
                 btnSortFloating.classList.remove('active');
                 btnFavTagsFloating.classList.remove('active');
                 isFavoriteTagsView = false;
+                
+                if (id === 'commentsModal') {
+                    cancelReply();
+                    editingCommentId = null;
+                    document.querySelector('.add-comment-btn').textContent = 'Отправить';
+                }
+
                 setTimeout(() => {
                     modal.style.display = 'none';
                     if (content) content.style.transform = '';
@@ -848,7 +1262,6 @@
 
         let touchStartY = 0;
         let currentTouchModal = null;
-
         document.addEventListener('touchstart', (e) => {
             const dragArea = e.target.closest('.modal-drag-area');
             if (dragArea) {
@@ -892,14 +1305,11 @@
 
         function renderTagsList() {
             const tagsList = document.getElementById('tagsList');
-            
-            // Сортируем по алфавиту (англ), игнорируя @ и регистр букв
             const uniqueTags = [...new Set(allPostsData.map(p => p.tag))].sort((a, b) => {
                 const cleanA = a.replace('@', '').toLowerCase();
                 const cleanB = b.replace('@', '').toLowerCase();
                 return cleanA.localeCompare(cleanB, 'en');
             });
-
             tagsList.innerHTML = '';
             let currentLetter = '';
             let filteredTags = uniqueTags;
@@ -930,17 +1340,14 @@
                                 <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                             </button>
                             <button class="action-btn profile-btn" onclick="event.stopPropagation(); openTelegramLink('${tag}')">
-                                <svg viewBox="0 0 24 24">
-                                    <circle cx="12" cy="8" r="4.5" fill="black" stroke="none"></circle>
-                                    <rect x="5" y="14" width="14" height="8" rx="4" fill="black" stroke="none"></rect>
-                                </svg>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.2 18.4 19c-.24 1.05-.86 1.31-1.74.82l-4.8-3.54-2.32 2.23c-.26.26-.48.48-.98.48l.35-4.9 8.92-8.06c.39-.35-.08-.54-.6-.19L6.2 12.8l-4.66-1.46c-1.01-.32-1.03-1.01.21-1.5L20 3.1c.84-.31 1.58.2 1.6 1.1Z" fill="currentColor" stroke="none"/></svg>
                             </button>
                         </div>
                     </div>
                 `;
             });
             if (filteredTags.length === 0 && isFavoriteTagsView) {
-                tagsList.innerHTML = `<p style="text-align:center; width:100%; padding: 20px; color:#888;">Нет избранных тегов</p>`;
+                tagsList.innerHTML = `<p style="text-align:center; width:100%; padding: 20px; color:var(--secondary-text);">Нет избранных тегов</p>`;
             }
         }
 
@@ -967,8 +1374,33 @@
             btnFavTagsFloating.classList.remove('active');
         }
 
+        function showFeedMiniatures() {
+            if (navigator.vibrate) navigator.vibrate(20);
+            const authorGrid = document.getElementById('authorGrid');
+            authorGrid.innerHTML = '';
+            allPostsData.forEach(p => {
+                authorGrid.innerHTML += `<div class="grid-item" onclick="scrollToPost('${p.id}', 'searchModal')"><img src="${p.img}" loading="lazy"></div>`;
+            });
+            document.getElementById('tagsView').style.display = 'none';
+            document.getElementById('gridView').style.display = 'block';
+            document.getElementById('searchTitle').innerText = 'Вся лента';
+            btnBackFloating.classList.add('active');
+            btnFavTagsFloating.classList.remove('active');
+            isFavoriteTagsView = false;
+        }
+
         function handleBackClick() {
             if (navigator.vibrate) navigator.vibrate(20);
+            const title = document.getElementById('searchTitle').innerText;
+            if (title === 'Вся лента') {
+                document.getElementById('tagsView').style.display = 'block';
+                document.getElementById('gridView').style.display = 'none';
+                document.getElementById('searchTitle').innerText = 'Поиск по тегам';
+                btnBackFloating.classList.remove('active');
+                btnFavTagsFloating.classList.add('active');
+                renderTagsList();
+                return;
+            }
             if (isFavoriteTagsView) {
                 isFavoriteTagsView = false;
                 document.getElementById('searchTitle').innerText = 'Поиск по тегам';
@@ -993,6 +1425,33 @@
             }, 500);
         }
 
+        function openLikesModal() {
+            const likesGrid = document.getElementById('likesGrid');
+            likesGrid.innerHTML = '';
+            let uniqueLikedIds = [...new Set(likedPhotos)];
+            if (!isLikesSortedAsc) uniqueLikedIds = uniqueLikedIds.reverse();
+            if (uniqueLikedIds.length === 0) {
+                likesGrid.innerHTML = `<p style="grid-column: span 3; text-align: center; color: var(--secondary-text);">Пока пусто</p>`;
+            } else {
+                uniqueLikedIds.forEach(id => {
+                    const photo = allPostsData.find(p => p.id.toString() === id.toString());
+                    if (photo) {
+                        likesGrid.innerHTML += `<div class="grid-item" onclick="scrollToPost('${id}', 'likesModal')"><img src="${photo.img}"></div>`;
+                    }
+                });
+            }
+            openModal('likesModal');
+            btnSortFloating.classList.add('active');
+            btnBackFloating.classList.remove('active');
+            btnFavTagsFloating.classList.remove('active');
+        }
+
+        function toggleSort() {
+            if (navigator.vibrate) navigator.vibrate(20);
+            isLikesSortedAsc = !isLikesSortedAsc;
+            openLikesModal(); 
+        }
+
         function openTelegramLink(tag) {
             if (navigator.vibrate) navigator.vibrate(20);
             let username = tag.trim().replace(/@/g, '');
@@ -1010,9 +1469,16 @@
         function updateControlsVisibility(scrollTop) {
             if (document.body.classList.contains('modal-open')) {
                 bottomControls.classList.add('hidden');
+                document.getElementById('profileFloatingBtn').classList.add('hidden');
+                document.getElementById('profileUsernamePill').classList.add('hidden');
                 btnPulseDown.classList.add('hidden');
                 btnPulseUp.classList.add('hidden');
                 return;
+            }
+
+            if (activeLens) {
+                activeLens.classList.remove('active');
+                activeLens = null;
             }
 
             bottomControls.classList.add('scrolling');
@@ -1021,7 +1487,6 @@
 
             const scrollHeight = feed.scrollHeight;
             const clientHeight = feed.clientHeight;
-
             const isAtBottom = scrollTop + clientHeight >= scrollHeight - 50;
             const isAtTop = scrollTop <= 10;
 
@@ -1038,6 +1503,8 @@
                 btnPulseDown.classList.remove('hidden');
             } else if (isAtBottom) {
                 bottomControls.classList.add('hidden');
+                document.getElementById('profileFloatingBtn').classList.add('hidden');
+                document.getElementById('profileUsernamePill').classList.add('hidden');
                 btnPulseDown.classList.add('hidden');
                 btnPulseUp.classList.remove('hidden');
             } else {
@@ -1048,17 +1515,31 @@
 
             if (scrollTop > 200 && !isAtBottom) {
                 btnDown.classList.remove('hidden');
+                document.getElementById('profileFloatingBtn').classList.remove('hidden');
+                document.getElementById('profileUsernamePill').classList.remove('hidden');
             } else {
                 btnDown.classList.add('hidden');
+                document.getElementById('profileFloatingBtn').classList.add('hidden');
+                document.getElementById('profileUsernamePill').classList.add('hidden');
             }
 
             logo.classList.add('shrunk');
             bottomControls.classList.add('shrunk');
+            document.getElementById('profileFloatingBtn').classList.add('shrunk');
+            document.getElementById('profileUsernamePill').classList.add('shrunk');
+            btnPulseDown.classList.add('shrunk');
+            btnPulseUp.classList.add('shrunk');
+            btnDown.classList.add('shrunk');
 
             clearTimeout(scrollTimeout);
             scrollTimeout = setTimeout(() => {
                 logo.classList.remove('shrunk');
                 bottomControls.classList.remove('shrunk');
+                document.getElementById('profileFloatingBtn').classList.remove('shrunk');
+                document.getElementById('profileUsernamePill').classList.remove('shrunk');
+                btnPulseDown.classList.remove('shrunk');
+                btnPulseUp.classList.remove('shrunk');
+                btnDown.classList.remove('shrunk');
                 bottomControls.classList.remove('scrolling');
                 btnPulseDown.classList.remove('scrolling');
                 btnPulseUp.classList.remove('scrolling');
@@ -1066,7 +1547,11 @@
 
             clearTimeout(hideArrowTimeout);
             hideArrowTimeout = setTimeout(() => {
-                if (scrollTop > 200 && !isAtBottom) btnDown.classList.add('hidden');
+                if (scrollTop > 200 && !isAtBottom) {
+                    btnDown.classList.add('hidden');
+                    document.getElementById('profileFloatingBtn').classList.add('hidden');
+                document.getElementById('profileUsernamePill').classList.add('hidden');
+                }
             }, 1000);
         }
 
@@ -1108,78 +1593,6 @@
             if (topMask) topMask.style.transform = 'translateZ(0)';
             if (bottomMask) bottomMask.style.transform = 'translateZ(0)';
         }, 100);
-
-        function handleFileSelect(input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.getElementById('compressCanvas');
-                        const ctx = canvas.getContext('2d');
-                        let width = img.width, height = img.height;
-                        const MAX_SIZE = 1080;
-                        if (width > height && width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
-                        else if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
-                        canvas.width = width; canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-                        canvas.toBlob(function(blob) {
-                            currentFileToUpload = new File([blob], "photo.jpg", { type: "image/jpeg" });
-                            previewImage.src = URL.createObjectURL(blob);
-                            previewImage.style.display = 'block';
-                            document.getElementById('uploadText').innerText = 'Файл выбран';
-                            document.getElementById('uploadIcon').style.display = 'none';
-                            // Показываем кнопку "Заменить файл"
-                            document.getElementById('replaceFileBtn').style.display = 'block';
-                        }, 'image/jpeg', 0.8);
-                    }
-                    img.src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        async function submitPhoto() {
-            const tagInput = document.getElementById('tagInput').value;
-            if (!currentFileToUpload) { alert("Выберите файл!"); return; }
-            if (tagInput === '@') { alert("Введите тег!"); return; }
-            
-            // Проверка на кириллицу в теге
-            if (/[а-яА-ЯёЁ]/.test(tagInput)) {
-                alert("Тег должен содержать только латиницу, цифры и спецсимволы (без русских букв)!");
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('photo', currentFileToUpload);
-            formData.append('tag', tagInput);
-            const btn = document.querySelector('.btn-submit');
-            btn.innerText = 'Отправка...';
-            btn.disabled = true;
-            try {
-                const res = await fetch('/api/submit', { method: 'POST', body: formData });
-                if (res.ok) {
-                    alert('Файл успешно отправлен на модерацию!');
-                    document.getElementById('fileInput').value = '';
-                    previewImage.style.display = 'none';
-                    previewImage.src = '';
-                    document.getElementById('uploadText').innerText = 'Нажмите, чтобы выбрать файл';
-                    document.getElementById('uploadIcon').style.display = 'flex';
-                    document.getElementById('replaceFileBtn').style.display = 'none'; // Скрываем кнопку замены
-                    currentFileToUpload = null;
-                    closeModal({target: submitModal}, 'submitModal');
-                } else {
-                    const data = await res.json();
-                    alert('Ошибка: ' + data.error);
-                }
-            } catch (err) {
-                alert('Ошибка сети');
-            } finally {
-                btn.innerText = 'Отправить';
-                btn.disabled = false;
-            }
-        }
     </script>
 </body>
 </html>
