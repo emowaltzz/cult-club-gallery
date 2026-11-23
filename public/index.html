@@ -871,7 +871,7 @@
         }
 
         function shareProfile(profileId) {
-            const shareUrl = `https://t.me/cultclubgallery_bot/app?startapp=profile_${profileId}`;
+            const shareUrl = `https://t.me/cultclubgallery_bot/ccg?startapp=profile_${profileId}`;
             navigator.clipboard.writeText(shareUrl).then(() => {
                 const toast = document.getElementById('toastMsg');
                 toast.textContent = 'Ссылка скопирована';
