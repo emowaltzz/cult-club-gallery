@@ -662,6 +662,25 @@
         tg.ready();
         tg.disableVerticalSwipes();
 
+// Получаем start_param из initDataUnsafe или из URL (запасной вариант)
+let startParam = tg.initDataUnsafe?.start_param;
+if (!startParam) {
+    const urlParams = new URLSearchParams(window.location.search);
+    startParam = urlParams.get('tgWebAppStartParam');
+}
+
+// Обработка Deep Link из ссылки (используем startParam)
+if (startParam && startParam.startsWith('profile_')) {
+    const profileId = startParam.replace('profile_', '');
+    setTimeout(() => {
+        if(currentUser) {
+            openUserProfile(profileId);
+        } else {
+            setTimeout(() => openUserProfile(profileId), 500);
+        }
+    }, 500);
+}
+
         const supabaseUrl = 'https://asoljhfvsrxmeniwsvel.supabase.co';
         const supabaseKey = 'sb_publishable_zRTzYg6bqdPH4JYRIngTMQ_K0JNe7zG';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
