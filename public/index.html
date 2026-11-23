@@ -33,7 +33,6 @@
             --green: #000000;
         }
 
-
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
         body {
@@ -119,7 +118,6 @@
             .btn-add { width: 58px; height: 58px; }
         }
 
-
         .btn-pulse-down, .btn-pulse-up { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(0) scale(1); width: 65px; height: 65px; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 4px 10px var(--btn-shadow); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; animation: pulseWhole 2s ease-in-out infinite; opacity: 1; visibility: visible; transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0s; z-index: 99; }
         .btn-pulse-down.hidden, .btn-pulse-up.hidden { opacity: 0; visibility: hidden; pointer-events: none; animation-play-state: paused; transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0.35s; }
         .btn-pulse-down svg, .btn-pulse-up svg { width: 24px; height: 24px; stroke: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.8; display: block; }
@@ -137,7 +135,8 @@
         .modal-overlay, .modal-content, .modal-body { overscroll-behavior: contain; }
         .modal-content { touch-action: pan-y; -webkit-overflow-scrolling: touch; }
         .modal-body { touch-action: pan-y; }
-        #profileModal .modal-content { z-index: 221; }
+
+        /* Парящая строка поиска профилей — теперь только в профиле */
         .profile-search-float { position:absolute; z-index:223; left:50%; bottom:calc(70vh + 12px); transform:translate(-50%, 12px); width:calc(100% - 28px); max-width:460px; opacity:0; visibility:hidden; pointer-events:none; transition:opacity .35s var(--smooth-ease), transform .45s var(--smooth-ease), visibility 0s linear .35s; }
         #profileModal.active .profile-search-float { opacity:1; visibility:visible; pointer-events:auto; transform:translate(-50%, 0); transition-delay:0s; }
         .profile-search-input-wrap { display:flex; align-items:center; gap:9px; padding:11px 15px; border:1px solid var(--border); border-radius:18px; background:var(--modal-bg); box-shadow:0 8px 28px rgba(0,0,0,.16); }
@@ -152,6 +151,7 @@
         .profile-search-avatar { width:34px; height:34px; border-radius:50%; object-fit:cover; background:var(--fill-1); flex-shrink:0; }
         @keyframes profileSearchIn { from {opacity:0; transform:translateY(-5px) scale(.98)} to {opacity:1; transform:translateY(0) scale(1)} }
         @media (max-height:650px) { .profile-search-float { bottom:calc(70vh + 8px); } }
+
         .modal-content { background: var(--modal-bg); border-top: 1px solid var(--border); width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; height: 70vh; display: flex; flex-direction: column; transform: translateY(100%); opacity: 0; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease; box-shadow: 0 -10px 40px rgba(0,0,0,0.15); position: relative; z-index: 201; overflow: hidden; }
         .modal-overlay.active .modal-content { transform: translateY(0); opacity: 1; }
         .modal-drag-area { padding: 30px 20px 15px; flex-shrink: 0; cursor: grab; position: relative; touch-action: none; display: flex; align-items: center; justify-content: center; }
@@ -182,14 +182,100 @@
 
         #submitModal .modal-content { height: 85vh; }
         #submitModal .modal-body { gap: 12px; justify-content: flex-start; padding-bottom: 20px; }
+        
+        /* Обновленное окно комментариев */
+        #commentsModal .modal-content { height: 70vh; }
         #commentsModal .modal-body { justify-content:flex-start; padding:0 20px 12px; overflow:hidden; min-height:0; }
         #commentsModal #commentModalBody { display:flex; flex-direction:column; flex:1 1 auto; min-height:0; height:100%; gap:0; }
-        #commentsModal #commentPostDesc { order:0; flex:0 0 auto; max-height:20vh; overflow-y:auto; margin:0 0 10px; }
         #commentsModal #commentsList { order:1; flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; padding:2px 2px 12px 0; }
         #commentsModal .add-comment-box { order:2; flex:0 0 auto; margin:10px 0 0; padding:10px 0 0; border-bottom:0; border-top:1px solid var(--border); background:var(--modal-bg); }
         #commentsModal .add-comment-input { max-height:110px; min-height:54px; }
         #commentsModal .add-comment-btn { flex:0 0 auto; }
-        
+
+        /* Парящий блок описания поста (над окном комментариев) */
+        .floating-post-desc {
+            position: absolute;
+            left: 50%;
+            bottom: calc(70vh + 12px);
+            transform: translate(-50%, 12px);
+            width: calc(100% - 28px);
+            max-width: 460px;
+            background: var(--modal-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 14px;
+            box-shadow: 0 8px 28px rgba(0,0,0,.16);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity .35s var(--smooth-ease), transform .45s var(--smooth-ease), visibility 0s linear .35s;
+            z-index: 223;
+            /* Ограничение: блок не выходит за верх экрана */
+            max-height: calc(100vh - 70vh - 40px);
+        }
+        #commentsModal.active .floating-post-desc {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translate(-50%, 0);
+            transition-delay: 0s;
+        }
+        .floating-desc-tag {
+            font-size: 12px;
+            color: var(--secondary-text);
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        .floating-desc-text {
+            font-size: 14px;
+            color: var(--text-color);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-word;
+            transition: max-height 0.35s var(--smooth-ease);
+            max-height: calc(3 * 1.4 * 14px);
+        }
+        .floating-desc-text.expanded {
+            display: block;
+            -webkit-line-clamp: unset;
+            -webkit-box-orient: initial;
+            overflow-y: auto;
+            max-height: calc(100vh - 70vh - 120px);
+            padding-right: 4px;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+        }
+        .floating-desc-text.expanded::-webkit-scrollbar { width: 4px; }
+        .floating-desc-text.expanded::-webkit-scrollbar-thumb { background: var(--fill-1); border-radius: 2px; }
+        .floating-desc-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .btn-expand-desc {
+            background: none;
+            border: none;
+            color: var(--secondary-text);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+        }
+        .floating-desc-date {
+            font-size: 12px;
+            color: var(--secondary-text);
+            margin-left: auto;
+        }
+
         .file-upload-wrapper { position: relative; width: 100%; flex: 1; min-height: 150px; border: 2px dashed var(--border); border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--fill-3); cursor: pointer; overflow: hidden; margin-bottom: 0; }
         .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
         .upload-icon svg { width: 32px; height: 32px; stroke: var(--secondary-text); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; }
@@ -212,21 +298,24 @@
         .btn-submit { width: 100%; padding: 16px; background: var(--text-color); color: var(--bg-color); border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: inherit; flex-shrink: 0; transition: opacity 0.2s; text-transform: uppercase; margin-top: auto; }
         .btn-submit:active { opacity: 0.8; }
 
-        /* Поиск */
         .search-header-row { display: flex; justify-content: center; margin-top: 15px; margin-bottom: 15px; }
         .btn-feed-link { display: inline-flex; align-items: center; justify-content: center; padding: 10px 30px; background: var(--btn-bg); color: var(--text-color); text-decoration: none; border: 1px solid var(--border); border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px; cursor: pointer; transition: transform 0.2s; }
         .btn-feed-link:active { transform: scale(0.95); }
 
         .tags-list { display: flex; flex-direction: column; padding-bottom: 13px; }
         .alphabet-header { font-size: 15px; font-weight: 600; color: var(--text-color); padding: 15px 0 5px 10px; background: transparent; position: relative; z-index: 1; }
-        .tag-item { padding: 12px 15px; background: var(--fill-1); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; transition: background 0.2s; }
+        
+        .tag-item-wrapper { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .tag-item { flex: 1; padding: 12px 15px; background: var(--fill-1); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; min-width: 0; }
         .tag-item:active { background: var(--fill-2); }
         .tag-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
         .tag-name { font-weight: 500; font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-color); }
         .tag-count { font-size: 13px; color: var(--secondary-text); font-weight: 400; }
         .tag-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; margin-left: 10px; }
+        
         .tag-profile-btn { width:40px; height:40px; min-width:40px; padding:0; position:relative; border-radius:50%; border:1px solid var(--border); background:var(--btn-bg); box-shadow:0 2px 5px var(--btn-shadow); display:flex; align-items:center; justify-content:center; color:var(--icon-color); cursor:pointer; flex-shrink:0; line-height:0; }
         .tag-profile-btn svg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:block; width:20px; height:20px; fill:transparent !important; stroke:var(--icon-color); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; pointer-events:none; }
+
         .comment-author-wrap { display:inline-flex; align-items:center; gap:6px; min-width:0; flex:none; vertical-align:middle; }
         .comment-header .comment-author-avatar, .comment-header .comment-author-avatar-placeholder { display:inline-flex; align-self:center; }
         .comment-author-avatar { width:24px; height:24px; border-radius:50%; object-fit:cover; flex:none; background:var(--fill-1); border:1px solid var(--border); }
@@ -249,7 +338,6 @@
         .btn-fav-tags-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
         .btn-fav-tags-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: var(--icon-color); fill: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-        .post-description { background: var(--fill-2); border-radius: 14px; padding: 16px; font-size: 15px; line-height: 1.5; color: var(--text-color); margin-bottom: 16px; flex-shrink: 0; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; unicode-bidi: plaintext; }
         .add-comment-box { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; flex-shrink: 0; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
         .reply-indicator { display: none; background: var(--fill-1); padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 8px; color: var(--secondary-text); align-items: center; justify-content: space-between; }
         .reply-indicator.active { display: flex; }
@@ -274,7 +362,6 @@
         .comment-replies > .comment-item { flex: 0 0 auto; min-width: min(220px, 72vw); max-width: 80%; }
         .comment-replies .comment-item { background: var(--fill-3); padding: 10px 12px; }
 
-
         .profile-screen { width:100%; max-width:500px; margin:0 auto; padding:4px 0 28px; }
         .profile-top { display:flex; align-items:flex-start; gap:14px; position:relative; padding:8px 2px 16px; }
         .profile-avatar-wrap { width:82px; height:82px; flex:none; position:relative; }
@@ -284,26 +371,34 @@
         .profile-display-name { font-size:19px; font-weight:700; line-height:1.2; overflow-wrap:anywhere; }
         .profile-handle { color:var(--secondary-text); font-size:13px; margin-top:4px; overflow-wrap:anywhere; }
         .profile-bio { color:var(--text-color); font-size:14px; line-height:1.4; margin:12px 0 16px; white-space:pre-wrap; overflow-wrap:anywhere; }
+        .profile-bio a { color: var(--text-color); text-decoration: underline; font-weight: 500; }
+        .profile-bio strong { font-weight: 700; }
+        .profile-bio em { font-style: italic; }
+        
         .profile-tools { position:absolute; top:0; right:0; display:flex; flex-direction:column; gap:8px; }
         .profile-tool-btn, .profile-tag-edit, .profile-tag-delete, .profile-avatar-remove { box-sizing:border-box; padding:0; display:inline-flex; align-items:center; justify-content:center; text-align:center; line-height:0; }
-        .profile-tool-btn { width:38px; height:38px; border-radius:50%; border:1px solid var(--border); background:var(--btn-bg); color:var(--text-color); }
+        .profile-tool-btn { width:38px; height:38px; border-radius:50%; border:1px solid var(--border); background:var(--btn-bg); color:var(--text-color); cursor:pointer; }
         .profile-tool-btn svg, .profile-tag-edit svg { width:18px; height:18px; display:block; flex:none; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+        
         .profile-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:14px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
         .profile-stat { text-align:center; min-width:0; }
         .profile-stat strong { display:block; font-size:18px; color:var(--text-color); font-weight:700; font-variant-numeric:tabular-nums; }
         .profile-stat span { display:block; font-size:11px; color:var(--secondary-text); margin-top:3px; line-height:1.2; }
         .profile-actions { display:flex; gap:10px; margin:16px 0 20px; }
-        .profile-action { flex:1; min-height:42px; border:0; border-radius:14px; background:var(--text-color); color:var(--bg-color); font-size:13px; font-weight:650; padding:0 12px; }
+        .profile-action { flex:1; min-height:42px; border:0; border-radius:14px; background:var(--text-color); color:var(--bg-color); font-size:13px; font-weight:650; padding:0 12px; cursor:pointer; }
         .profile-action.secondary { background:var(--fill-1); color:var(--text-color); border:1px solid var(--border); }
         .profile-action:disabled { opacity:.5; }
-        .profile-section-title { font-size:14px; font-weight:700; margin:18px 0 12px; }
+        
+        .profile-section-title { font-size:14px; font-weight:700; margin:18px 0 12px; display:flex; justify-content:space-between; align-items:center;}
         .profile-mini-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:3px; }
         .profile-mini-grid .grid-item { aspect-ratio:1; overflow:hidden; border-radius:5px; background:var(--fill-1); }
         .profile-mini-grid img { width:100%; height:100%; object-fit:cover; display:block; }
         .profile-empty { color:var(--secondary-text); font-size:13px; text-align:center; padding:24px 8px; }
+        
         .profile-dropdown { display:none; position:absolute; right:0; top:84px; z-index:5; min-width:190px; padding:7px; border:1px solid var(--border); border-radius:14px; background:var(--modal-bg); box-shadow:0 8px 28px rgba(0,0,0,.12); }
         .profile-dropdown.open { display:block; }
         .profile-dropdown button { display:block; width:100%; border:0; border-radius:9px; padding:11px 10px; text-align:left; background:transparent; color:var(--text-color); font-size:13px; }
+        
         .profile-edit-form { display:flex; flex-direction:column; gap:10px; margin:8px 0 18px; }
         .profile-edit-form input,.profile-edit-form textarea,.profile-password-form input,.profile-tag-input { width:100%; border:1px solid var(--border); border-radius:12px; background:var(--fill-1); color:var(--text-color); padding:12px; font:inherit; font-size:14px; outline:none; }
         .profile-edit-form textarea { min-height:86px; resize:vertical; }
@@ -317,6 +412,14 @@
         .profile-password-form { display:flex; flex-direction:column; gap:9px; padding:8px 0; }
         .profile-following { opacity:.55; }
 
+        /* Markdown toolbar для bio */
+        .md-toolbar { display:flex; gap:6px; margin-bottom:6px; flex-wrap:wrap; }
+        .md-btn { width:36px; height:36px; border:1px solid var(--border); border-radius:10px; background:var(--fill-1); color:var(--text-color); font-size:15px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; line-height:1; }
+        .md-btn:active { background:var(--fill-2); }
+        .md-btn.md-bold { font-weight:800; }
+        .md-btn.md-italic { font-style:italic; font-family:Georgia, serif; font-weight:600; }
+        .md-btn.md-link svg { width:18px; height:18px; stroke:var(--text-color); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
         .lens-btn { position: absolute; bottom: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; background: var(--btn-bg); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 20; transition: transform 0.2s; }
         .lens-btn svg { width: 20px; height: 20px; stroke: var(--icon-color); fill: none; stroke-width: 2; }
         .lens-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15; opacity: 0; transition: opacity 0.3s; overflow: hidden; border-radius: 8px; }
@@ -328,6 +431,48 @@
         .support-wrapper { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 10px; margin-bottom: 30px; }
         .support-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 30px; background: var(--text-color); color: var(--bg-color); text-decoration: none; border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px; width: 160px; }
         .chat-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 30px; background: var(--btn-bg); color: var(--text-color); text-decoration: none; border: 1px solid var(--border); border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px; width: 160px; }
+
+        /* Тост-уведомление о копировании */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* Кнопка скрытия клавиатуры */
+        .keyboard-hide-btn {
+            position: fixed;
+            right: 15px;
+            bottom: 90px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--btn-bg);
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            cursor: pointer;
+        }
+        .keyboard-hide-btn svg { width: 20px; height: 20px; stroke: var(--text-color); fill: none; stroke-width: 2; }
     </style>
 </head>
 <body>
@@ -354,6 +499,7 @@
         </button>
     </div>
 
+    <!-- Иконка профиля снизу слева (размер выровнен) -->
     <button class="liquid-glass profile-floating hidden" id="profileFloatingBtn" onclick="handleProfileClick()" aria-label="Профиль пользователя">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 14.8 8.5l6.3.9-4.55 4.43 1.08 6.27L12 17.15l-5.63 2.95 1.08-6.27L2.9 9.4l6.3-.9L12 2.8Z"/></svg>
     </button>
@@ -378,7 +524,13 @@
         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
     </button>
 
+    <!-- Кнопка скрытия клавиатуры -->
+    <button class="keyboard-hide-btn" id="keyboardHideBtn" onclick="hideKeyboard()">
+        <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
 
+    <!-- Тосты -->
+    <div id="toastMsg" class="toast">Ссылка скопирована</div>
 
     <div class="modal-overlay" id="authModal" onclick="closeModal(event, 'authModal')">
         <div class="modal-content auth-modal" onclick="event.stopPropagation()">
@@ -406,6 +558,7 @@
         </div>
     </div>
 
+    <!-- Модальные окна: поиск профиля — только в profileModal -->
     <div class="modal-overlay" id="profileModal" onclick="closeModal(event, 'profileModal')">
         <div class="profile-search-float" onclick="event.stopPropagation()">
             <div class="profile-search-input-wrap">
@@ -447,6 +600,7 @@
         </div>
     </div>
 
+    <!-- searchModal — БЕЗ панели поиска профиля -->
     <div class="modal-overlay" id="searchModal" onclick="closeModal(event, 'searchModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-drag-area"><div class="modal-title" id="searchTitle">Поиск по тегам</div></div>
@@ -462,6 +616,7 @@
         </div>
     </div>
 
+    <!-- likesModal — БЕЗ панели поиска профиля -->
     <div class="modal-overlay" id="likesModal" onclick="closeModal(event, 'likesModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-drag-area"><div class="modal-title">Избранное</div></div>
@@ -470,13 +625,21 @@
     </div>
 
     <div class="modal-overlay" id="commentsModal" onclick="closeModal(event, 'commentsModal')">
+        <!-- Парящее описание -->
+        <div class="floating-post-desc" id="floatingPostDesc" style="display: none;" onclick="event.stopPropagation()">
+            <div class="floating-desc-tag" id="floatingDescTag"></div>
+            <div class="floating-desc-text" id="floatingDescText"></div>
+            <div class="floating-desc-bottom">
+                <button class="btn-expand-desc" id="btnExpandDesc" onclick="toggleDescExpand()" style="display:none;">Развернуть</button>
+                <span class="floating-desc-date" id="floatingDescDate"></span>
+            </div>
+        </div>
+
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-drag-area"><div class="modal-title">Описание</div></div>
+            <div class="modal-drag-area"><div class="modal-title">Комментарии</div></div>
             <div class="modal-body">
                 <div id="commentModalBody">
-                    <div class="post-description" id="commentPostDesc" style="display:none;"></div>
-
-                    <div class="add-comment-box">
+                    <div class="add-comment-box" style="order: 0; margin-top: 0; border-top: none; padding-top: 0;">
                         <div class="reply-indicator" id="replyIndicator">
                             Ответ <span id="replyToName"></span>...
                             <button class="cancel-reply" onclick="cancelReply()">×</button>
@@ -484,7 +647,6 @@
                         <textarea class="add-comment-input" id="newCommentInput" maxlength="250" placeholder="Написать комментарий..." rows="2"></textarea>
                         <button class="add-comment-btn" onclick="submitComment()">Отправить</button>
                     </div>
-
                     <div class="comments-list" id="commentsList"></div>
                 </div>
             </div>
@@ -494,6 +656,7 @@
     <canvas id="compressCanvas" style="display:none;"></canvas>
 
     <script>
+
         const tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
@@ -512,11 +675,9 @@
         const btnSortFloating = document.getElementById('btnSortFloating');
         const btnFavTagsFloating = document.getElementById('btnFavTagsFloating');
         const logo = document.getElementById('logo');
-        const logoImg = document.getElementById('logoImg');
         const submitModal = document.getElementById('submitModal');
         const previewImage = document.getElementById('previewImage');
         const authModal = document.getElementById('authModal');
-        const mainAddBtn = document.getElementById('mainAddBtn');
 
         let currentUser = null;
         let allPostsData = []; 
@@ -540,8 +701,78 @@
         let replyToId = null;
         let editingCommentId = null;
         let activeLens = null;
+        let isDescExpanded = false;
 
-function checkAuth() {
+        // === Утилита нормализации тега (без @/#, нижний регистр) ===
+        function normalizeTagKey(tag) {
+            return String(tag || '').trim().replace(/^[@#]+/, '').toLowerCase();
+        }
+
+        // Обработка Deep Link из ссылки
+        if (tg.initDataUnsafe && tg.initDataUnsafe.start_param && tg.initDataUnsafe.start_param.startsWith('profile_')) {
+            const profileId = tg.initDataUnsafe.start_param.replace('profile_', '');
+            setTimeout(() => {
+                if(currentUser) {
+                    openUserProfile(profileId);
+                } else {
+                    setTimeout(() => openUserProfile(profileId), 500);
+                }
+            }, 500);
+        }
+
+        // Обработка скрытия клавиатуры (показ кнопки)
+        document.body.addEventListener('focusin', (e) => {
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+                document.getElementById('keyboardHideBtn').style.display = 'flex';
+            }
+        });
+        document.body.addEventListener('focusout', (e) => {
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+                setTimeout(() => {
+                    if (!document.activeElement || (document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'INPUT')) {
+                        document.getElementById('keyboardHideBtn').style.display = 'none';
+                    }
+                }, 100);
+            }
+        });
+
+        function hideKeyboard() {
+            document.activeElement.blur();
+            document.getElementById('keyboardHideBtn').style.display = 'none';
+            if (tg && tg.hideKeyboard) tg.hideKeyboard();
+        }
+
+        // Утилита для парсинга Markdown-ссылок и жирного/курсива
+        function parseTextLinks(text) {
+            if (!text) return '';
+            let safeText = escapeHtml(text);
+            // Markdown [text](url)
+            safeText = safeText.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+            // **bold**
+            safeText = safeText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            // _italic_
+            safeText = safeText.replace(/(^|[^A-Za-z0-9])_([^_]+)_(?![A-Za-z0-9])/g, '$1<em>$2</em>');
+            // Обычные URL
+            safeText = safeText.replace(/(^|\s)(https?:\/\/[^\s]+)/g, '$1<a href="$2" target="_blank">$2</a>');
+            return safeText;
+        }
+
+        function toggleDescExpand() {
+            isDescExpanded = !isDescExpanded;
+            const textEl = document.getElementById('floatingDescText');
+            const btn = document.getElementById('btnExpandDesc');
+            if (isDescExpanded) {
+                textEl.classList.add('expanded');
+                btn.innerText = 'Свернуть';
+            } else {
+                textEl.classList.remove('expanded');
+                btn.innerText = 'Развернуть';
+                // при сворачивании прокручиваем текст наверх
+                textEl.scrollTop = 0;
+            }
+        }
+
+        function checkAuth() {
             const savedUser = localStorage.getItem('cult_user');
             if (savedUser) currentUser = JSON.parse(savedUser);
             if (!currentUser) { likedPhotos = []; likedTags = []; }
@@ -563,48 +794,41 @@ function checkAuth() {
             body.innerHTML = '<div class="profile-empty">Загрузка профиля…</div>';
             openModal('profileModal');
 
-            const { data: account, error } = await supabaseClient
-                .from('users').select('id, username')
-                .eq('id', userId).single();
-
+            const { data: account, error } = await supabaseClient.from('users').select('id, username').eq('id', userId).single();
             if (error || !account) {
-                body.innerHTML = '<div class="profile-empty">Не удалось загрузить профиль. Проверьте настройки базы данных.</div>';
-                console.error('Profile load error:', error);
+                body.innerHTML = '<div class="profile-empty">Не удалось загрузить профиль.</div>';
                 return;
             }
-            const { data: profileData, error: profileError } = await supabaseClient
-                .from('user_profiles').select('display_name, bio, avatar_url')
-                .eq('user_id', userId).maybeSingle();
-            if (profileError) {
-                body.innerHTML = '<div class="profile-empty">Не удалось загрузить данные профиля. Примените SQL-файл cult_profile_schema.sql.</div>';
-                console.error('User profile load error:', profileError);
-                return;
-            }
+            const { data: profileData, error: profileError } = await supabaseClient.from('user_profiles').select('display_name, bio, avatar_url').eq('user_id', userId).maybeSingle();
+            
             const profile = { ...account, ...(profileData || {}) };
-
             activeProfileUserId = profile.id;
             const isOwner = currentUser && String(currentUser.id) === String(profile.id);
-            const tagResult = await supabaseClient
-                .from('profile_tags').select('tag').eq('user_id', profile.id);
-
-            if (tagResult.error) {
-                body.innerHTML = '<div class="profile-empty">Для профилей нужно сначала применить файл cult_profile_schema.sql к базе Supabase.</div>';
-                console.error('Profile tags table missing or unavailable:', tagResult.error);
-                return;
-            }
+            const tagResult = await supabaseClient.from('profile_tags').select('tag').eq('user_id', profile.id);
 
             activeProfileTags = [...new Set((tagResult.data || []).map(x => x.tag).filter(Boolean))];
             const displayName = profile.display_name || String(profile.username || '').replace(/^@/, '') || 'Пользователь';
             const avatar = profile.avatar_url
                 ? `<img class="profile-avatar" src="${escapeHtml(profile.avatar_url)}" alt="Аватар">`
                 : `<div class="profile-avatar-placeholder">${escapeHtml((displayName[0] || 'П').toUpperCase())}</div>`;
+            
             const tagsMarkup = activeProfileTags.map(t => {
                 const encoded = encodeURIComponent(String(t));
                 return `<div class="profile-tag-row"><button type="button" class="profile-tag-chip" onclick="openProfileTagSearch(decodeURIComponent('${encoded}'))">${escapeHtml(normalizeSearchTag(t))}</button>${isOwner ? `<button type="button" class="profile-tag-edit" title="Изменить тег" aria-label="Изменить тег" onclick="event.stopPropagation();editProfileTag(decodeURIComponent('${encoded}'))"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg></button><button type="button" class="profile-tag-delete" title="Удалить тег" aria-label="Удалить тег" onclick="event.stopPropagation();deleteProfileTag(decodeURIComponent('${encoded}'))">×</button>` : ''}</div>`;
             }).join('');
-            const ownTagButton = isOwner
-                ? `<button class="profile-action secondary" onclick="addProfileTags()">Теги</button>`
-                : '';
+            const ownTagButton = isOwner ? `<button class="profile-action secondary" onclick="addProfileTags()">Привязанные теги</button>` : '';
+
+            // Формируем список публикаций — сравнение по нормализованному ключу
+            let userPostsHtml = '<div class="profile-empty">Нет публикаций</div>';
+            if (activeProfileTags.length > 0) {
+                const tagKeys = activeProfileTags.map(t => normalizeTagKey(t));
+                const postsForTags = allPostsData.filter(p => tagKeys.includes(normalizeTagKey(p.tag)));
+                if (postsForTags.length > 0) {
+                    userPostsHtml = '<div class="profile-mini-grid">' + postsForTags.map(p => 
+                        `<div class="grid-item" onclick="scrollToPost('${p.id}', 'profileModal')"><img src="${p.img}" loading="lazy"></div>`
+                    ).join('') + '</div>';
+                }
+            }
 
             body.innerHTML = `
                 <div class="profile-screen">
@@ -614,21 +838,28 @@ function checkAuth() {
                             <div class="profile-display-name">${escapeHtml(displayName)}</div>
                             <div class="profile-handle">@${escapeHtml(String(profile.username || '').replace(/^@/, ''))}</div>
                         </div>
-                        ${isOwner ? `
                         <div class="profile-tools">
+                            <button class="profile-tool-btn" title="Поделиться" onclick="shareProfile(${profile.id})" aria-label="Поделиться">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                            </button>
+                            ${isOwner ? `
                             <button class="profile-tool-btn" title="Редактировать профиль" onclick="showProfileEditor()" aria-label="Редактировать">
                                 <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
                             </button>
                             <button class="profile-tool-btn" title="Выйти из аккаунта" onclick="confirmLogout()" aria-label="Выйти из аккаунта">
                                 <svg viewBox="0 0 24 24"><path d="M5 12h13"/><path d="m13 6 6 6-6 6"/></svg>
-                            </button>
-                        </div>` : ''}
+                            </button>` : ''}
+                        </div>
                     </div>
-                    <div class="profile-bio">${profile.bio ? escapeHtml(profile.bio) : (isOwner ? 'Добавьте описание профиля' : '')}</div>
+                    <div class="profile-bio">${profile.bio ? parseTextLinks(profile.bio) : (isOwner ? 'Добавьте описание профиля' : '')}</div>
                     ${isOwner ? `<div class="profile-actions">${ownTagButton}</div>` : ''}
                     ${isOwner ? `<input type="file" id="profileAvatarInput" accept="image/*" hidden onchange="uploadProfileAvatar(this)">` : ''}
+                    
                     <div class="profile-section-title">Теги ${activeProfileTags.length ? `(${activeProfileTags.length})` : ''}</div>
-                    <div>${tagsMarkup || '<div class="profile-empty">Пока нет тегов</div>'}</div>
+                    <div style="margin-bottom: 20px;">${tagsMarkup || '<div class="profile-empty">Пока нет тегов</div>'}</div>
+                    
+                    <div class="profile-section-title">Публикации</div>
+                    <div>${userPostsHtml}</div>
                 </div>
             `;
             if (isOwner) {
@@ -637,6 +868,28 @@ function checkAuth() {
                 avatarWrap.title = 'Изменить аватар';
                 avatarWrap.addEventListener('click', () => document.getElementById('profileAvatarInput')?.click());
             }
+        }
+
+        function shareProfile(profileId) {
+            const shareUrl = `https://t.me/cultclubgallery_bot/app?startapp=profile_${profileId}`;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                const toast = document.getElementById('toastMsg');
+                toast.textContent = 'Ссылка скопирована';
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+            }).catch(err => {
+                alert('Не удалось скопировать ссылку');
+            });
+        }
+
+        // Показ уведомления (тост)
+        function showToast(message) {
+            const toast = document.getElementById('toastMsg');
+            if (!toast) { alert(message); return; }
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(showToast._t);
+            showToast._t = setTimeout(() => toast.classList.remove('show'), 2500);
         }
 
         function normalizeSearchTag(tag) {
@@ -658,8 +911,8 @@ function checkAuth() {
         }
 
         let profileSearchRequest = 0;
-        async function searchProfiles(rawQuery) {
-            const results = document.getElementById('profileSearchResults');
+        async function searchProfiles(rawQuery, targetId = 'profileSearchResults') {
+            const results = document.getElementById(targetId);
             const query = String(rawQuery || '').trim().replace(/^@/, '');
             if (!results) return;
             if (query.length < 2) {
@@ -700,10 +953,10 @@ function checkAuth() {
         }
 
         function selectSearchedProfile(userId) {
-            const input = document.getElementById('profileSearchInput');
-            const results = document.getElementById('profileSearchResults');
-            if (input) input.value = '';
-            if (results) { results.classList.remove('open'); results.innerHTML = ''; }
+            const allInputs = document.querySelectorAll('.profile-search-input');
+            const allResults = document.querySelectorAll('.profile-search-results');
+            allInputs.forEach(i => i.value = '');
+            allResults.forEach(r => { r.classList.remove('open'); r.innerHTML = ''; });
             openUserProfile(userId);
         }
 
@@ -730,17 +983,54 @@ function checkAuth() {
             await openUserProfile(profileId);
         }
 
+        // === ВАЛИДАЦИЯ И УНИКАЛЬНОСТЬ ТЕГОВ ===
         async function addProfileTags() {
             if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
             const input = prompt('Введите один или несколько тегов через запятую:');
             if (input === null) return;
-            const tags = [...new Set(input.split(',').map(t => { const clean = t.trim().replace(/^#+/, ''); return clean ? (clean.startsWith('@') ? clean : '@' + clean) : ''; }).filter(Boolean))];
-            if (!tags.length) return;
+
+            // Нормализуем вводимые теги
+            const rawTags = input.split(',').map(t => t.trim()).filter(Boolean);
+            if (!rawTags.length) return;
+
+            const tags = [...new Set(rawTags.map(t => {
+                const clean = t.replace(/^#+/, '');
+                return clean.startsWith('@') ? clean : '@' + clean;
+            }))];
+
+            // 1) Все теги должны существовать в photos (сравнение без @)
+            const existingTagKeys = new Set(allPostsData.map(p => normalizeTagKey(p.tag)));
+            const missing = tags.filter(t => !existingTagKeys.has(normalizeTagKey(t)));
+            if (missing.length) {
+                showToast('Тег не найден в приложении: ' + missing.map(normalizeSearchTag).join(', '));
+                return;
+            }
+
+            // 2) Проверка уникальности — тег не должен быть привязан к другому профилю
+            const keys = tags.map(normalizeTagKey);
+            const { data: allProfileTags, error: checkError } = await supabaseClient
+                .from('profile_tags').select('user_id, tag');
+            if (checkError) { alert('Не удалось проверить теги: ' + checkError.message); return; }
+
+            const conflicts = [];
+            (allProfileTags || []).forEach(row => {
+                if (!row.tag) return;
+                if (String(row.user_id) === String(currentUser.id)) return;
+                if (keys.includes(normalizeTagKey(row.tag))) {
+                    conflicts.push(normalizeSearchTag(row.tag));
+                }
+            });
+            if (conflicts.length) {
+                showToast('Тег уже привязан к другому профилю: ' + [...new Set(conflicts)].join(', '));
+                return;
+            }
+
             const { error } = await supabaseClient.from('profile_tags').upsert(
                 tags.map(tag => ({ user_id: currentUser.id, tag })),
                 { onConflict: 'user_id,tag', ignoreDuplicates: true }
             );
             if (error) { alert('Не удалось сохранить теги: ' + error.message); return; }
+            showToast('Теги сохранены');
             await openUserProfile(currentUser.id);
         }
 
@@ -751,11 +1041,29 @@ function checkAuth() {
             const newTag = normalizeSearchTag(input);
             if (!newTag) { alert('Укажите тег.'); return; }
             if (newTag === oldTag) return;
+
+            // Проверка существования
+            const existingTagKeys = new Set(allPostsData.map(p => normalizeTagKey(p.tag)));
+            if (!existingTagKeys.has(normalizeTagKey(newTag))) {
+                showToast('Тег не найден в приложении: ' + newTag);
+                return;
+            }
+            // Проверка уникальности
+            const { data: allProfileTags } = await supabaseClient.from('profile_tags').select('user_id, tag');
+            const conflict = (allProfileTags || []).find(row =>
+                row.tag && String(row.user_id) !== String(currentUser.id) &&
+                normalizeTagKey(row.tag) === normalizeTagKey(newTag)
+            );
+            if (conflict) {
+                showToast('Тег уже привязан к другому профилю: ' + normalizeSearchTag(conflict.tag));
+                return;
+            }
+
             const { error } = await supabaseClient.from('profile_tags').update({ tag: newTag })
                 .eq('user_id', currentUser.id).eq('tag', oldTag);
             if (error) { alert('Не удалось изменить тег: ' + error.message); return; }
-            if (tagProfileOwners[oldTag] === currentUser.id) delete tagProfileOwners[oldTag];
-            tagProfileOwners[newTag] = currentUser.id;
+            if (tagProfileOwners[normalizeTagKey(oldTag)] === currentUser.id) delete tagProfileOwners[normalizeTagKey(oldTag)];
+            tagProfileOwners[normalizeTagKey(newTag)] = currentUser.id;
             await openUserProfile(currentUser.id);
         }
 
@@ -765,7 +1073,7 @@ function checkAuth() {
             const { error } = await supabaseClient.from('profile_tags').delete()
                 .eq('user_id', currentUser.id).eq('tag', tag);
             if (error) { alert('Не удалось удалить тег: ' + error.message); return; }
-            if (tagProfileOwners[tag] === currentUser.id) delete tagProfileOwners[tag];
+            if (tagProfileOwners[normalizeTagKey(tag)] === currentUser.id) delete tagProfileOwners[normalizeTagKey(tag)];
             await openUserProfile(currentUser.id);
         }
 
@@ -777,7 +1085,6 @@ function checkAuth() {
                 { user_id: currentUser.id, avatar_url: null }, { onConflict: 'user_id' }
             );
             if (error) { alert('Не удалось удалить аватар: ' + error.message); return; }
-            // Удаление файла из Storage необязательно для снятия аватара; пробуем очистить его, если URL принадлежит bucket avatars.
             try {
                 const marker = '/storage/v1/object/public/avatars/';
                 const at = oldUrl.indexOf(marker);
@@ -785,7 +1092,7 @@ function checkAuth() {
                     const path = decodeURIComponent(oldUrl.slice(at + marker.length).split('?')[0]);
                     if (path) await supabaseClient.storage.from('avatars').remove([path]);
                 }
-            } catch (storageError) { console.warn('Avatar storage cleanup failed:', storageError); }
+            } catch (storageError) {}
             currentUser = { ...currentUser, avatar_url: null };
             localStorage.setItem('cult_user', JSON.stringify(currentUser));
             await openUserProfile(currentUser.id);
@@ -799,10 +1106,46 @@ function checkAuth() {
             body.querySelector('.profile-screen').insertAdjacentHTML('afterbegin', `
                 <form class="profile-edit-form" id="profileEditForm" onsubmit="saveProfileEdits(event)">
                     <input id="profileEditName" maxlength="60" placeholder="Ник" value="${escapeHtml(name)}" required>
+                    <div class="md-toolbar">
+                        <button type="button" class="md-btn md-bold" title="Жирный" onclick="insertMarkdown('bold')">Ж</button>
+                        <button type="button" class="md-btn md-italic" title="Курсив" onclick="insertMarkdown('italic')">К</button>
+                        <button type="button" class="md-btn md-link" title="Ссылка" onclick="insertMarkdown('link')">
+                            <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                        </button>
+                    </div>
                     <textarea id="profileEditBio" maxlength="280" placeholder="Описание профиля">${escapeHtml(bio === 'Добавьте описание профиля' ? '' : bio)}</textarea>
                     <div class="profile-edit-actions"><button type="submit">Сохранить</button><button type="button" onclick="openUserProfile(currentUser.id)">Отмена</button></div>
                 </form>
             `);
+        }
+
+        // Вставка Markdown-разметки в textarea bio
+        function insertMarkdown(type) {
+            const ta = document.getElementById('profileEditBio');
+            if (!ta) return;
+            ta.focus();
+            const start = ta.selectionStart;
+            const end = ta.selectionEnd;
+            const selected = ta.value.slice(start, end);
+            let before = '', after = '', placeholder = '';
+
+            if (type === 'bold') {
+                before = '**'; after = '**'; placeholder = 'жирный текст';
+            } else if (type === 'italic') {
+                before = '_'; after = '_'; placeholder = 'курсив';
+            } else if (type === 'link') {
+                before = '['; after = '](url)'; placeholder = 'текст';
+            } else {
+                return;
+            }
+
+            const insertText = before + (selected || placeholder) + after;
+            ta.value = ta.value.slice(0, start) + insertText + ta.value.slice(end);
+
+            // Выделяем вставленный текст (или placeholder), чтобы удобно заменить
+            const selStart = start + before.length;
+            const selEnd = selStart + (selected || placeholder).length;
+            ta.setSelectionRange(selStart, selEnd);
         }
 
         async function saveProfileEdits(event) {
@@ -880,7 +1223,11 @@ function checkAuth() {
             ]);
             allLikesCache = allLikes || [];
             tagProfileOwners = {};
-            (profileTagRows || []).forEach(row => { if (row.tag && !tagProfileOwners[row.tag]) tagProfileOwners[row.tag] = row.user_id; });
+            (profileTagRows || []).forEach(row => {
+                if (!row.tag) return;
+                const key = normalizeTagKey(row.tag);
+                if (!tagProfileOwners[key]) tagProfileOwners[key] = row.user_id;
+            });
 
             let myLikes = null;
             if (currentUser && allLikesCache) myLikes = allLikesCache.filter(l => l.user_id == currentUser.id);
@@ -925,11 +1272,12 @@ function checkAuth() {
     
             if (reversedData.length > 0) {
                 reversedData.forEach((post) => {
-                    allPostsData.push({ tag: post.tag, img: post.image_url, id: post.id, description: post.description });
+                    allPostsData.push({ tag: post.tag, img: post.image_url, id: post.id, description: post.description, created_at: post.created_at });
                     const isLiked = likedPhotos.includes(post.id);
                     const postLikes = allLikesCache.filter(l => l.photo_id === post.id);
                     const uniqueUserLikes = [...new Set(postLikes.map(l => l.user_id))].length;
                     const countStr = formatCount(uniqueUserLikes);
+                    
                     const dateStr = new Date(post.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + 
                                     new Date(post.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
@@ -957,7 +1305,7 @@ function checkAuth() {
                                     <div class="tag-wrapper"><span class="post-tag" onclick="openTelegramLink('${post.tag}')">${post.tag}</span></div>
                                 </div>
                                 <div class="info-middle">
-                                    <button class="comment-btn" onclick="openComments('${post.id}')"" aria-label="Комментарии"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+                                    <button class="comment-btn" onclick="openComments('${post.id}')" aria-label="Комментарии"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
                                 </div>
                                 <div class="info-right">
                                     <span class="post-date">${dateStr}</span>
@@ -1214,7 +1562,7 @@ function checkAuth() {
                     if (existingUser.password === password) {
                         currentUser = existingUser;
                         localStorage.setItem('cult_user', JSON.stringify(existingUser));
-                                        closeModal({ target: authModal }, 'authModal');
+                        closeModal({ target: authModal }, 'authModal');
                         loadRealPhotos(true);
                     } else { alert("Неверный пароль!"); }
                 } else {
@@ -1222,7 +1570,7 @@ function checkAuth() {
                     if (newUser) {
                         currentUser = newUser;
                         localStorage.setItem('cult_user', JSON.stringify(newUser));
-                                        closeModal({ target: authModal }, 'authModal');
+                        closeModal({ target: authModal }, 'authModal');
                         loadRealPhotos(true);
                     } else { alert("Ошибка: " + insertError.message); }
                 }
@@ -1294,7 +1642,7 @@ function checkAuth() {
         }
 
         function updateTagLikeCount(tag) {
-            const tagItems = document.querySelectorAll(`.tag-item[data-tag="${tag}"]`);
+            const tagItems = document.querySelectorAll(`.tag-item-wrapper[data-tag="${tag}"] .tag-item`);
             tagItems.forEach(item => {
                 const countSpan = item.querySelector('.like-count');
                 if (!countSpan) return;
@@ -1313,18 +1661,47 @@ function checkAuth() {
             document.getElementById('replyIndicator').classList.remove('active');
 
             const post = allPostsData.find(item => String(item.id) === String(photoId));
-            const description = post && post.description != null ? String(post.description) : '';
-            const descBlock = document.getElementById('commentPostDesc');
-            if (description.length > 0 && description !== 'null') {
-                descBlock.textContent = description;
-                descBlock.style.display = 'block';
+            
+            // Настройка парящего блока описания
+            const descBlock = document.getElementById('floatingPostDesc');
+            const descText = document.getElementById('floatingDescText');
+            const descTag = document.getElementById('floatingDescTag');
+            const descDate = document.getElementById('floatingDescDate');
+            const btnExpand = document.getElementById('btnExpandDesc');
+
+            if (post && post.description && post.description !== 'null' && post.description.trim().length > 0) {
+                descTag.innerText = post.tag;
+                descText.innerText = post.description;
+                descText.classList.remove('expanded');
+                isDescExpanded = false;
+                descText.scrollTop = 0;
+                
+                const d = new Date(post.created_at);
+                descDate.innerText = d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                
+                descBlock.style.display = 'flex';
+                btnExpand.style.display = 'none';
+
+                // Определяем, нужно ли показывать кнопку «Развернуть»:
+                // сравниваем реальную высоту текста с высотой свёрнутого (3 строки)
+                requestAnimationFrame(() => {
+                    const collapsedHeight = parseFloat(getComputedStyle(descText).maxHeight) || (3 * 1.4 * 14);
+                    const fullHeight = descText.scrollHeight;
+                    if (fullHeight > collapsedHeight + 2) {
+                        btnExpand.style.display = 'inline-block';
+                    } else {
+                        btnExpand.style.display = 'none';
+                    }
+                });
             } else {
-                descBlock.textContent = '';
                 descBlock.style.display = 'none';
             }
 
             const commentsList = document.getElementById('commentsList');
             commentsList.innerHTML = '<div style="text-align:center;padding:20px;color:var(--secondary-text);">Загрузка...</div>';
+            
+            document.querySelector('#commentsModal .add-comment-box').style.order = '2';
+            
             openModal('commentsModal');
             loadComments(photoId);
         }
@@ -1556,10 +1933,10 @@ function checkAuth() {
                 const modal = document.getElementById(id);
                 const content = modal.querySelector('.modal-content');
                 if (id === 'profileModal') {
-                    const searchInput = document.getElementById('profileSearchInput');
-                    const searchResults = document.getElementById('profileSearchResults');
-                    if (searchInput) searchInput.value = '';
-                    if (searchResults) { searchResults.classList.remove('open'); searchResults.innerHTML = ''; }
+                    const inputs = document.querySelectorAll('.profile-search-input');
+                    const results = document.querySelectorAll('.profile-search-results');
+                    inputs.forEach(i => i.value = '');
+                    results.forEach(r => { r.classList.remove('open'); r.innerHTML = ''; });
                 }
                 modal.classList.remove('active');
                 document.body.classList.remove('modal-open');
@@ -1572,6 +1949,7 @@ function checkAuth() {
                     cancelReply();
                     editingCommentId = null;
                     document.querySelector('.add-comment-btn').textContent = 'Отправить';
+                    document.getElementById('floatingPostDesc').style.display = 'none';
                 }
 
                 setTimeout(() => {
@@ -1653,22 +2031,30 @@ function checkAuth() {
                     tagsList.innerHTML += `<div class="alphabet-header">${letter}</div>`;
                 }
                 
+                // Кнопка профиля — поиск по нормализованному ключу
+                const ownerId = tagProfileOwners[normalizeTagKey(tag)];
+                const profileBtnHtml = ownerId 
+                    ? `<button class="tag-profile-btn" aria-label="Открыть профиль" title="Профиль" onclick="event.stopPropagation(); openUserProfile('${ownerId}')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.8 5.7 6.3.9-4.55 4.43 1.08 6.27L12 17.15l-5.63 2.95 1.08-6.27L2.9 9.4l6.3-.9L12 2.8Z"/></svg></button>` 
+                    : '';
+
                 tagsList.innerHTML += `
-                    <div class="tag-item" data-tag="${tag}">
-                        <div class="tag-info" onclick="showTagPhotos('${tag}')">
-                            <span class="tag-name">@${String(tag).replace(/^[@#]/, '')}</span>
-                            <span class="tag-count">${count} фото</span>
+                    <div class="tag-item-wrapper" data-tag="${tag}">
+                        <div class="tag-item" onclick="showTagPhotos('${tag}')">
+                            <div class="tag-info">
+                                <span class="tag-name">@${String(tag).replace(/^[@#]/, '')}</span>
+                                <span class="tag-count">${count} фото</span>
+                            </div>
+                            <div class="tag-actions">
+                                <span class="like-count">${countStr}</span>
+                                <button class="action-btn like-btn ${isTagLiked ? 'liked' : ''}" onclick="event.stopPropagation(); toggleTagLike(event, '${tag}')">
+                                    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                </button>
+                                <button class="action-btn profile-btn" onclick="event.stopPropagation(); openTelegramLink('${tag}')">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.2 18.4 19c-.24 1.05-.86 1.31-1.74.82l-4.8-3.54-2.32 2.23c-.26.26-.48.48-.98.48l.35-4.9 8.92-8.06c.39-.35-.08-.54-.6-.19L6.2 12.8l-4.66-1.46c-1.01-.32-1.03-1.01.21-1.5L20 3.1c.84-.31 1.58.2 1.6 1.1Z" fill="#000000" stroke="none"/></svg>
+                                </button>
+                            </div>
                         </div>
-                        <div class="tag-actions">
-                            <span class="like-count">${countStr}</span>
-                            <button class="action-btn like-btn ${isTagLiked ? 'liked' : ''}" onclick="event.stopPropagation(); toggleTagLike(event, '${tag}')">
-                                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                            </button>
-                            <button class="action-btn profile-btn" onclick="event.stopPropagation(); openTelegramLink('${tag}')">
-                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 4.2 18.4 19c-.24 1.05-.86 1.31-1.74.82l-4.8-3.54-2.32 2.23c-.26.26-.48.48-.98.48l.35-4.9 8.92-8.06c.39-.35-.08-.54-.6-.19L6.2 12.8l-4.66-1.46c-1.01-.32-1.03-1.01.21-1.5L20 3.1c.84-.31 1.58.2 1.6 1.1Z" fill="#000000" stroke="none"/></svg>
-                            </button>
-                            ${tagProfileOwners[tag] ? `<button class="tag-profile-btn" aria-label="Открыть профиль" title="Профиль" onclick="event.stopPropagation(); openUserProfile('${tagProfileOwners[tag]}')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.8 5.7 6.3.9-4.55 4.43 1.08 6.27L12 17.15l-5.63 2.95 1.08-6.27L2.9 9.4l6.3-.9L12 2.8Z"/></svg></button>` : ''}
-                        </div>
+                        ${profileBtnHtml}
                     </div>
                 `;
             });
