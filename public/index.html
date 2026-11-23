@@ -669,18 +669,6 @@ if (!startParam) {
     startParam = urlParams.get('tgWebAppStartParam');
 }
 
-// Обработка Deep Link из ссылки (используем startParam)
-if (startParam && startParam.startsWith('profile_')) {
-    const profileId = startParam.replace('profile_', '');
-    setTimeout(() => {
-        if(currentUser) {
-            openUserProfile(profileId);
-        } else {
-            setTimeout(() => openUserProfile(profileId), 500);
-        }
-    }, 500);
-}
-
         const supabaseUrl = 'https://asoljhfvsrxmeniwsvel.supabase.co';
         const supabaseKey = 'sb_publishable_zRTzYg6bqdPH4JYRIngTMQ_K0JNe7zG';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
@@ -727,11 +715,29 @@ if (startParam && startParam.startsWith('profile_')) {
             return String(tag || '').trim().replace(/^[@#]+/, '').toLowerCase();
         }
 
-        // Обработка Deep Link из ссылки
-        if (tg.initDataUnsafe && tg.initDataUnsafe.start_param && tg.initDataUnsafe.start_param.startsWith('profile_')) {
-            const profileId = tg.initDataUnsafe.start_param.replace('profile_', '');
+        // === ЧТЕНИЕ ПАРАМЕТРА STARTAPP (Deep Link) ===
+        // 1. Пытаемся получить из initData (самый надежный способ)
+        const initDataParams = new URLSearchParams(tg.initData);
+        let startParam = initDataParams.get('start_param');
+
+        // 2. Запасной вариант: initDataUnsafe
+        if (!startParam) {
+            startParam = tg.initDataUnsafe?.start_param;
+        }
+
+        // 3. Запасной вариант: URL
+        if (!startParam) {
+            const urlParams = new URLSearchParams(window.location.search);
+            startParam = urlParams.get('tgWebAppStartParam');
+        }
+
+        console.log('Final startParam:', startParam); // Для отладки (потом можно убрать)
+
+        // Обработка Deep Link
+        if (startParam && startParam.startsWith('profile_')) {
+            const profileId = startParam.replace('profile_', '');
             setTimeout(() => {
-                if(currentUser) {
+                if (currentUser) {
                     openUserProfile(profileId);
                 } else {
                     setTimeout(() => openUserProfile(profileId), 500);
