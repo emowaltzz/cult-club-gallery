@@ -588,6 +588,13 @@
                 </div>
                 
                 <div class="desc-wrapper">
+                    <div class="md-toolbar">
+                        <button type="button" class="md-btn md-bold" title="Жирный" onclick="insertMarkdown('desc', 'bold')">Ж</button>
+                        <button type="button" class="md-btn md-italic" title="Курсив" onclick="insertMarkdown('desc', 'italic')">К</button>
+                        <button type="button" class="md-btn md-link" title="Ссылка" onclick="insertMarkdown('desc', 'link')">
+                            <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                        </button>
+                    </div>
                     <textarea id="descInput" class="desc-area" maxlength="250" placeholder="Добавьте описание (необязательно)" spellcheck="true"></textarea>
                     <div class="desc-footer">
                         <div class="desc-count" id="descCount">0 символов</div>
@@ -1167,9 +1174,9 @@
             `);
         }
 
-        // Вставка Markdown-разметки в textarea bio
-        function insertMarkdown(type) {
-            const ta = document.getElementById('profileEditBio');
+        // Вставка Markdown-разметки в textarea (профиль или описание поста)
+        function insertMarkdown(target, type) {
+            const ta = target === 'desc' ? document.getElementById('descInput') : document.getElementById('profileEditBio');
             if (!ta) return;
             ta.focus();
             const start = ta.selectionStart;
@@ -1195,7 +1202,6 @@
             const selEnd = selStart + (selected || placeholder).length;
             ta.setSelectionRange(selStart, selEnd);
         }
-
         async function saveProfileEdits(event) {
             event.preventDefault();
             if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
@@ -1719,7 +1725,7 @@
 
             if (post && post.description && post.description !== 'null' && post.description.trim().length > 0) {
                 descTag.innerText = post.tag;
-                descText.innerText = post.description;
+                descText.innerHTML = parseTextLinks(post.description);
                 descText.classList.remove('expanded');
                 isDescExpanded = false;
                 descText.scrollTop = 0;
