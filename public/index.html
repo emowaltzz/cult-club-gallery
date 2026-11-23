@@ -809,6 +809,15 @@
 
         async function openUserProfile(userId) {
             if (!userId) return;
+            
+            // Скрываем лишние кнопки при открытии профиля
+            btnBackFloating.classList.remove('active');
+            btnFavTagsFloating.classList.remove('active');
+            btnSortFloating.classList.remove('active');
+
+            const profileModalEl = document.getElementById('profileModal');
+            if (profileModalEl) profileModalEl.style.zIndex = '250';
+
             const body = document.getElementById('profileModalBody');
             body.innerHTML = '<div class="profile-empty">Загрузка профиля…</div>';
             openModal('profileModal');
@@ -839,10 +848,20 @@
 
             // Формируем список публикаций — сравнение по нормализованному ключу
             let userPostsHtml = '<div class="profile-empty">Нет публикаций</div>';
+            let postsCount = 0;
+            let totalPostLikes = 0; // <-- НОВАЯ ПЕРЕМЕННАЯ
+
             if (activeProfileTags.length > 0) {
                 const tagKeys = activeProfileTags.map(t => normalizeTagKey(t));
-                const postsForTags = allPostsData.filter(p => tagKeys.includes(normalizeTagKey(p.tag)));
+                let postsForTags = allPostsData.filter(p => tagKeys.includes(normalizeTagKey(p.tag)));
+                postsCount = postsForTags.length;
+                
                 if (postsForTags.length > 0) {
+                    // Считаем общее количество лайков на этих публикациях
+                    const postIds = postsForTags.map(p => p.id);
+                    const postLikes = allLikesCache.filter(l => postIds.includes(l.photo_id));
+                    totalPostLikes = [...new Set(postLikes.map(l => l.user_id))].length; // Уникальные пользователи
+                    
                     userPostsHtml = '<div class="profile-mini-grid">' + postsForTags.map(p => 
                         `<div class="grid-item" onclick="scrollToPost('${p.id}', 'profileModal')"><img src="${p.img}" loading="lazy"></div>`
                     ).join('') + '</div>';
@@ -858,9 +877,6 @@
                             <div class="profile-handle">@${escapeHtml(String(profile.username || '').replace(/^@/, ''))}</div>
                         </div>
                         <div class="profile-tools">
-                            <button class="profile-tool-btn" title="Поделиться" onclick="shareProfile(${profile.id})" aria-label="Поделиться">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                            </button>
                             ${isOwner ? `
                             <button class="profile-tool-btn" title="Редактировать профиль" onclick="showProfileEditor()" aria-label="Редактировать">
                                 <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>
@@ -871,6 +887,19 @@
                         </div>
                     </div>
                     <div class="profile-bio">${profile.bio ? parseTextLinks(profile.bio) : (isOwner ? 'Добавьте описание профиля' : '')}</div>
+                    
+                    <!-- НОВЫЙ БЛОК СТАТИСТИКИ -->
+                    <div class="profile-stats" style="grid-template-columns: 1fr 1fr;">
+                        <div class="profile-stat">
+                            <strong>${postsCount}</strong>
+                            <span>Публикации</span>
+                        </div>
+                        <div class="profile-stat">
+                            <strong>${formatCount(totalPostLikes)}</strong>
+                            <span>В избранном</span>
+                        </div>
+                    </div>
+
                     ${isOwner ? `<div class="profile-actions">${ownTagButton}</div>` : ''}
                     ${isOwner ? `<input type="file" id="profileAvatarInput" accept="image/*" hidden onchange="uploadProfileAvatar(this)">` : ''}
                     
@@ -1952,6 +1981,9 @@
                 const modal = document.getElementById(id);
                 const content = modal.querySelector('.modal-content');
                 if (id === 'profileModal') {
+                    // Возвращаем стандартный z-index, чтобы следующее открытие было корректным
+                    modal.style.zIndex = '';
+                    
                     const inputs = document.querySelectorAll('.profile-search-input');
                     const results = document.querySelectorAll('.profile-search-results');
                     inputs.forEach(i => i.value = '');
@@ -2020,8 +2052,12 @@
             document.getElementById('tagsView').style.display = 'block';
             document.getElementById('gridView').style.display = 'none';
             document.getElementById('searchTitle').innerText = 'Поиск по тегам';
+            
+            // Показываем нужные кнопки
             btnBackFloating.classList.remove('active');
             btnFavTagsFloating.classList.add('active'); 
+            btnSortFloating.classList.remove('active');
+            
             openModal('searchModal');
         }
 
