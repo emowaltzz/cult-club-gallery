@@ -662,12 +662,6 @@
         tg.ready();
         tg.disableVerticalSwipes();
 
-// Получаем start_param из initDataUnsafe или из URL (запасной вариант)
-let startParam = tg.initDataUnsafe?.start_param;
-if (!startParam) {
-    const urlParams = new URLSearchParams(window.location.search);
-    startParam = urlParams.get('tgWebAppStartParam');
-}
 
         const supabaseUrl = 'https://asoljhfvsrxmeniwsvel.supabase.co';
         const supabaseKey = 'sb_publishable_zRTzYg6bqdPH4JYRIngTMQ_K0JNe7zG';
