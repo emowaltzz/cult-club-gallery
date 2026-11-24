@@ -1172,9 +1172,9 @@
                 <form class="profile-edit-form" id="profileEditForm" onsubmit="saveProfileEdits(event)">
                     <input id="profileEditName" maxlength="60" placeholder="Ник" value="${escapeHtml(name)}" required>
                     <div class="md-toolbar">
-                        <button type="button" class="md-btn md-bold" title="Жирный" onclick="insertMarkdown('bold')">Ж</button>
-                        <button type="button" class="md-btn md-italic" title="Курсив" onclick="insertMarkdown('italic')">К</button>
-                        <button type="button" class="md-btn md-link" title="Ссылка" onclick="insertMarkdown('link')">
+                        <button type="button" class="md-btn md-bold" title="Жирный" onclick="insertMarkdown('profile', 'bold')">Ж</button>
+                        <button type="button" class="md-btn md-italic" title="Курсив" onclick="insertMarkdown('profile', 'italic')">К</button>
+                        <button type="button" class="md-btn md-link" title="Ссылка" onclick="insertMarkdown('profile', 'link')">
                             <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                         </button>
                     </div>
@@ -2164,7 +2164,7 @@
                 // Кнопка профиля — поиск по нормализованному ключу
                 const ownerId = tagProfileOwners[normalizeTagKey(tag)];
                 const profileBtnHtml = ownerId 
-                    ? `<button class="tag-profile-btn" aria-label="Открыть профиль" title="Профиль" onclick="event.stopPropagation(); openUserProfile('${ownerId}')"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="28" r="22"/><ellipse cx="50" cy="73" rx="35" ry="25"/></svg></button>` 
+                    ? `<button class="tag-profile-btn" aria-label="Открыть профиль" title="Профиль" onclick="event.stopPropagation(); openUserProfile('${ownerId}')"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="26" r="18"/><ellipse cx="50" cy="75" rx="33" ry="19"/></svg></button>` 
                     : '';
 
                 tagsList.innerHTML += `
