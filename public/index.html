@@ -93,29 +93,37 @@
         .like-count { font-size: 12px; color: var(--secondary-text); font-weight: 500; margin-left: 10px; white-space: nowrap; min-width: 15px; text-align: left; flex-shrink: 0; }
         .tag-item .like-count { margin-right: 8px; margin-left: 0; }
 
-        .bottom-controls { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(0) scale(1); z-index: 100; display: flex; align-items: center; justify-content: center; gap: 15px; transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0s; opacity: 1; visibility: visible; pointer-events: auto; }
+        .bottom-controls { position: fixed; bottom: 30px; left: 50%; width: min(calc(100vw - 14px), 500px); height: 65px; transform: translateX(-50%) translateY(0) scale(1); z-index: 100; display: flex; align-items: center; justify-content: flex-start; gap: 0; transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0s; opacity: 1; visibility: visible; pointer-events: auto; }
         .bottom-controls.hidden { opacity: 0; pointer-events: none; transform: translateX(-50%) translateY(20px) scale(0.9); visibility: hidden; transition: opacity 0.4s var(--smooth-ease), transform 0.4s var(--smooth-ease), visibility 0s linear 0.4s; }
         .bottom-controls.scrolling, .btn-pulse-down.scrolling, .btn-pulse-up.scrolling { pointer-events: none !important; }
 
         .liquid-glass { background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 4px 10px var(--btn-shadow); border-radius: 50%; position: relative; cursor: pointer; transition: transform var(--smooth-duration) var(--smooth-ease), background 0.3s ease, border 0.3s ease; }
         .liquid-glass svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block; width: 24px; height: 24px; stroke: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; opacity: 0.8; }
-        
-        .btn-search, .btn-likes { width: 50px; height: 50px; }
-        .btn-add { width: 65px; height: 65px; }
+
+        /* Три основные кнопки закреплены в центре экрана и не зависят от ширины кнопки профиля. */
+        .bottom-actions { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; justify-content: center; gap: 12px; width: max-content; }
+        .btn-search, .btn-likes { width: 50px; height: 50px; flex: 0 0 50px; }
+        .btn-add { width: 65px; height: 65px; flex: 0 0 65px; }
         .bottom-controls.shrunk .btn-search, .bottom-controls.shrunk .btn-likes { transform: scale(0.85); }
         .bottom-controls.shrunk .btn-add { transform: scale(0.85); }
 
-        .profile-floating { position: fixed; left: max(12px, calc((100vw - 500px) / 2 + 7px)); right: auto; bottom: 37px; width: 50px; height: 50px; z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 1; visibility: visible; pointer-events: auto; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 4px 10px var(--btn-shadow); transition: transform var(--smooth-duration) var(--smooth-ease), opacity 0.4s ease, visibility 0s linear 0s; }
-        .profile-floating svg { position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); display:block; width:24px; height:24px; stroke:var(--icon-color); stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; fill:none; color:var(--icon-color); opacity:1; transition:transform var(--smooth-duration) var(--smooth-ease); pointer-events:none; }
-        .profile-floating:active { transform: scale(.85); }
-        .profile-floating.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(15px) scale(.8); transition: transform .2s var(--smooth-ease), opacity .2s var(--smooth-ease), visibility 0s linear .2s; }
-        .profile-floating.shrunk { transform: scale(.88); }
+        /* Профиль — flex-элемент слева; заполняет только доступный промежуток до центральной группы. */
+        .profile-floating { position: relative; left: auto; right: auto; bottom: auto; width: auto; min-width: 0; max-width: none; height: 50px; flex: 0 1 calc(50% - 106.5px); margin-right: 12px; z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 1; visibility: visible; pointer-events: auto; background: var(--btn-bg); border: 1px solid var(--border); border-radius: 28px; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: inherit; font-size: clamp(6px, 3vw, 13px); font-weight: 600; line-height: 1; white-space: nowrap; padding: 0 3px; overflow: hidden; text-align: center; }
+        .profile-floating:active { transform: scale(.98); }
+        .profile-floating.hidden { opacity: 0; visibility: hidden; pointer-events: none; transform: none; transition: opacity .2s var(--smooth-ease), visibility 0s linear .2s; }
+        .profile-floating.shrunk { transform: scale(.98); }
         .btn-pulse-down.shrunk, .btn-pulse-up.shrunk { animation-play-state: paused; }
-        .bottom-controls { gap: 12px; }
         @media (max-width: 380px) {
-            .bottom-controls { gap: 7px; }
-            .btn-search, .btn-likes { width: 44px; height: 44px; }
-            .btn-add { width: 58px; height: 58px; }
+            .bottom-actions { gap: 7px; }
+            .btn-search, .btn-likes { width: 44px; height: 44px; flex-basis: 44px; }
+            .btn-add { width: 58px; height: 58px; flex-basis: 58px; }
+            .profile-floating { height: 44px; flex-basis: calc(50% - 87px); font-size: clamp(5px, 3vw, 11px); margin-right: 7px; }
+        }
+        @media (max-width: 260px) {
+            .bottom-actions { gap: 5px; }
+            .btn-search, .btn-likes { width: 40px; height: 40px; flex-basis: 40px; }
+            .btn-add { width: 52px; height: 52px; flex-basis: 52px; }
+            .profile-floating { height: 40px; flex-basis: calc(50% - 76px); font-size: clamp(4px, 2.9vw, 7px); padding: 0 2px; margin-right: 5px; }
         }
 
         .btn-pulse-down, .btn-pulse-up { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(0) scale(1); width: 65px; height: 65px; background: var(--btn-bg); border: 1px solid var(--border); box-shadow: 0 4px 10px var(--btn-shadow); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; animation: pulseWhole 2s ease-in-out infinite; opacity: 1; visibility: visible; transition: opacity 0.35s var(--smooth-ease), transform 0.35s var(--smooth-ease), visibility 0s linear 0s; z-index: 99; }
@@ -314,7 +322,7 @@
         .tag-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; margin-left: 10px; }
         
         .tag-profile-btn { width:40px; height:40px; min-width:40px; padding:0; position:relative; border-radius:50%; border:1px solid var(--border); background:var(--btn-bg); box-shadow:0 2px 5px var(--btn-shadow); display:flex; align-items:center; justify-content:center; color:var(--icon-color); cursor:pointer; flex-shrink:0; line-height:0; }
-        .tag-profile-btn svg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:block; width:20px; height:20px; fill:transparent !important; stroke:var(--icon-color); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; pointer-events:none; }
+        .tag-profile-btn svg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); display:block; width:24px; height:24px; fill:currentColor !important; stroke:none; pointer-events:none; }
 
         .comment-author-wrap { display:inline-flex; align-items:center; gap:6px; min-width:0; flex:none; vertical-align:middle; }
         .comment-header .comment-author-avatar, .comment-header .comment-author-avatar-placeholder { display:inline-flex; align-self:center; }
@@ -488,21 +496,19 @@
 
     <!-- Нижнее меню -->
     <div class="bottom-controls hidden" id="bottomControls">
-        <button class="liquid-glass btn-search" onclick="openSearchModal()" aria-label="Поиск по тегам">
-            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        </button>
-        <button class="liquid-glass btn-add" id="mainAddBtn" onclick="handleAddClick()" aria-label="Загрузить медиа">
-            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
-        <button class="liquid-glass btn-likes" onclick="handleLikesClick()" aria-label="Избранное">
-            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-        </button>
+        <button class="liquid-glass profile-floating hidden" id="profileFloatingBtn" onclick="handleProfileClick()" aria-label="Профиль пользователя">Профиль</button>
+        <div class="bottom-actions">
+            <button class="liquid-glass btn-search" onclick="openSearchModal()" aria-label="Поиск по тегам">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+            <button class="liquid-glass btn-add" id="mainAddBtn" onclick="handleAddClick()" aria-label="Загрузить медиа">
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <button class="liquid-glass btn-likes" onclick="handleLikesClick()" aria-label="Избранное">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </button>
+        </div>
     </div>
-
-    <!-- Иконка профиля снизу слева (размер выровнен) -->
-    <button class="liquid-glass profile-floating hidden" id="profileFloatingBtn" onclick="handleProfileClick()" aria-label="Профиль пользователя">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 14.8 8.5l6.3.9-4.55 4.43 1.08 6.27L12 17.15l-5.63 2.95 1.08-6.27L2.9 9.4l6.3-.9L12 2.8Z"/></svg>
-    </button>
 
     <button class="btn-pulse-down hidden" id="btnPulseDown">
         <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
@@ -637,7 +643,10 @@
             <div class="floating-desc-tag" id="floatingDescTag"></div>
             <div class="floating-desc-text" id="floatingDescText"></div>
             <div class="floating-desc-bottom">
-                <button class="btn-expand-desc" id="btnExpandDesc" onclick="toggleDescExpand()" style="display:none;">Развернуть</button>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <button class="btn-expand-desc" id="btnExpandDesc" onclick="toggleDescExpand()" style="display:none;">Развернуть</button>
+                    <button class="btn-expand-desc" id="btnEditPostDesc" onclick="editPostDescription()" style="display:none;">Изменить</button>
+                </div>
                 <span class="floating-desc-date" id="floatingDescDate"></span>
             </div>
         </div>
@@ -706,6 +715,7 @@
         let programmaticScrollEndTimer = null;
 
         let currentCommentPhotoId = null;
+        let canEditCurrentPostDescription = false;
         let replyToId = null;
         let editingCommentId = null;
         let activeLens = null;
@@ -1722,6 +1732,17 @@
             const descTag = document.getElementById('floatingDescTag');
             const descDate = document.getElementById('floatingDescDate');
             const btnExpand = document.getElementById('btnExpandDesc');
+            const btnEditDesc = document.getElementById('btnEditPostDesc');
+            canEditCurrentPostDescription = false;
+            if (btnEditDesc) btnEditDesc.style.display = 'none';
+            if (post && currentUser) {
+                const { data: attachedTags, error: attachedTagsError } = await supabaseClient
+                    .from('profile_tags').select('tag').eq('user_id', currentUser.id);
+                canEditCurrentPostDescription = !attachedTagsError && (attachedTags || []).some(row =>
+                    normalizeTagKey(row.tag) === normalizeTagKey(post.tag)
+                );
+                if (btnEditDesc) btnEditDesc.style.display = canEditCurrentPostDescription ? 'inline-block' : 'none';
+            }
 
             if (post && post.description && post.description !== 'null' && post.description.trim().length > 0) {
                 descTag.innerText = post.tag;
@@ -1758,6 +1779,54 @@
             
             openModal('commentsModal');
             loadComments(photoId);
+        }
+
+        async function editPostDescription() {
+            const post = allPostsData.find(item => String(item.id) === String(currentCommentPhotoId));
+            if (!post || !currentUser || !canEditCurrentPostDescription) {
+                alert('Изменять описание может только владелец профиля с привязанным тегом этой публикации.');
+                return;
+            }
+            const updatedDescription = prompt('Изменить описание публикации:', post.description || '');
+            if (updatedDescription === null) return;
+            if (updatedDescription.length > 250) {
+                alert('Описание не должно превышать 250 символов.');
+                return;
+            }
+
+            const { data: attachedTags, error: tagsError } = await supabaseClient
+                .from('profile_tags').select('tag').eq('user_id', currentUser.id);
+            const stillOwnsTag = !tagsError && (attachedTags || []).some(row =>
+                normalizeTagKey(row.tag) === normalizeTagKey(post.tag)
+            );
+            if (!stillOwnsTag) {
+                canEditCurrentPostDescription = false;
+                document.getElementById('btnEditPostDesc').style.display = 'none';
+                alert('Тег больше не привязан к вашему профилю.');
+                return;
+            }
+
+            const { error } = await supabaseClient.from('photos')
+                .update({ description: updatedDescription })
+                .eq('id', post.id)
+                .eq('tag', post.tag);
+            if (error) {
+                console.error('Ошибка изменения описания:', error);
+                alert('Не удалось сохранить описание. Проверьте права UPDATE для таблицы photos в Supabase.');
+                return;
+            }
+
+            post.description = updatedDescription;
+            const postElement = document.getElementById(`post-${post.id}`);
+            if (postElement) postElement.dataset.desc = updatedDescription;
+            document.getElementById('floatingDescText').innerHTML = updatedDescription.trim()
+                ? parseTextLinks(updatedDescription)
+                : '';
+            document.getElementById('floatingPostDesc').style.display = updatedDescription.trim() ? 'flex' : 'none';
+            document.getElementById('btnExpandDesc').style.display = 'none';
+            document.getElementById('floatingDescText').classList.remove('expanded');
+            isDescExpanded = false;
+            alert('Описание обновлено.');
         }
 
         async function loadComments(photoId) {
@@ -2095,7 +2164,7 @@
                 // Кнопка профиля — поиск по нормализованному ключу
                 const ownerId = tagProfileOwners[normalizeTagKey(tag)];
                 const profileBtnHtml = ownerId 
-                    ? `<button class="tag-profile-btn" aria-label="Открыть профиль" title="Профиль" onclick="event.stopPropagation(); openUserProfile('${ownerId}')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2.8 2.8 5.7 6.3.9-4.55 4.43 1.08 6.27L12 17.15l-5.63 2.95 1.08-6.27L2.9 9.4l6.3-.9L12 2.8Z"/></svg></button>` 
+                    ? `<button class="tag-profile-btn" aria-label="Открыть профиль" title="Профиль" onclick="event.stopPropagation(); openUserProfile('${ownerId}')"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="28" r="22"/><ellipse cx="50" cy="73" rx="35" ry="25"/></svg></button>` 
                     : '';
 
                 tagsList.innerHTML += `
