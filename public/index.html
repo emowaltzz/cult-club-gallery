@@ -311,7 +311,7 @@
 
         .search-header-row { display: flex; justify-content: center; margin-top: 15px; margin-bottom: 15px; }
         .feed-link-wrap { position: relative; display: inline-flex; }
-        .feed-count-badge { position: absolute; left: calc(100% + 8px); top: 50%; transform: translateY(-50%); min-width: 38px; height: 38px; padding: 0 8px; box-sizing: border-box; border-radius: 19px; background: #fff; color: #000; border: 1px solid var(--border); box-shadow: 0 2px 5px var(--btn-shadow); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; white-space: nowrap; }
+        .feed-count-badge { position: absolute; left: calc(100% + 8px); top: 50%; transform: translateY(-50%); min-width: 38px; height: 38px; padding: 0 8px; box-sizing: border-box; border-radius: 19px; background: #000; color: #fff; border: 1px solid #000; box-shadow: 0 2px 5px var(--btn-shadow); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; white-space: nowrap; }
         .thumb-cell { min-width: 0; display: flex; flex-direction: column; }
         .thumb-tag { margin-top: 4px; font-size: 11px; line-height: 1.2; color: var(--secondary-text); text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .thumb-likes { margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 11px; line-height: 1; color: var(--secondary-text); font-variant-numeric: tabular-nums; }
@@ -343,17 +343,21 @@
         .grid-item:active { opacity: 0.7; }
         .grid-item img { width: 100%; height: 100%; object-fit: cover; }
 
-        .btn-back-floating { position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px); width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden; transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5); display: flex; justify-content: center; align-items: center; background: var(--bg-color); border-radius: 50%; border: none; cursor: pointer; }
+        .btn-back-floating { position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px); width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden; transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5); display: flex; justify-content: center; align-items: center; background: var(--btn-bg); border-radius: 50%; border: none; cursor: pointer; }
         .btn-back-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
         .btn-back-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 
-        .btn-sort-floating { position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px); width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden; transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5); display: flex; justify-content: center; align-items: center; background: var(--bg-color); border-radius: 50%; border: none; cursor: pointer; }
+        .btn-sort-floating { position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px); width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden; transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5); display: flex; justify-content: center; align-items: center; background: var(--btn-bg); border-radius: 50%; border: none; cursor: pointer; }
         .btn-sort-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
         .btn-sort-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
 
-        .btn-fav-tags-floating { position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px); width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden; transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.5); display: flex; justify-content: center; align-items: center; background: var(--bg-color); border-radius: 50%; border: none; cursor: pointer; }
+        .btn-fav-tags-floating { position: fixed; bottom: 37px; left: 50%; transform: translateX(-50%) translateY(20px); width: 50px; height: 50px; z-index: 400; opacity: 0; visibility: hidden; transition: transform 0.3s var(--smooth-ease), opacity 0.3s ease, visibility 0.3s; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35), 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.12); display: flex; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.6); border-radius: 50%; border: none; cursor: pointer; }
         .btn-fav-tags-floating.active { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
-        .btn-fav-tags-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: var(--icon-color); fill: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .btn-fav-tags-floating svg { display: block; margin: auto; width: 24px; height: 24px; stroke: #fff; fill: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* Служебные кнопки делят одно место: уходящая гаснет быстро, новая появляется после неё — без наложения */
+        .btn-back-floating, .btn-sort-floating, .btn-fav-tags-floating { transition: transform 0.3s var(--smooth-ease), opacity 0.15s ease, visibility 0s linear 0.15s; }
+        .btn-back-floating.active, .btn-sort-floating.active, .btn-fav-tags-floating.active { transition: transform 0.3s var(--smooth-ease) 0.12s, opacity 0.2s ease 0.12s, visibility 0s linear 0s; }
 
         .add-comment-box { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; flex-shrink: 0; border-bottom: 1px solid var(--border); padding-bottom: 16px; }
         .reply-indicator { display: none; background: var(--fill-1); padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 8px; color: var(--secondary-text); align-items: center; justify-content: space-between; }
@@ -498,15 +502,17 @@
            справа от ленты — кнопки меню, а правее кнопок — окна меню.
            ===================================================================== */
         .panel-close-btn { display: none; }
+        .btn-panels-toggle { display: none; }
 
         @media (min-width: 1100px) {
             :root {
                 --gap: 16px;
                 --rail-w: 64px;
                 --feed-w: clamp(380px, 36vw, 560px);
-                --side-w: clamp(260px, calc((100vw - var(--feed-w) - var(--rail-w) - 5 * var(--gap)) / 2), 440px);
-                --grp-l: calc((100vw - (var(--side-w) * 2 + var(--feed-w) + var(--rail-w) + 3 * var(--gap))) / 2);
-                --feed-l: calc(var(--grp-l) + var(--side-w) + var(--gap));
+                --side-w: clamp(260px, calc((100vw - var(--feed-w) - 2 * var(--rail-w) - 6 * var(--gap)) / 2), 440px);
+                --grp-l: calc((100vw - (var(--side-w) * 2 + var(--feed-w) + var(--rail-w) * 2 + 4 * var(--gap))) / 2);
+                --lrail-l: calc(var(--grp-l) + var(--side-w) + var(--gap));
+                --feed-l: calc(var(--lrail-l) + var(--rail-w) + var(--gap));
                 --rail-l: calc(var(--feed-l) + var(--feed-w) + var(--gap));
                 --rwin-l: calc(var(--rail-l) + var(--rail-w) + var(--gap));
                 --panel-top: 84px;
@@ -580,6 +586,23 @@
 
             .grid-item:hover { opacity: .88; }
             .tag-item:hover { background: var(--fill-2); }
+
+            /* Кнопка смены отображения ленты — по центру между профилем и лентой, отступы как у кнопок меню */
+            .btn-panels-toggle { display: flex; align-items: center; justify-content: center; position: fixed; left: calc(var(--lrail-l) + (var(--rail-w) - 54px) / 2); top: 50%; width: 54px; height: 54px; padding: 0; box-sizing: border-box; transform: translateY(-50%) scale(1); z-index: 450; opacity: 1; visibility: visible; transition: opacity .4s var(--smooth-ease), transform .4s var(--smooth-ease), visibility 0s linear 0s, background .3s ease, border .3s ease; }
+            .btn-panels-toggle svg { position: static; top: auto; left: auto; transform: none; margin: 0; flex: none; }
+            .btn-panels-toggle:active { transform: translateY(-50%) scale(.95); }
+            @media (hover: hover) { .btn-panels-toggle:hover { transform: translateY(-50%) scale(1.07); } }
+            /* Те же состояния, что у кнопок меню (синхронизируются с .bottom-controls) */
+            .btn-panels-toggle.shrunk { transform: translateY(-50%) scale(.85); }
+            .btn-panels-toggle.hidden { opacity: 0; pointer-events: none; transform: translateY(-50%) translateX(12px) scale(.9); visibility: hidden; transition: opacity .4s var(--smooth-ease), transform .4s var(--smooth-ease), visibility 0s linear .4s; }
+
+            /* Свёрнутое состояние: профиль/вход и все окна справа плавно скрываются */
+            .modal-overlay { transition: opacity .4s ease, visibility 0s linear 0s; }
+            body.panels-collapsed .modal-overlay { opacity: 0 !important; visibility: hidden; pointer-events: none; transition: opacity .4s ease, visibility 0s linear .4s; }
+            body.panels-collapsed .modal-overlay > .modal-content { pointer-events: none; }
+            body.panels-collapsed #authModal .modal-content, body.panels-collapsed #profileModal .modal-content { transform: translateX(-28px) scale(.98); }
+            body.panels-collapsed #submitModal .modal-content, body.panels-collapsed #searchModal .modal-content, body.panels-collapsed #likesModal .modal-content, body.panels-collapsed #commentsModal .modal-content { transform: translateX(28px) scale(.98); }
+            body.panels-collapsed .btn-back-floating, body.panels-collapsed .btn-sort-floating, body.panels-collapsed .btn-fav-tags-floating { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; transform: translateX(-50%) translateY(20px) !important; }
         }
     </style>
 </head>
@@ -618,6 +641,10 @@
     </button>
     <button class="liquid-glass btn-down hidden" id="btnDown" onclick="scrollToTop()">
         <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+    </button>
+
+    <button class="liquid-glass btn-panels-toggle" id="btnPanelsToggle" onclick="togglePanels()" aria-label="Сменить отображение ленты" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"></rect><path d="M3 8v8M21 8v8"></path></svg>
     </button>
 
     <button class="liquid-glass btn-back-floating" id="btnBackFloating" onclick="handleBackClick()">
@@ -811,6 +838,33 @@
         const desktopMQ = window.matchMedia('(min-width: 1100px)');
         function isDesktop() { return desktopMQ.matches; }
         const DESKTOP_RIGHT_WINDOWS = ['submitModal', 'searchModal', 'likesModal', 'commentsModal'];
+        let panelsCollapsed = false;
+        let searchGridReturn = 'tags'; // куда возвращает «назад» из сетки: 'tags' (все теги) или 'favorites'
+        function setFloating(which) {
+            btnBackFloating.classList.toggle('active', which === 'back');
+            btnFavTagsFloating.classList.toggle('active', which === 'fav');
+            btnSortFloating.classList.toggle('active', which === 'sort');
+        }
+        // Восстанавливает нужную кнопку по текущему состоянию открытого окна (например, после закрытия профиля поверх поиска)
+        function restoreFloatingButtons() {
+            const searchEl = document.getElementById('searchModal');
+            const likesEl = document.getElementById('likesModal');
+            if (searchEl && searchEl.classList.contains('active')) {
+                const gridShown = document.getElementById('gridView').style.display === 'block';
+                setFloating(gridShown || isFavoriteTagsView ? 'back' : 'fav');
+            } else if (likesEl && likesEl.classList.contains('active')) setFloating('sort');
+            else setFloating(null);
+        }
+        function setPanelsCollapsed(v) {
+            panelsCollapsed = !!v;
+            document.body.classList.toggle('panels-collapsed', panelsCollapsed);
+            const b = document.getElementById('btnPanelsToggle');
+            if (b) b.setAttribute('aria-pressed', String(panelsCollapsed));
+        }
+        function togglePanels() {
+            if (!isDesktop()) return;
+            setPanelsCollapsed(!panelsCollapsed);
+        }
         let activeProfileUserId = null;
         let activeProfileTags = [];
         let viewingOtherProfile = false;
@@ -2200,13 +2254,15 @@
             const modal = document.getElementById(id);
             clearTimeout(modal._closeTimer);
             if (isDesktop()) {
+                // Если панели свёрнуты, а пользователь открывает окно — разворачиваем обратно
+                if (panelsCollapsed && !(opts && (opts.keepCollapsed || opts.silent || opts.noFocus)) && (id !== 'profileModal' || viewingOtherProfile)) setPanelsCollapsed(false);
                 // Окно входа: если поверх него открыт чужой профиль — возвращаем вход
                 if (id === 'authModal' && viewingOtherProfile) showDefaultDock();
                 // Окна меню делят одно место справа от кнопок: открывается одно, остальные закрываются
                 if (DESKTOP_RIGHT_WINDOWS.includes(id)) {
                     DESKTOP_RIGHT_WINDOWS.forEach(otherId => {
                         const other = document.getElementById(otherId);
-                        if (otherId !== id && other && other.classList.contains('active')) closeModal({ target: other }, otherId);
+                        if (otherId !== id && other && other.classList.contains('active')) closeModal({ target: other }, otherId, true);
                     });
                 }
                 if (id === 'authModal' && modal.classList.contains('active') && !(opts && opts.noFocus)) {
@@ -2228,11 +2284,13 @@
             setTimeout(() => modal.classList.add('active'), 10);
         }
 
-        function closeModal(e, id) {
+        function closeModal(e, id, replacing) {
             if (e.target === document.getElementById(id) || !e.target) {
                 const modal = document.getElementById(id);
                 const content = modal.querySelector('.modal-content');
                 const desk = isDesktop();
+                // На ПК окно загрузки медиа закрыть нельзя — его может только заменить другое окно справа
+                if (desk && id === 'submitModal' && !replacing) return;
                 const docked = desk && (id === 'profileModal' || id === 'authModal');
                 if (docked) {
                     // Слева на ПК всегда открыт вход (без авторизации) или свой профиль
@@ -2251,10 +2309,13 @@
                 modal.classList.remove('active');
                 if (!desk) document.body.classList.remove('modal-open');
                 if (!docked) {
-                    btnBackFloating.classList.remove('active');
-                    btnSortFloating.classList.remove('active');
-                    btnFavTagsFloating.classList.remove('active');
-                    isFavoriteTagsView = false;
+                    if (id === 'profileModal' || id === 'authModal') {
+                        // Профиль/вход лежат поверх поиска или избранного — их кнопки и состояние не сбрасываем
+                        restoreFloatingButtons();
+                    } else {
+                        setFloating(null);
+                        isFavoriteTagsView = false;
+                    }
                 }
                 
                 if (id === 'commentsModal') {
@@ -2270,6 +2331,8 @@
                     if (content) content.style.transform = '';
                     updateControlsVisibility(feed.scrollTop);
                 }, 400);
+                // После закрытия другого окна справа возвращаем окно загрузки медиа
+                if (desk && !replacing && id !== 'submitModal' && DESKTOP_RIGHT_WINDOWS.includes(id)) openDefaultRightWindow();
             }
         }
 
@@ -2315,12 +2378,11 @@
             document.getElementById('gridView').style.display = 'none';
             document.getElementById('searchTitle').innerText = 'Поиск по тегам';
             
+            searchGridReturn = 'tags';
             openModal('searchModal');
 
             // Показываем нужные кнопки
-            btnBackFloating.classList.remove('active');
-            btnFavTagsFloating.classList.add('active'); 
-            btnSortFloating.classList.remove('active');
+            setFloating('fav');
         }
 
         function renderTagsList() {
@@ -2384,15 +2446,17 @@
         function showFavoriteTags() {
             if (navigator.vibrate) navigator.vibrate(20);
             isFavoriteTagsView = true;
+            document.getElementById('tagsView').style.display = 'block';
+            document.getElementById('gridView').style.display = 'none';
             document.getElementById('searchTitle').innerText = 'Избранные теги';
-            btnFavTagsFloating.classList.remove('active'); 
-            btnBackFloating.classList.add('active');
+            setFloating('back');
             renderTagsList();
         }
 
         function showTagPhotos(tag) {
             if (navigator.vibrate) navigator.vibrate(20);
             const normalizedTag = normalizeSearchTag(tag);
+            searchGridReturn = isFavoriteTagsView ? 'favorites' : 'tags';
             const matches = allPostsData.filter(p => normalizeSearchTag(p.tag) === normalizedTag);
             const authorGrid = document.getElementById('authorGrid');
             authorGrid.innerHTML = '';
@@ -2402,8 +2466,7 @@
             document.getElementById('tagsView').style.display = 'none';
             document.getElementById('gridView').style.display = 'block';
             document.getElementById('searchTitle').innerText = normalizedTag;
-            btnBackFloating.classList.add('active');
-            btnFavTagsFloating.classList.remove('active');
+            setFloating('back');
         }
 
         function showFeedMiniatures() {
@@ -2416,37 +2479,29 @@
             document.getElementById('tagsView').style.display = 'none';
             document.getElementById('gridView').style.display = 'block';
             document.getElementById('searchTitle').innerText = 'Вся лента';
-            btnBackFloating.classList.add('active');
-            btnFavTagsFloating.classList.remove('active');
+            searchGridReturn = 'tags';
+            setFloating('back');
             isFavoriteTagsView = false;
         }
 
         function handleBackClick() {
             if (navigator.vibrate) navigator.vibrate(20);
-            const title = document.getElementById('searchTitle').innerText;
-            if (title === 'Вся лента') {
-                document.getElementById('tagsView').style.display = 'block';
-                document.getElementById('gridView').style.display = 'none';
-                document.getElementById('searchTitle').innerText = 'Поиск по тегам';
-                btnBackFloating.classList.remove('active');
-                btnFavTagsFloating.classList.add('active');
-                renderTagsList();
-                return;
-            }
-            if (isFavoriteTagsView) {
+            const gridShown = document.getElementById('gridView').style.display === 'block';
+            // Всегда возвращаем к списку тегов: обычному или избранному — откуда пользователь пришёл
+            const toFavorites = (gridShown && searchGridReturn === 'favorites');
+            document.getElementById('tagsView').style.display = 'block';
+            document.getElementById('gridView').style.display = 'none';
+            if (toFavorites) {
+                isFavoriteTagsView = true;
+                document.getElementById('searchTitle').innerText = 'Избранные теги';
+                setFloating('back');
+            } else {
                 isFavoriteTagsView = false;
                 document.getElementById('searchTitle').innerText = 'Поиск по тегам';
-                btnFavTagsFloating.classList.add('active');
-                btnBackFloating.classList.remove('active');
-                renderTagsList();
-            } else {
-                document.getElementById('tagsView').style.display = 'block';
-                document.getElementById('gridView').style.display = 'none';
-                document.getElementById('searchTitle').innerText = 'Поиск по тегам';
-                btnBackFloating.classList.remove('active');
-                btnFavTagsFloating.classList.add('active');
-                renderTagsList();
+                setFloating('fav');
             }
+            searchGridReturn = 'tags';
+            renderTagsList();
         }
 
         function scrollToPost(id, modalId) {
@@ -2479,9 +2534,7 @@
                 });
             }
             openModal('likesModal');
-            btnSortFloating.classList.add('active');
-            btnBackFloating.classList.remove('active');
-            btnFavTagsFloating.classList.remove('active');
+            setFloating('sort');
         }
 
         function toggleSort() {
@@ -2642,7 +2695,7 @@
         function openDefaultRightWindow() {
             if (!isDesktop()) return;
             const anyOpen = DESKTOP_RIGHT_WINDOWS.some(id => document.getElementById(id).classList.contains('active'));
-            if (!anyOpen) openModal('submitModal');
+            if (!anyOpen) openModal('submitModal', { keepCollapsed: true });
         }
 
         function refreshDockedProfile() {
@@ -2665,7 +2718,7 @@
 
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
             const area = overlay.querySelector('.modal-drag-area');
-            if (!area) return;
+            if (!area || overlay.id === 'submitModal') return;
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'panel-close-btn';
@@ -2678,7 +2731,7 @@
         document.addEventListener('keydown', (e) => {
             if (e.key !== 'Escape' || !isDesktop()) return;
             if (e.target && e.target.classList && e.target.classList.contains('profile-search-input')) return;
-            const open = DESKTOP_RIGHT_WINDOWS.map(id => document.getElementById(id)).find(m => m && m.classList.contains('active'));
+            const open = DESKTOP_RIGHT_WINDOWS.filter(id => id !== 'submitModal').map(id => document.getElementById(id)).find(m => m && m.classList.contains('active'));
             if (open) { closeModal({ target: open }, open.id); return; }
             if (viewingOtherProfile) showDefaultDock();
         });
@@ -2700,6 +2753,7 @@
                 updateControlsVisibility(feed.scrollTop);
             } else {
                 // Возврат к мобильному виду: закрываем «приколотую» левую панель
+                setPanelsCollapsed(false);
                 viewingOtherProfile = false;
                 profileEl.classList.remove('viewing-other');
                 authEl.classList.remove('dock-covered');
@@ -2722,6 +2776,18 @@
         }
         if (desktopMQ.addEventListener) desktopMQ.addEventListener('change', onLayoutModeChange);
         else if (desktopMQ.addListener) desktopMQ.addListener(onLayoutModeChange);
+
+        // Кнопка смены отображения повторяет состояния кнопок меню (скрытие у верха/низа ленты, уменьшение при прокрутке)
+        (function syncPanelsToggle() {
+            const t = document.getElementById('btnPanelsToggle');
+            if (!t) return;
+            const sync = () => {
+                t.classList.toggle('hidden', bottomControls.classList.contains('hidden'));
+                t.classList.toggle('shrunk', bottomControls.classList.contains('shrunk'));
+            };
+            new MutationObserver(sync).observe(bottomControls, { attributes: true, attributeFilter: ['class'] });
+            sync();
+        })();
 
         // Начальное состояние ПК-версии: слева профиль (или вход), справа загрузка медиа
         if (isDesktop()) { showDefaultDock(); openDefaultRightWindow(); }
