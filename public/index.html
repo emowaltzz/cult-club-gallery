@@ -490,6 +490,97 @@
             cursor: pointer;
         }
         .keyboard-hide-btn svg { width: 20px; height: 20px; stroke: var(--text-color); fill: none; stroke-width: 2; }
+
+
+        /* =====================================================================
+           ПК-ВЕРСИЯ (окно шире 1100px). Мобильный вид не затрагивается.
+           Слева — профиль (или вход, если нет авторизации), по центру — лента,
+           справа от ленты — кнопки меню, а правее кнопок — окна меню.
+           ===================================================================== */
+        .panel-close-btn { display: none; }
+
+        @media (min-width: 1100px) {
+            :root {
+                --gap: 16px;
+                --rail-w: 64px;
+                --feed-w: clamp(380px, 36vw, 560px);
+                --side-w: clamp(260px, calc((100vw - var(--feed-w) - var(--rail-w) - 5 * var(--gap)) / 2), 440px);
+                --grp-l: calc((100vw - (var(--side-w) * 2 + var(--feed-w) + var(--rail-w) + 3 * var(--gap))) / 2);
+                --feed-l: calc(var(--grp-l) + var(--side-w) + var(--gap));
+                --rail-l: calc(var(--feed-l) + var(--feed-w) + var(--gap));
+                --rwin-l: calc(var(--rail-l) + var(--rail-w) + var(--gap));
+                --panel-top: 84px;
+                --panel-bottom: 24px;
+                --cdesc: max(190px, 26vh);
+            }
+
+            /* Лента */
+            .feed { padding-left: var(--feed-l); padding-right: calc(100vw - var(--feed-l) - var(--feed-w)); padding-top: 90px; padding-bottom: 150px; }
+            .post, .skeleton-loading, .support-wrapper { max-width: var(--feed-w); }
+            body.modal-open .feed { filter: none; }
+            .floating-logo { left: calc(var(--feed-l) + var(--feed-w) / 2); }
+            .toast { left: calc(var(--feed-l) + var(--feed-w) / 2); }
+            .keyboard-hide-btn { display: none !important; }
+
+            /* Блюр сверху и снизу — как на телефоне, в пределах ленты */
+            .blur-mask-top, .blur-mask-bottom { left: var(--feed-l); right: auto; width: var(--feed-w); }
+
+            /* Кнопки меню — справа от ленты, те же механики появления/скрытия, что и на телефоне */
+            .profile-floating { display: none !important; }
+            .bottom-controls { left: var(--rail-l); top: 50%; bottom: auto; width: var(--rail-w); height: auto; transform: translateY(-50%) scale(1); flex-direction: column; align-items: center; justify-content: center; }
+            .bottom-controls.hidden { transform: translateY(-50%) translateX(-12px) scale(.9); }
+            .bottom-controls.scrolling { pointer-events: auto !important; }
+            .bottom-actions { position: static; transform: none; flex-direction: column; gap: 16px; width: auto; }
+            .btn-search, .btn-likes { width: 54px; height: 54px; flex: 0 0 54px; }
+            .btn-add { width: 64px; height: 64px; flex: 0 0 64px; }
+            @media (hover: hover) { .bottom-actions .liquid-glass:hover { transform: scale(1.07); } }
+
+            /* Кнопка «наверх» — в колонке кнопок меню; стрелки у чата — по центру ленты */
+            .btn-down { left: calc(var(--rail-l) + (var(--rail-w) - 54px) / 2); right: auto; bottom: 40px; width: 54px; height: 54px; border-radius: 50%; }
+            @media (hover: hover) { .btn-down:hover { transform: scale(1.07); } }
+            .btn-pulse-down, .btn-pulse-up { left: calc(var(--feed-l) + var(--feed-w) / 2); }
+
+            /* Окна — панели без затемнения и блюра, лента остаётся видна */
+            .modal-overlay { top: var(--panel-top); bottom: var(--panel-bottom); left: auto; right: auto; width: var(--side-w); background: transparent; justify-content: stretch; align-items: stretch; pointer-events: none; }
+            .modal-overlay > .modal-content { pointer-events: auto; }
+            #authModal, #profileModal { left: var(--grp-l); }
+            #submitModal, #searchModal, #likesModal, #commentsModal { left: var(--rwin-l); }
+            #commentsModal { top: var(--cdesc); }
+            #authModal { bottom: auto; }
+            #authModal.dock-covered { opacity: 0 !important; visibility: hidden; pointer-events: none; transition: opacity .4s ease, visibility 0s linear .4s; }
+
+            .modal-content { width: 100%; max-width: none; height: 100%; border-radius: 24px; border: 1px solid var(--border); transform: translateY(14px); box-shadow: 0 18px 50px rgba(0,0,0,.16), 0 4px 14px rgba(0,0,0,.08); }
+            #submitModal .modal-content, #commentsModal .modal-content { height: 100%; }
+            #authModal .modal-content { height: auto; max-height: calc(100vh - var(--panel-top) - var(--panel-bottom)); }
+            .modal-overlay.active .modal-content { transform: none; }
+            .modal-content::before { display: none; }
+            .modal-drag-area { padding: 22px 60px 14px; cursor: default; touch-action: auto; }
+            .modal-body { padding-left: 24px; padding-right: 24px; scrollbar-width: thin; }
+            .modal-body::-webkit-scrollbar { display: block; width: 6px; }
+            .modal-body::-webkit-scrollbar-thumb { background: var(--fill-1); border-radius: 3px; }
+            .auth-modal .modal-body { justify-content: flex-start; padding-bottom: 24px; }
+            .auth-btn { margin-top: 8px; }
+
+            /* Кнопка закрытия окна (у профиля — только когда открыт чужой профиль) */
+            .panel-close-btn { display: flex; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 1px solid var(--border); background: var(--btn-bg); box-shadow: 0 2px 5px var(--btn-shadow); align-items: center; justify-content: center; cursor: pointer; color: var(--icon-color); }
+            .panel-close-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+            #authModal .panel-close-btn, #profileModal:not(.viewing-other) .panel-close-btn { display: none; }
+
+            /* Поиск профилей — над панелью профиля */
+            .profile-search-float { top: -58px; bottom: auto; left: 0; width: 100%; max-width: none; transform: translateY(8px); }
+            #profileModal.active .profile-search-float { transform: none; }
+
+            /* Описание поста — висит над окном комментариев и не перекрывает его */
+            .floating-post-desc { left: 0; bottom: calc(100% + 12px); width: 100%; max-width: none; transform: translateY(8px); max-height: calc(var(--cdesc) - 36px); }
+            #commentsModal.active .floating-post-desc { transform: none; }
+            .floating-desc-text.expanded { max-height: calc(var(--cdesc) - 36px - 76px); }
+
+            /* Служебные кнопки окон (назад / сортировка / избранные теги) — внизу правой панели */
+            .btn-back-floating, .btn-sort-floating, .btn-fav-tags-floating { left: calc(var(--rwin-l) + var(--side-w) / 2); bottom: calc(var(--panel-bottom) + 16px); }
+
+            .grid-item:hover { opacity: .88; }
+            .tag-item:hover { background: var(--fill-2); }
+        }
     </style>
 </head>
 <body>
@@ -717,6 +808,15 @@
         let currentFileToUpload = null;
         let isLikesSortedAsc = false; 
         let isFavoriteTagsView = false; 
+        const desktopMQ = window.matchMedia('(min-width: 1100px)');
+        function isDesktop() { return desktopMQ.matches; }
+        const DESKTOP_RIGHT_WINDOWS = ['submitModal', 'searchModal', 'likesModal', 'commentsModal'];
+        let activeProfileUserId = null;
+        let activeProfileTags = [];
+        let viewingOtherProfile = false;
+        let profileEditorOpen = false;
+        let profileLoadToken = 0;
+        let dockRefreshTimer = null;
         let supportButtonOffset = null; 
         
         let scrollTimeout;
@@ -833,35 +933,51 @@
             openUserProfile(currentUser.id);
         }
 
-        let activeProfileUserId = null;
-        let activeProfileTags = [];
 
-        async function openUserProfile(userId) {
+        async function openUserProfile(userId, opts) {
             if (!userId) return;
-            
-            // Скрываем лишние кнопки при открытии профиля
-            btnBackFloating.classList.remove('active');
-            btnFavTagsFloating.classList.remove('active');
-            btnSortFloating.classList.remove('active');
+            const silent = !!(opts && opts.silent);
+            const myToken = ++profileLoadToken;
+            activeProfileUserId = userId;
+            profileEditorOpen = false;
+            const desk = isDesktop();
+
+            // Скрываем лишние кнопки при открытии профиля (на ПК окна меню остаются открытыми)
+            if (!desk) {
+                btnBackFloating.classList.remove('active');
+                btnFavTagsFloating.classList.remove('active');
+                btnSortFloating.classList.remove('active');
+            }
 
             const profileModalEl = document.getElementById('profileModal');
             if (profileModalEl) profileModalEl.style.zIndex = '250';
 
+            if (desk) {
+                // Чужой профиль открывается слева поверх своего профиля (или окна входа)
+                viewingOtherProfile = !currentUser || String(currentUser.id) !== String(userId);
+                profileModalEl.classList.toggle('viewing-other', viewingOtherProfile);
+                document.getElementById('authModal').classList.toggle('dock-covered', viewingOtherProfile && !currentUser);
+            }
+
             const body = document.getElementById('profileModalBody');
-            body.innerHTML = '<div class="profile-empty">Загрузка профиля…</div>';
+            const prevScroll = silent ? body.scrollTop : 0;
+            if (!silent) body.innerHTML = '<div class="profile-empty">Загрузка профиля…</div>';
             openModal('profileModal');
 
             const { data: account, error } = await supabaseClient.from('users').select('id, username').eq('id', userId).single();
+            if (myToken !== profileLoadToken) return;
             if (error || !account) {
                 body.innerHTML = '<div class="profile-empty">Не удалось загрузить профиль.</div>';
                 return;
             }
             const { data: profileData, error: profileError } = await supabaseClient.from('user_profiles').select('display_name, bio, avatar_url').eq('user_id', userId).maybeSingle();
+            if (myToken !== profileLoadToken) return;
             
             const profile = { ...account, ...(profileData || {}) };
             activeProfileUserId = profile.id;
             const isOwner = currentUser && String(currentUser.id) === String(profile.id);
             const tagResult = await supabaseClient.from('profile_tags').select('tag').eq('user_id', profile.id);
+            if (myToken !== profileLoadToken) return;
 
             activeProfileTags = [...new Set((tagResult.data || []).map(x => x.tag).filter(Boolean))];
             const displayName = profile.display_name || String(profile.username || '').replace(/^@/, '') || 'Пользователь';
@@ -945,6 +1061,7 @@
                 avatarWrap.title = 'Изменить аватар';
                 avatarWrap.addEventListener('click', () => document.getElementById('profileAvatarInput')?.click());
             }
+            if (prevScroll) body.scrollTop = prevScroll;
         }
 
         function shareProfile(profileId) {
@@ -977,6 +1094,12 @@
         function openProfileTagSearch(tag) {
             const normalizedTag = normalizeSearchTag(tag);
             if (!normalizedTag) return;
+            if (isDesktop()) {
+                // На ПК профиль остаётся слева, а результаты поиска открываются справа от кнопок меню
+                openSearchModal();
+                showTagPhotos(normalizedTag);
+                return;
+            }
             const profileModal = document.getElementById('profileModal');
             closeModal({ target: profileModal }, 'profileModal');
             const searchModal = document.getElementById('searchModal');
@@ -1177,6 +1300,7 @@
 
         function showProfileEditor() {
             if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
+            profileEditorOpen = true;
             const body = document.getElementById('profileModalBody');
             const name = body.querySelector('.profile-display-name')?.textContent || currentUser.username?.replace(/^@/, '') || '';
             const bio = body.querySelector('.profile-bio')?.textContent || '';
@@ -1283,6 +1407,10 @@
             likedPhotos = [];
             likedTags = [];
             closeModal({ target: document.getElementById('profileModal') }, 'profileModal');
+            if (isDesktop()) {
+                showDefaultDock();
+                loadRealPhotos(false);
+            }
         }
 
         async function loadRealPhotos(isInitialLoad = false) {
@@ -1323,6 +1451,7 @@
                         if (!likedPhotos.includes(postId)) btn.classList.remove('liked');
                     }
                 });
+                scheduleDockRefresh();
                 return;
             }
 
@@ -1426,6 +1555,7 @@
                     updateControlsVisibility(0);
                 }, 100);
             }
+            scheduleDockRefresh();
         }
 
         function toggleLens(e, postId, imgUrl) {
@@ -1652,6 +1782,7 @@
                         currentUser = existingUser;
                         localStorage.setItem('cult_user', JSON.stringify(existingUser));
                         closeModal({ target: authModal }, 'authModal');
+                        if (isDesktop()) showDefaultDock();
                         loadRealPhotos(true);
                     } else { alert("Неверный пароль!"); }
                 } else {
@@ -1660,6 +1791,7 @@
                         currentUser = newUser;
                         localStorage.setItem('cult_user', JSON.stringify(newUser));
                         closeModal({ target: authModal }, 'authModal');
+                        if (isDesktop()) showDefaultDock();
                         loadRealPhotos(true);
                     } else { alert("Ошибка: " + insertError.message); }
                 }
@@ -1695,6 +1827,7 @@
         }
 
         function updatePostLikeCount(postId) {
+            scheduleDockRefresh();
             const countSpan = document.getElementById(`like-count-${postId}`);
             if (!countSpan) return;
             const postLikes = allLikesCache.filter(l => l.photo_id === postId);
@@ -1705,6 +1838,7 @@
         async function toggleTagLike(e, tag) {
             e.stopPropagation();
             if (!currentUser) {
+                if (isDesktop()) { openModal('authModal'); return; }
                 closeModal({ target: document.getElementById('searchModal') }, 'searchModal');
                 setTimeout(() => { openModal('authModal'); }, 450);
                 return;
@@ -2024,6 +2158,7 @@
         });
 
         async function submitPhoto() {
+            if (!currentUser) { openModal('authModal'); return; }
             const tagInput = document.getElementById('tagInput').value;
             const descInput = document.getElementById('descInput').value;
             if (!currentFileToUpload) { alert("Выберите файл!"); return; }
@@ -2050,6 +2185,7 @@
                     document.getElementById('descCount').textContent = '0 символов';
                     currentFileToUpload = null;
                     closeModal({target: submitModal}, 'submitModal');
+                    if (isDesktop()) setTimeout(openDefaultRightWindow, 450); // на ПК снова открываем чистое окно загрузки
                 } else {
                     const data = await res.json();
                     alert('Ошибка: ' + data.error);
@@ -2059,17 +2195,33 @@
             }
         }
 
-        function openModal(id) {
+        function openModal(id, opts) {
             try { tg.disableVerticalSwipes(); } catch (_) {}
-            clearTimeout(controlsRevealTimer);
-            clearTimeout(scrollTimeout);     
-            clearTimeout(hideArrowTimeout);  
-            
-            bottomControls.classList.add('hidden');
-            btnPulseDown.classList.add('hidden');
-            btnPulseUp.classList.add('hidden');
-            document.body.classList.add('modal-open');
             const modal = document.getElementById(id);
+            clearTimeout(modal._closeTimer);
+            if (isDesktop()) {
+                // Окно входа: если поверх него открыт чужой профиль — возвращаем вход
+                if (id === 'authModal' && viewingOtherProfile) showDefaultDock();
+                // Окна меню делят одно место справа от кнопок: открывается одно, остальные закрываются
+                if (DESKTOP_RIGHT_WINDOWS.includes(id)) {
+                    DESKTOP_RIGHT_WINDOWS.forEach(otherId => {
+                        const other = document.getElementById(otherId);
+                        if (otherId !== id && other && other.classList.contains('active')) closeModal({ target: other }, otherId);
+                    });
+                }
+                if (id === 'authModal' && modal.classList.contains('active') && !(opts && opts.noFocus)) {
+                    const u = document.getElementById('authUsername');
+                    if (u) u.focus();
+                }
+            } else {
+                clearTimeout(controlsRevealTimer);
+                clearTimeout(scrollTimeout);
+                clearTimeout(hideArrowTimeout);
+                bottomControls.classList.add('hidden');
+                btnPulseDown.classList.add('hidden');
+                btnPulseUp.classList.add('hidden');
+                document.body.classList.add('modal-open');
+            }
             const content = modal.querySelector('.modal-content');
             if (content) content.style.transform = '';
             modal.style.display = 'flex';
@@ -2080,6 +2232,13 @@
             if (e.target === document.getElementById(id) || !e.target) {
                 const modal = document.getElementById(id);
                 const content = modal.querySelector('.modal-content');
+                const desk = isDesktop();
+                const docked = desk && (id === 'profileModal' || id === 'authModal');
+                if (docked) {
+                    // Слева на ПК всегда открыт вход (без авторизации) или свой профиль
+                    if (id === 'authModal' && !currentUser) return;
+                    if (id === 'profileModal' && currentUser && !viewingOtherProfile) return;
+                }
                 if (id === 'profileModal') {
                     // Возвращаем стандартный z-index, чтобы следующее открытие было корректным
                     modal.style.zIndex = '';
@@ -2090,11 +2249,13 @@
                     results.forEach(r => { r.classList.remove('open'); r.innerHTML = ''; });
                 }
                 modal.classList.remove('active');
-                document.body.classList.remove('modal-open');
-                btnBackFloating.classList.remove('active');
-                btnSortFloating.classList.remove('active');
-                btnFavTagsFloating.classList.remove('active');
-                isFavoriteTagsView = false;
+                if (!desk) document.body.classList.remove('modal-open');
+                if (!docked) {
+                    btnBackFloating.classList.remove('active');
+                    btnSortFloating.classList.remove('active');
+                    btnFavTagsFloating.classList.remove('active');
+                    isFavoriteTagsView = false;
+                }
                 
                 if (id === 'commentsModal') {
                     cancelReply();
@@ -2103,7 +2264,8 @@
                     document.getElementById('floatingPostDesc').style.display = 'none';
                 }
 
-                setTimeout(() => {
+                clearTimeout(modal._closeTimer);
+                modal._closeTimer = setTimeout(() => {
                     modal.style.display = 'none';
                     if (content) content.style.transform = '';
                     updateControlsVisibility(feed.scrollTop);
@@ -2118,7 +2280,7 @@
                 try { tg.disableVerticalSwipes(); } catch (_) {}
             }
             const dragArea = e.target.closest('.modal-drag-area');
-            if (dragArea) {
+            if (dragArea && !isDesktop()) {
                 currentTouchModal = dragArea.closest('.modal-content');
                 touchStartY = e.touches[0].clientY;
             }
@@ -2153,12 +2315,12 @@
             document.getElementById('gridView').style.display = 'none';
             document.getElementById('searchTitle').innerText = 'Поиск по тегам';
             
+            openModal('searchModal');
+
             // Показываем нужные кнопки
             btnBackFloating.classList.remove('active');
             btnFavTagsFloating.classList.add('active'); 
             btnSortFloating.classList.remove('active');
-            
-            openModal('searchModal');
         }
 
         function renderTagsList() {
@@ -2288,6 +2450,12 @@
         }
 
         function scrollToPost(id, modalId) {
+            if (isDesktop()) {
+                // На ПК окно остаётся открытым, лента просто прокручивается к нужному посту
+                const target = document.getElementById(`post-${id}`);
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
             closeModal({ target: document.getElementById(modalId) }, modalId);
             setTimeout(() => {
                 const post = document.getElementById(`post-${id}`);
@@ -2449,6 +2617,114 @@
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') loadRealPhotos(false);
         });
+
+
+        // ===================== ПК-режим: левая панель, закрытие окон, смена режима =====================
+        // Слева всегда открыт профиль авторизованного пользователя (или окно входа без авторизации).
+        function showDefaultDock() {
+            if (!isDesktop()) return;
+            const profileEl = document.getElementById('profileModal');
+            const authEl = document.getElementById('authModal');
+            viewingOtherProfile = false;
+            profileEl.classList.remove('viewing-other');
+            authEl.classList.remove('dock-covered');
+            if (currentUser) {
+                if (authEl.classList.contains('active')) closeModal({ target: authEl }, 'authModal');
+                openUserProfile(currentUser.id);
+            } else {
+                profileLoadToken++;
+                if (profileEl.classList.contains('active')) closeModal({ target: profileEl }, 'profileModal');
+                openModal('authModal', { noFocus: true });
+            }
+        }
+
+        // На ПК по умолчанию справа открыто окно загрузки медиа
+        function openDefaultRightWindow() {
+            if (!isDesktop()) return;
+            const anyOpen = DESKTOP_RIGHT_WINDOWS.some(id => document.getElementById(id).classList.contains('active'));
+            if (!anyOpen) openModal('submitModal');
+        }
+
+        function refreshDockedProfile() {
+            if (!isDesktop() || !currentUser || profileEditorOpen || !activeProfileUserId) return;
+            if (!document.getElementById('profileModal').classList.contains('active')) return;
+            openUserProfile(activeProfileUserId, { silent: true });
+        }
+
+        function scheduleDockRefresh() {
+            if (!isDesktop()) return;
+            clearTimeout(dockRefreshTimer);
+            dockRefreshTimer = setTimeout(refreshDockedProfile, 500);
+        }
+
+        function closePanel(id) {
+            if (id === 'authModal') return;
+            if (id === 'profileModal') { if (viewingOtherProfile) showDefaultDock(); return; }
+            closeModal({ target: document.getElementById(id) }, id);
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            const area = overlay.querySelector('.modal-drag-area');
+            if (!area) return;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'panel-close-btn';
+            btn.setAttribute('aria-label', 'Закрыть');
+            btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+            btn.addEventListener('click', (ev) => { ev.stopPropagation(); closePanel(overlay.id); });
+            area.appendChild(btn);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape' || !isDesktop()) return;
+            if (e.target && e.target.classList && e.target.classList.contains('profile-search-input')) return;
+            const open = DESKTOP_RIGHT_WINDOWS.map(id => document.getElementById(id)).find(m => m && m.classList.contains('active'));
+            if (open) { closeModal({ target: open }, open.id); return; }
+            if (viewingOtherProfile) showDefaultDock();
+        });
+
+        ['authUsername', 'authPassword'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && isDesktop()) { e.preventDefault(); submitAuth(); }
+            });
+        });
+
+        function onLayoutModeChange() {
+            const profileEl = document.getElementById('profileModal');
+            const authEl = document.getElementById('authModal');
+            if (desktopMQ.matches) {
+                document.body.classList.remove('modal-open');
+                showDefaultDock();
+                openDefaultRightWindow();
+                updateControlsVisibility(feed.scrollTop);
+            } else {
+                // Возврат к мобильному виду: закрываем «приколотую» левую панель
+                viewingOtherProfile = false;
+                profileEl.classList.remove('viewing-other');
+                authEl.classList.remove('dock-covered');
+                [profileEl, authEl].forEach(m => {
+                    clearTimeout(m._closeTimer);
+                    m.classList.remove('active');
+                    m.style.display = 'none';
+                    m.style.zIndex = '';
+                });
+                if (document.querySelector('.modal-overlay.active')) {
+                    document.body.classList.add('modal-open');
+                    bottomControls.classList.add('hidden');
+                    btnPulseDown.classList.add('hidden');
+                    btnPulseUp.classList.add('hidden');
+                } else {
+                    document.body.classList.remove('modal-open');
+                    updateControlsVisibility(feed.scrollTop);
+                }
+            }
+        }
+        if (desktopMQ.addEventListener) desktopMQ.addEventListener('change', onLayoutModeChange);
+        else if (desktopMQ.addListener) desktopMQ.addListener(onLayoutModeChange);
+
+        // Начальное состояние ПК-версии: слева профиль (или вход), справа загрузка медиа
+        if (isDesktop()) { showDefaultDock(); openDefaultRightWindow(); }
 
         setTimeout(() => {
             const topMask = document.querySelector('.blur-mask-top');
