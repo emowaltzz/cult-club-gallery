@@ -647,7 +647,10 @@
         /* Мобильная версия: кнопка Chainsaw Squad над листом загрузки медиа, сайт — окно до самого верха */
         .ch-close { display: none; }
         /* Кнопка Chainsaw Squad в ленте — под каруселью, прокручивается вместе с лентой */
-        .chainsaw-feed-wrap { width: 100%; max-width: 500px; display: flex; justify-content: center; margin: -8px 0 30px; }
+        .chainsaw-feed-wrap { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; margin: -8px 0 30px; }
+        .chainsaw-feed-caption { margin-top: 14px; text-align: center; color: var(--secondary-text); font-size: 13px; line-height: 1.4; font-weight: 500; letter-spacing: .2px; }
+        .chainsaw-feed-caption span { display: block; white-space: nowrap; }
+        .chainsaw-caption-pc { display: none; }
         .btn-chainsaw-feed { display: flex; align-items: center; justify-content: center; height: 38px; min-width: 190px; padding: 0 26px; border-radius: 999px; border: 1px solid #e6e6e6; background: #fff; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: var(--font-main); font-size: 15px; font-weight: 600; letter-spacing: .5px; white-space: nowrap; cursor: pointer; transition: transform .3s var(--smooth-ease), background .3s ease, color .3s ease; }
         .btn-chainsaw-feed:active { transform: scale(.95); }
         @media (max-width: 1099.98px) {
@@ -663,7 +666,7 @@
            ПК-ДОПОЛНЕНИЯ (окно шире 1100px): вход по центру, фото без обрезки, Chainsaw Squad
            ===================================================================== */
         @media (min-width: 1100px) {
-            :root { --rbottom: calc(var(--panel-bottom) + 50px); }
+            :root { --rbottom: calc(var(--panel-bottom) + 94px); }
 
             /* Фото в ленте не обрезаются при масштабировании окна */
             .post img { max-height: none; object-fit: contain; }
@@ -687,11 +690,15 @@
             .ch-open { display: flex; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 1px solid var(--border); background: var(--btn-bg); box-shadow: 0 2px 5px var(--btn-shadow); align-items: center; justify-content: center; color: var(--icon-color); cursor: pointer; text-decoration: none; }
             .ch-open svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-            .btn-chainsaw { display: flex; align-items: center; justify-content: center; position: fixed; left: calc(var(--rwin-l) + var(--side-w) / 2); bottom: 20px; height: 38px; min-width: 190px; padding: 0 26px; border-radius: 999px; border: 1px solid #e6e6e6; background: #fff; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: var(--font-main); font-size: 15px; font-weight: 600; letter-spacing: .5px; white-space: nowrap; cursor: pointer; z-index: 450; opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); transition: transform .4s var(--smooth-ease), opacity .4s var(--smooth-ease), background .3s ease, color .3s ease, left .55s var(--smooth-ease), visibility 0s linear 0s; }
+            .btn-chainsaw { display: flex; align-items: center; justify-content: center; position: fixed; left: calc(var(--rwin-l) + var(--side-w) / 2); bottom: 64px; height: 38px; min-width: 190px; padding: 0 26px; border-radius: 999px; border: 1px solid #e6e6e6; background: #fff; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: var(--font-main); font-size: 15px; font-weight: 600; letter-spacing: .5px; white-space: nowrap; cursor: pointer; z-index: 450; opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); transition: transform .4s var(--smooth-ease), opacity .4s var(--smooth-ease), background .3s ease, color .3s ease, left .55s var(--smooth-ease), visibility 0s linear 0s; }
             .btn-chainsaw:active { transform: translateX(-50%) scale(.95); }
             @media (hover: hover) { .btn-chainsaw:hover { transform: translateX(-50%) scale(1.04); } }
             /* Открыт сайт — кнопка темнеет, плавно уезжает вправо и встаёт по центру открытого окна */
             .btn-chainsaw.active { background: var(--text-color); border-color: var(--text-color); color: var(--bg-color); left: calc((var(--rwin-l) + 100vw - var(--gap)) / 2); }
+            .chainsaw-caption-pc { display: block; position: fixed; left: calc(var(--rwin-l) + var(--side-w) / 2); bottom: 20px; transform: translateX(-50%); text-align: center; color: var(--secondary-text); font-size: 13px; line-height: 1.4; font-weight: 500; letter-spacing: .2px; pointer-events: none; z-index: 450; opacity: 1; visibility: visible; transition: left .55s var(--smooth-ease), opacity .4s var(--smooth-ease), transform .4s var(--smooth-ease), visibility 0s linear 0s; }
+            .chainsaw-caption-pc span { display: block; white-space: nowrap; }
+            .chainsaw-caption-pc.active { left: calc((var(--rwin-l) + 100vw - var(--gap)) / 2); }
+            body.panels-collapsed .chainsaw-caption-pc { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(12px); transition: opacity .4s var(--smooth-ease), transform .4s var(--smooth-ease), visibility 0s linear .4s; }
             body.panels-collapsed .btn-chainsaw { opacity: 0; visibility: hidden; pointer-events: none; transform: translateX(-50%) translateY(12px) scale(.9); transition: transform .4s var(--smooth-ease), opacity .4s var(--smooth-ease), visibility 0s linear .4s; }
             /* Открыт сайт — кнопка плавно уезжает вправо и встаёт по центру открытого окна */
             #chainsawModal .modal-title { text-transform: uppercase; letter-spacing: .12em; }
@@ -741,6 +748,7 @@
 
     <!-- ПК: кнопка Chainsaw Squad под правыми окнами меню -->
     <button class="btn-chainsaw" id="btnChainsaw" onclick="toggleChainsaw()" aria-label="Chainsaw Squad" aria-pressed="false">𝕮𝖍𝖆𝖎𝖓𝖘𝖆𝖜 𝕾𝖖𝖚𝖆𝖉 ★</button>
+    <div class="chainsaw-caption-pc" id="chainsawCaptionPc" aria-hidden="true"><span>Cult • Club Gallery</span><span>Members</span></div>
 
     <button class="liquid-glass btn-back-floating" id="btnBackFloating" onclick="handleBackClick()">
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
@@ -1639,7 +1647,7 @@
                 </div>
                 <div class="post static-post"><div class="image-container"><img src="${img4}" alt="Static Top 3"></div></div>
                 <div class="tag-showcase" id="tagShowcase"></div>
-                <div class="chainsaw-feed-wrap"><button type="button" class="btn-chainsaw-feed" onclick="toggleChainsaw()" aria-label="Chainsaw Squad" aria-pressed="false">𝕮𝖍𝖆𝖎𝖓𝖘𝖆𝖜 𝕾𝖖𝖚𝖆𝖉 ★</button></div>
+                <div class="chainsaw-feed-wrap"><button type="button" class="btn-chainsaw-feed" onclick="toggleChainsaw()" aria-label="Chainsaw Squad" aria-pressed="false">𝕮𝖍𝖆𝖎𝖓𝖘𝖆𝖜 𝕾𝖖𝖚𝖆𝖉 ★</button><div class="chainsaw-feed-caption"><span>Cult • Club Gallery</span><span>Members</span></div></div>
             `);
 
             const reversedData = data ? [...data].reverse() : [];
@@ -3095,7 +3103,7 @@
             const submit = document.getElementById('submitModal');
             const sync = () => {
                 const on = modal.classList.contains('active');
-                document.querySelectorAll('.btn-chainsaw, .btn-chainsaw-feed').forEach(b => { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
+                document.querySelectorAll('.btn-chainsaw, .btn-chainsaw-feed, .chainsaw-caption-pc').forEach(b => { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
             };
             const mo = new MutationObserver(sync);
             mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
