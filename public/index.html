@@ -61,7 +61,7 @@
         .post img { width: 100%; height: auto; max-height: 80vh; object-fit: cover; background-color: var(--fill-1); border-radius: 8px; display: block; }
 
         .post.last-published { position: relative; }
-        .post.last-published .image-container { position: relative; border-radius: 8px; box-shadow: 0 -15px 30px -5px rgba(0, 0, 0, 0.20), 0 15px 25px -10px rgba(0, 0, 0, 0.02); transition: box-shadow 0.3s ease; }
+        .post.last-published .image-container { position: relative; border-radius: 8px; }
 
         .skeleton-loading { width: 100%; max-width: 500px; height: 400px; border-radius: 8px; margin-bottom: 30px; background: linear-gradient(90deg, var(--skeleton-bg) 25%, var(--skeleton-shimmer) 50%, var(--skeleton-bg) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
@@ -604,6 +604,94 @@
             body.panels-collapsed #submitModal .modal-content, body.panels-collapsed #searchModal .modal-content, body.panels-collapsed #likesModal .modal-content, body.panels-collapsed #commentsModal .modal-content { transform: translateX(28px) scale(.98); }
             body.panels-collapsed .btn-back-floating, body.panels-collapsed .btn-sort-floating, body.panels-collapsed .btn-fav-tags-floating { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; transform: translateX(-50%) translateY(20px) !important; }
         }
+
+        /* =====================================================================
+           БЛОК «СЛУЧАЙНЫЕ ТЕГИ» — автопролистывание 5 фото перед первым постом
+           ===================================================================== */
+        .tag-showcase { width: 100%; max-width: 500px; margin-bottom: 30px; display: flex; flex-direction: column; }
+        .tag-showcase:empty { display: none; }
+        .ts-view { position: relative; width: 100%; aspect-ratio: 4 / 5; max-height: 80vh; border-radius: 8px; overflow: hidden; background: var(--fill-1); touch-action: pan-y; box-shadow: 0 -15px 30px -5px rgba(0, 0, 0, 0.20), 0 15px 25px -10px rgba(0, 0, 0, 0.02); }
+        .ts-strip { display: flex; height: 100%; will-change: transform; }
+        .ts-slide { position: relative; flex: none; width: 100%; height: 100%; overflow: hidden; }
+        .ts-bg { position: absolute; inset: -24px; background-size: cover; background-position: center; filter: blur(26px) saturate(1.1); transform: translateZ(0); }
+        .ts-slide img { position: relative; display: block; width: 100%; height: 100%; object-fit: contain; -webkit-user-drag: none; }
+        .ts-slide::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 38%; background: linear-gradient(to top, rgba(0,0,0,.5), rgba(0,0,0,0)); pointer-events: none; }
+        .ts-foot { position: absolute; z-index: 3; left: 16px; right: 12px; bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; pointer-events: none; }
+        .ts-cap { min-width: 0; flex: 1; font-size: 17px; font-weight: 600; letter-spacing: -.2px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 8px rgba(0,0,0,.35); }
+        /* Лайк — как кнопка зума: белая полупрозрачная, тёмная иконка, правый нижний угол напротив тега */
+        .ts-like { pointer-events: auto; flex: none; width: 36px; height: 36px; padding: 0; border-radius: 50%; background: var(--btn-bg); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform .2s ease; }
+        .ts-like:active { transform: scale(.85); }
+        .ts-like svg { width: 19px; height: 19px; display: block; stroke: var(--icon-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: transparent; transform: translate(-.45px, -.55px); transition: fill .2s ease; }
+        .ts-like.liked svg { fill: var(--like-color); }
+        .ts-view { user-select: none; -webkit-user-select: none; }
+        .ts-slide img { pointer-events: none; }
+        .ts-nav { display: none; position: absolute; z-index: 3; top: 50%; width: 34px; height: 34px; margin-top: -17px; padding: 0; border-radius: 50%; background: var(--btn-bg); border: 1px solid var(--border); cursor: pointer; align-items: center; justify-content: center; opacity: 0; transition: opacity .25s ease, transform .2s ease; }
+        .ts-nav svg { width: 18px; height: 18px; stroke: var(--icon-color); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .ts-nav:active { transform: scale(.88); }
+        .ts-prev { left: 10px; } .ts-next { right: 10px; }
+        .ts-view.at-start .ts-prev { display: none !important; }
+        @media (hover: hover) { .ts-nav { display: flex; } .ts-view:hover .ts-nav { opacity: 1; } }
+        .ts-dots { position: relative; display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 16px; height: 20px; }
+        .ts-dots button { position: relative; width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; background: rgba(0,0,0,.18); cursor: pointer; }
+        .ts-dots button::before { content: ""; position: absolute; inset: -8px; }
+        .ts-act { position: absolute; left: 0; top: 6px; height: 8px; width: 8px; border-radius: 4px; background: var(--text-color); will-change: transform, width; pointer-events: none; }
+
+        /* Кнопка и окно Chainsaw Squad существуют только в ПК-версии */
+        .btn-chainsaw { display: none; }
+        #chainsawModal .modal-content { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
+        #chainsawModal .modal-body { padding: 0 14px 14px; overflow: hidden; }
+        .ch-frame { flex: 1; width: 100%; min-height: 0; border: 0; border-radius: 14px; background: #fff; }
+        .ch-open { display: none; }
+
+        /* Мобильная версия: кнопка Chainsaw Squad над листом загрузки медиа, сайт — окно до самого верха */
+        .ch-close { display: none; }
+        @media (max-width: 1099.98px) {
+            .btn-chainsaw { display: flex; align-items: center; justify-content: center; position: fixed; left: 50%; bottom: calc(85vh + (15vh - 56px) / 2); width: min(70vw, 350px); height: 56px; min-width: 0; padding: 0 16px; border-radius: 999px; border: 1px solid var(--border); background: #fff; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: var(--font-main); font-size: min(6vw, 28px); font-weight: 600; letter-spacing: .5px; white-space: nowrap; cursor: pointer; z-index: 450; opacity: 0; visibility: hidden; pointer-events: none; transform: translateX(-50%) translateY(10px) scale(.95); transition: transform .4s var(--smooth-ease), opacity .3s ease, visibility 0s linear .4s; }
+            body.ch-btn-show .btn-chainsaw { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) scale(1); transition: transform .4s var(--smooth-ease), opacity .3s ease, visibility 0s linear 0s; }
+            body.ch-btn-show .btn-chainsaw:active { transform: translateX(-50%) scale(.95); }
+            #chainsawModal .modal-content { height: calc(100dvh - env(safe-area-inset-top, 0px) - 10px); border-radius: 24px 24px 0 0; }
+            #chainsawModal .modal-title { text-transform: uppercase; letter-spacing: .12em; }
+            #chainsawModal .modal-drag-area { padding: 28px 60px 14px; }
+            .ch-open, .ch-close { display: flex; position: absolute; top: calc(50% + 7px); transform: translateY(-50%); width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 1px solid var(--border); background: var(--btn-bg); box-shadow: 0 2px 5px var(--btn-shadow); align-items: center; justify-content: center; color: var(--icon-color); cursor: pointer; text-decoration: none; }
+            .ch-open { left: 16px; } .ch-close { right: 16px; }
+            .ch-open svg, .ch-close svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        }
+
+        /* =====================================================================
+           ПК-ДОПОЛНЕНИЯ (окно шире 1100px): вход по центру, фото без обрезки, Chainsaw Squad
+           ===================================================================== */
+        @media (min-width: 1100px) {
+            :root { --rbottom: calc(var(--panel-bottom) + 50px); }
+
+            /* Фото в ленте не обрезаются при масштабировании окна */
+            .post img { max-height: none; object-fit: contain; }
+            .tag-showcase { max-width: var(--feed-w); }
+
+            /* Окно авторизации — по центру слева, а не сверху */
+            #authModal { top: 0; bottom: 0; align-items: center; }
+            #authModal .modal-content { max-height: calc(100vh - 2 * var(--panel-bottom)); }
+
+            /* Без авторизации окно поиска по тегам нельзя закрыть */
+            body.guest #searchModal .panel-close-btn { display: none; }
+
+            /* Правые окна поднимаются на высоту кнопки Chainsaw Squad */
+            #submitModal, #searchModal, #likesModal, #commentsModal, #chainsawModal { bottom: var(--rbottom); }
+            .btn-back-floating, .btn-sort-floating, .btn-fav-tags-floating { bottom: calc(var(--rbottom) + 16px); }
+
+            /* Окно Chainsaw Squad — на всю оставшуюся ширину справа */
+            #chainsawModal { left: var(--rwin-l); right: var(--gap); width: auto; }
+            body.panels-collapsed #chainsawModal .modal-content { transform: translateX(28px) scale(.98); }
+            .ch-open { display: flex; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 1px solid var(--border); background: var(--btn-bg); box-shadow: 0 2px 5px var(--btn-shadow); align-items: center; justify-content: center; color: var(--icon-color); cursor: pointer; text-decoration: none; }
+            .ch-open svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+            .btn-chainsaw { display: flex; align-items: center; justify-content: center; position: fixed; left: calc(var(--rwin-l) + var(--side-w) / 2); bottom: 20px; height: 38px; min-width: 190px; padding: 0 26px; border-radius: 999px; border: 1px solid var(--border); background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: var(--font-main); font-size: 15px; font-weight: 600; letter-spacing: .5px; white-space: nowrap; cursor: pointer; z-index: 450; opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); transition: transform .4s var(--smooth-ease), opacity .4s var(--smooth-ease), background .3s ease, color .3s ease, left .55s var(--smooth-ease), visibility 0s linear 0s; }
+            .btn-chainsaw:active { transform: translateX(-50%) scale(.95); }
+            @media (hover: hover) { .btn-chainsaw:hover { transform: translateX(-50%) scale(1.04); } }
+            /* Открыт сайт — кнопка плавно уезжает вправо и встаёт по центру открытого окна */
+            .btn-chainsaw.active { background: var(--text-color); color: var(--bg-color); left: calc((var(--rwin-l) + 100vw - var(--gap)) / 2); }
+            #chainsawModal .modal-title { text-transform: uppercase; letter-spacing: .12em; }
+            body.panels-collapsed .btn-chainsaw { opacity: 0; visibility: hidden; pointer-events: none; transform: translateX(-50%) translateY(12px) scale(.9); transition: transform .4s var(--smooth-ease), opacity .4s var(--smooth-ease), visibility 0s linear .4s; }
+        }
     </style>
 </head>
 <body>
@@ -646,6 +734,9 @@
     <button class="liquid-glass btn-panels-toggle" id="btnPanelsToggle" onclick="togglePanels()" aria-label="Сменить отображение ленты" aria-pressed="false">
         <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2.5"></rect><path d="M3 8v8M21 8v8"></path></svg>
     </button>
+
+    <!-- ПК: кнопка Chainsaw Squad под правыми окнами меню -->
+    <button class="btn-chainsaw" id="btnChainsaw" onclick="toggleChainsaw()" aria-label="Chainsaw Squad" aria-pressed="false">𝕮𝖍𝖆𝖎𝖓𝖘𝖆𝖜 𝕾𝖖𝖚𝖆𝖉 ★</button>
 
     <button class="liquid-glass btn-back-floating" id="btnBackFloating" onclick="handleBackClick()">
         <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
@@ -799,6 +890,22 @@
         </div>
     </div>
 
+    <!-- ПК: сайт Chainsaw Squad в окне справа, на всю оставшуюся ширину -->
+    <div class="modal-overlay" id="chainsawModal" onclick="closeModal(event, 'chainsawModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-drag-area">
+                <a class="ch-open" href="https://chainsawsquad.ru/" target="_blank" rel="noopener" title="Открыть в новой вкладке" aria-label="Открыть в новой вкладке">
+                    <svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+                </a>
+                <div class="modal-title">CHAIN$AW SQUAD</div>
+                <button type="button" class="ch-close" onclick="closeModal({ target: document.getElementById('chainsawModal') }, 'chainsawModal')" aria-label="Закрыть"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+            </div>
+            <div class="modal-body">
+                <iframe class="ch-frame" id="chainsawFrame" title="Chainsaw Squad" referrerpolicy="no-referrer-when-downgrade" allow="clipboard-write; fullscreen"></iframe>
+            </div>
+        </div>
+    </div>
+
     <canvas id="compressCanvas" style="display:none;"></canvas>
 
     <script>
@@ -837,7 +944,7 @@
         let isFavoriteTagsView = false; 
         const desktopMQ = window.matchMedia('(min-width: 1100px)');
         function isDesktop() { return desktopMQ.matches; }
-        const DESKTOP_RIGHT_WINDOWS = ['submitModal', 'searchModal', 'likesModal', 'commentsModal'];
+        const DESKTOP_RIGHT_WINDOWS = ['submitModal', 'searchModal', 'likesModal', 'commentsModal', 'chainsawModal'];
         let panelsCollapsed = false;
         let searchGridReturn = 'tags'; // куда возвращает «назад» из сетки: 'tags' (все теги) или 'favorites'
         function setFloating(which) {
@@ -1461,8 +1568,10 @@
             likedPhotos = [];
             likedTags = [];
             closeModal({ target: document.getElementById('profileModal') }, 'profileModal');
+            syncShowcaseLikes();
             if (isDesktop()) {
                 showDefaultDock();
+                syncGuestMode();
                 loadRealPhotos(false);
             }
         }
@@ -1525,6 +1634,7 @@
                     <a href="https://t.me/cultclubchatroom" target="_blank" class="chat-btn" id="topChatBtn">CHAT</a>
                 </div>
                 <div class="post static-post"><div class="image-container"><img src="${img4}" alt="Static Top 3"></div></div>
+                <div class="tag-showcase" id="tagShowcase"></div>
             `);
 
             const reversedData = data ? [...data].reverse() : [];
@@ -1586,6 +1696,11 @@
                 feed.insertAdjacentHTML('beforeend', `<p style="text-align:center; width:100%; padding: 20px; color:var(--secondary-text);">Пока нет одобренных медиа</p>`);
             }
 
+            // Блок со случайными тегами (под 4.png, перед первым постом) и список тегов в окне поиска
+            initTagShowcase();
+            const searchModalEl = document.getElementById('searchModal');
+            if (searchModalEl && (searchModalEl.style.display === 'flex' || searchModalEl.classList.contains('active')) && document.getElementById('tagsView').style.display !== 'none') renderTagsList();
+
             feed.insertAdjacentHTML('beforeend', `
                 <div class="post static-post" id="bottom-static-1"><div class="image-container"><img src="${img1}" alt="Static"></div></div>
                 <div class="post static-post" id="bottom-static-2"><div class="image-container"><img src="${img2}" alt="Static"></div></div>
@@ -1610,6 +1725,228 @@
                 }, 100);
             }
             scheduleDockRefresh();
+        }
+
+        // ===================== Блок «случайные теги»: 5 фото, автопролистывание =====================
+        // Берётся 5 случайных тегов и по одному случайному фото каждого. Слайды плавно скользят на одной пружине,
+        // активная точка — пилюля, передний край которой бежит к следующей точке, а задний подтягивается (как в референсе).
+        // Когда показаны все 5 фото, к ленте слайдов подклеивается следующая пятёрка тегов и она продолжает скользить дальше.
+        let tagShowcaseInstance = null;
+
+        function syncShowcaseLikes() {
+            document.querySelectorAll('.ts-like').forEach(b => {
+                b.classList.toggle('liked', likedPhotos.includes(Number(b.dataset.id)));
+            });
+        }
+
+        async function showcaseLikeClick(e, photoId) {
+            if (e) { e.stopPropagation(); e.preventDefault(); }
+            if (!currentUser) { if (isDesktop()) showAuthRequired(); else openModal('authModal'); return; }
+            if (navigator.vibrate) navigator.vibrate(20);
+            await toggleLike(null, photoId);
+            syncShowcaseLikes();
+        }
+
+        function initTagShowcase() {
+            if (tagShowcaseInstance) { tagShowcaseInstance.destroy(); tagShowcaseInstance = null; }
+            const root = document.getElementById('tagShowcase');
+            if (!root) return;
+            root.innerHTML = '';
+
+            // Теги и их фото — из загруженных из базы одобренных постов
+            const byTag = new Map();
+            allPostsData.forEach(p => {
+                if (!p.tag || !p.img) return;
+                const key = normalizeTagKey(p.tag);
+                if (!byTag.has(key)) byTag.set(key, { tag: p.tag, photos: [] });
+                byTag.get(key).photos.push(p);
+            });
+            const tags = [...byTag.values()];
+            if (!tags.length) return;
+            const totalPhotos = tags.reduce((sum, t) => sum + t.photos.length, 0);
+
+            const BATCH = 5, HOLD = 3.2;
+            const n = Math.min(BATCH, tags.length);
+            const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+            // Минимум повторов: теги идут по кругу — сначала те, что не показывались дольше всех;
+            // фото каждого тега тоже идут по кругу (новое фото, пока не показаны все остальные).
+            let tick = 0, lastTagShown = null;
+            tags.forEach(t => { t.last = -1; t.queue = []; t.lastPhoto = null; });
+            const pickPhoto = t => {
+                if (!t.queue.length) {
+                    t.queue = shuffle(t.photos.slice());
+                    const q = t.queue;
+                    if (q.length > 1 && q[q.length - 1] === t.lastPhoto) [q[0], q[q.length - 1]] = [q[q.length - 1], q[0]];
+                }
+                t.lastPhoto = t.queue.pop();
+                return t.lastPhoto;
+            };
+            const nextBatch = () => {
+                const order = shuffle(tags.slice()).sort((a, b) => a.last - b.last);   // sort стабилен: равные остаются в случайном порядке
+                const picked = shuffle(order.slice(0, n));
+                if (picked.length > 1 && picked[0].tag === lastTagShown) picked.push(picked.shift());  // не ставим тот же тег подряд на стыке пятёрок
+                lastTagShown = picked[picked.length - 1].tag;
+                return picked.map(t => { t.last = tick++; return { tag: t.tag, photo: pickPhoto(t) }; });
+            };
+            const prepare = () => {
+                const items = nextBatch();
+                items.forEach(it => { it.pre = new Image(); it.pre.src = it.photo.img; });
+                return items;
+            };
+            const makeSlide = it => {
+                const s = document.createElement('div'); s.className = 'ts-slide';
+                const bg = document.createElement('div'); bg.className = 'ts-bg';
+                bg.style.backgroundImage = 'url("' + String(it.photo.img).replace(/["\\\r\n]/g, c => encodeURIComponent(c)) + '")';
+                const im = document.createElement('img'); im.src = it.photo.img; im.alt = it.tag; im.draggable = false;
+                const foot = document.createElement('div'); foot.className = 'ts-foot';
+                const cap = document.createElement('div'); cap.className = 'ts-cap'; cap.textContent = '@' + String(it.tag).replace(/^[@#]+/, '');
+                const like = document.createElement('button'); like.type = 'button';
+                like.className = 'ts-like' + (likedPhotos.includes(Number(it.photo.id)) ? ' liked' : '');
+                like.dataset.id = it.photo.id;
+                like.setAttribute('aria-label', 'В избранное');
+                like.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+                like.addEventListener('click', e => showcaseLikeClick(e, it.photo.id));
+                foot.append(cap, like);
+                s.append(bg, im, foot);
+                return s;
+            };
+
+            root.innerHTML = '<div class="ts-view at-start"><div class="ts-strip"></div>' +
+                '<button type="button" class="ts-nav ts-prev" aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>' +
+                '<button type="button" class="ts-nav ts-next" aria-label="Вперёд"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button></div>' +
+                '<div class="ts-dots" role="tablist" aria-label="Случайные теги"><span class="ts-act"></span></div>';
+            const view = root.querySelector('.ts-view'), strip = root.querySelector('.ts-strip');
+            const dotsEl = root.querySelector('.ts-dots'), act = root.querySelector('.ts-act');
+            const canMove = totalPhotos > 1;
+            if (!canMove) view.querySelectorAll('.ts-nav').forEach(b => b.remove());
+
+            // Пружины (жёсткость, демпфирование)
+            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const S = (x, k = 400, c = 30) => ({ x, v: 0, t: x, k, c });
+            const tune = (s, k, c) => { s.k = k; s.c = reduce ? 2 * Math.sqrt(k) : c; };
+            const step = (s, dt) => { const a = -s.k * (s.x - s.t) - s.c * s.v; s.v += a * dt; s.x += s.v * dt; };
+            const P = S(0, 170, 22), A = S(0), B = S(0);
+
+            // Лента слайдов: base — номер первого слайда в DOM, g — номер текущего. Пятёрки подклеиваются по мере надобности,
+            // а одна предыдущая пятёрка остаётся в DOM, чтобы можно было листать назад.
+            let base = 0, g = 0, pending = null, waitTries = 0;
+            let clock = 0, nextAt = HOLD, visible = false, ready = false, dead = false, drag = null;
+            const loaded = () => base + strip.children.length;
+            const dotOf = k => ((k % n) + n) % n;
+            const batchStart = () => Math.floor(g / n) * n;
+            const appendBatch = () => {
+                const items = pending || prepare();
+                items.forEach(it => strip.appendChild(makeSlide(it)));
+                pending = prepare();
+            };
+            appendBatch();
+
+            const btns = Array.from({ length: n }, (_, i) => {
+                const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Слайд ' + (i + 1));
+                b.addEventListener('click', () => { nextAt = clock + 7; move(batchStart() + i); });
+                dotsEl.appendChild(b);
+                return b;
+            });
+            if (n < 2) dotsEl.style.display = 'none';
+
+            // пилюля 20px над точками через 22px (8 + 14): по 8px воздуха до соседей
+            const setDot = (i, snap, dir) => {
+                btns.forEach((b, k) => b.setAttribute('aria-selected', String(k === i)));
+                const b = btns[i], w = 20, c = b.offsetLeft + b.offsetWidth / 2;
+                A.t = c - w / 2; B.t = c + w / 2;
+                if (dir > 0) { tune(B, 520, 34); tune(A, 140, 18); } else { tune(A, 520, 34); tune(B, 140, 18); }
+                if (snap) { A.x = A.t; B.x = B.t; }
+            };
+            // Переход к слайду с номером to (вперёд, назад, по точке)
+            const move = to => {
+                if (!canMove || to < base) return false;
+                while (to >= loaded()) appendBatch();
+                const oldDot = dotOf(g);
+                g = to; P.t = g - base;
+                nextAt = Math.max(nextAt, clock + HOLD);
+                view.classList.toggle('at-start', g <= base);
+                if (ready) setDot(dotOf(g), false, dotOf(g) >= oldDot ? 1 : -1);
+                return true;
+            };
+            const advance = () => {
+                if (g + 1 >= loaded() && pending && !pending.every(it => it.pre.complete) && waitTries++ < 6) { nextAt = clock + 1; return; }
+                waitTries = 0;
+                nextAt = clock + HOLD;
+                move(g + 1);
+            };
+            view.querySelector('.ts-prev')?.addEventListener('click', e => { e.stopPropagation(); nextAt = clock + 7; move(g - 1); });
+            view.querySelector('.ts-next')?.addEventListener('click', e => { e.stopPropagation(); nextAt = clock + 7; move(g + 1); });
+
+            // Свайп пальцем или мышью (вертикальная прокрутка ленты не затрагивается: touch-action: pan-y)
+            view.addEventListener('pointerdown', e => {
+                if (!canMove || (e.pointerType === 'mouse' && e.button !== 0)) return;
+                if (e.target.closest('.ts-like, .ts-nav')) return;
+                drag = { id: e.pointerId, x: e.clientX, y: e.clientY, active: false, from: 0, lastX: e.clientX, lastT: performance.now(), vx: 0 };
+            });
+            view.addEventListener('pointermove', e => {
+                if (!drag || e.pointerId !== drag.id) return;
+                const dx = e.clientX - drag.x;
+                if (!drag.active) {
+                    if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(e.clientY - drag.y)) return;
+                    drag.active = true;
+                    try { view.setPointerCapture(e.pointerId); } catch (_) {}
+                    if (g + 1 >= loaded()) appendBatch();          // справа уже должна ждать следующая фотография
+                    drag.from = P.x; drag.x = e.clientX; P.v = 0;
+                    nextAt = clock + 7;
+                }
+                const now = performance.now();
+                drag.vx = (e.clientX - drag.lastX) / Math.max(1, now - drag.lastT); drag.lastX = e.clientX; drag.lastT = now;
+                const w = view.clientWidth || 1, hi = loaded() - base - 1;
+                let x = drag.from - (e.clientX - drag.x) / w;
+                if (x < 0) x *= 0.3; else if (x > hi) x = hi + (x - hi) * 0.3;   // у краёв лента «резинит»
+                P.x = P.t = x; P.v = 0;
+            });
+            const endDrag = e => {
+                if (!drag || e.pointerId !== drag.id) return;
+                const d = drag; drag = null;
+                if (!d.active) return;
+                try { view.releasePointerCapture(e.pointerId); } catch (_) {}
+                const w = view.clientWidth || 1, dx = e.clientX - d.x;
+                const dir = Math.abs(d.vx) > 0.4 ? (d.vx < 0 ? 1 : -1) : (dx < -w * 0.15 ? 1 : dx > w * 0.15 ? -1 : 0);
+                if (!dir || !move(g + dir)) P.t = g - base;
+            };
+            view.addEventListener('pointerup', endDrag);
+            view.addEventListener('pointercancel', endDrag);
+
+            const dragging = () => drag && drag.active;
+            const frame = dt => {
+                clock += dt;
+                if (!ready && btns[0].offsetWidth) { setDot(dotOf(g), true, 1); ready = true; }
+                if (!visible || dragging()) nextAt = clock + HOLD;      // пока блок не на экране или его держат — не листаем
+                else if (ready && canMove && clock >= nextAt) advance();
+                for (let k = 0; k < 4; k++) { if (!dragging()) step(P, dt / 4); step(A, dt / 4); step(B, dt / 4); }
+                // старые слайды убираем (остаётся одна предыдущая пятёрка), положение при этом не прыгает
+                if (!dragging()) while (batchStart() - base > n) { strip.removeChild(strip.firstChild); base++; P.x -= 1; P.t -= 1; }
+            };
+            const render = () => {
+                strip.style.transform = 'translateX(' + (-P.x * 100).toFixed(3) + '%)';
+                act.style.transform = 'translateX(' + A.x.toFixed(2) + 'px)';
+                act.style.width = Math.max(8, B.x - A.x).toFixed(2) + 'px';
+            };
+
+            let last = performance.now(), raf = 0;
+            const loop = now => {
+                if (dead) return;
+                if (!root.isConnected) { inst.destroy(); return; }
+                const dt = Math.min((now - last) / 1000, 1 / 30); last = now;
+                frame(dt); render();
+                raf = requestAnimationFrame(loop);
+            };
+            raf = requestAnimationFrame(loop);
+
+            const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => { visible = es[es.length - 1].isIntersecting; }, { threshold: 0.3 }) : null;
+            if (io) io.observe(root); else visible = true;
+            const ro = 'ResizeObserver' in window ? new ResizeObserver(() => { if (ready) setDot(dotOf(g), true, 1); }) : null;
+            if (ro) ro.observe(dotsEl);
+
+            const inst = { destroy() { dead = true; cancelAnimationFrame(raf); if (io) io.disconnect(); if (ro) ro.disconnect(); } };
+            tagShowcaseInstance = inst;
         }
 
         function toggleLens(e, postId, imgUrl) {
@@ -1740,8 +2077,11 @@
             if (!likedPhotos.includes(idAsNumber)) toggleLike(null, postId);
         }
 
+        // ПК: окно входа всегда открыто слева, поэтому вместо его повторного открытия показываем уведомление
+        function showAuthRequired() { showToast('Нужно авторизоваться'); }
+
         function checkAuthOrShowModal() {
-            if (!currentUser) { openModal('authModal'); return false; }
+            if (!currentUser) { if (isDesktop()) showAuthRequired(); else openModal('authModal'); return false; }
             return true;
         }
         function handleAddClick() {
@@ -1758,7 +2098,7 @@
         }
         function handleLikeClick(e, postId) {
             if (e) e.stopPropagation();
-            if (!currentUser) { openModal('authModal'); return; }
+            if (!currentUser) { if (isDesktop()) showAuthRequired(); else openModal('authModal'); return; }
             if (navigator.vibrate) navigator.vibrate(20);
             toggleLike(e, postId);
         }
@@ -1836,7 +2176,7 @@
                         currentUser = existingUser;
                         localStorage.setItem('cult_user', JSON.stringify(existingUser));
                         closeModal({ target: authModal }, 'authModal');
-                        if (isDesktop()) showDefaultDock();
+                        if (isDesktop()) { showDefaultDock(); syncGuestMode(); }
                         loadRealPhotos(true);
                     } else { alert("Неверный пароль!"); }
                 } else {
@@ -1845,7 +2185,7 @@
                         currentUser = newUser;
                         localStorage.setItem('cult_user', JSON.stringify(newUser));
                         closeModal({ target: authModal }, 'authModal');
-                        if (isDesktop()) showDefaultDock();
+                        if (isDesktop()) { showDefaultDock(); syncGuestMode(); }
                         loadRealPhotos(true);
                     } else { alert("Ошибка: " + insertError.message); }
                 }
@@ -1882,6 +2222,7 @@
 
         function updatePostLikeCount(postId) {
             scheduleDockRefresh();
+            syncShowcaseLikes();
             const countSpan = document.getElementById(`like-count-${postId}`);
             if (!countSpan) return;
             const postLikes = allLikesCache.filter(l => l.photo_id === postId);
@@ -1892,7 +2233,7 @@
         async function toggleTagLike(e, tag) {
             e.stopPropagation();
             if (!currentUser) {
-                if (isDesktop()) { openModal('authModal'); return; }
+                if (isDesktop()) { showAuthRequired(); return; }
                 closeModal({ target: document.getElementById('searchModal') }, 'searchModal');
                 setTimeout(() => { openModal('authModal'); }, 450);
                 return;
@@ -2291,6 +2632,8 @@
                 const desk = isDesktop();
                 // На ПК окно загрузки медиа закрыть нельзя — его может только заменить другое окно справа
                 if (desk && id === 'submitModal' && !replacing) return;
+                // На ПК без авторизации окно поиска по тегам тоже нельзя закрыть
+                if (desk && id === 'searchModal' && !currentUser && !replacing) return;
                 const docked = desk && (id === 'profileModal' || id === 'authModal');
                 if (docked) {
                     // Слева на ПК всегда открыт вход (без авторизации) или свой профиль
@@ -2333,6 +2676,10 @@
                 }, 400);
                 // После закрытия другого окна справа возвращаем окно загрузки медиа
                 if (desk && !replacing && id !== 'submitModal' && DESKTOP_RIGHT_WINDOWS.includes(id)) openDefaultRightWindow();
+                if (id === 'chainsawModal' && !replacing) {
+                    if (!desk && chainsawReturnToSubmit) openModal('submitModal');
+                    chainsawReturnToSubmit = false;
+                }
             }
         }
 
@@ -2370,7 +2717,7 @@
             currentTouchModal = null;
         });
 
-        function openSearchModal() {
+        function openSearchModal(opts) {
             if (navigator.vibrate) navigator.vibrate(20);
             isFavoriteTagsView = false;
             renderTagsList();
@@ -2379,7 +2726,7 @@
             document.getElementById('searchTitle').innerText = 'Поиск по тегам';
             
             searchGridReturn = 'tags';
-            openModal('searchModal');
+            openModal('searchModal', opts);
 
             // Показываем нужные кнопки
             setFloating('fav');
@@ -2444,6 +2791,7 @@
         }
 
         function showFavoriteTags() {
+            if (!currentUser && isDesktop()) { showAuthRequired(); return; }
             if (navigator.vibrate) navigator.vibrate(20);
             isFavoriteTagsView = true;
             document.getElementById('tagsView').style.display = 'block';
@@ -2691,12 +3039,65 @@
             }
         }
 
-        // На ПК по умолчанию справа открыто окно загрузки медиа
+        // На ПК по умолчанию справа открыто окно загрузки медиа,
+        // а без авторизации — поиск по тегам (его нельзя закрыть)
         function openDefaultRightWindow() {
             if (!isDesktop()) return;
             const anyOpen = DESKTOP_RIGHT_WINDOWS.some(id => document.getElementById(id).classList.contains('active'));
-            if (!anyOpen) openModal('submitModal', { keepCollapsed: true });
+            if (anyOpen) return;
+            if (currentUser) openModal('submitModal', { keepCollapsed: true });
+            else openSearchModal({ keepCollapsed: true });
         }
+
+        // Подгоняет правую панель под состояние авторизации (вход / выход)
+        let desktopWasGuest = null;
+        function syncGuestMode() {
+            const guest = !currentUser;
+            document.body.classList.toggle('guest', isDesktop() && guest);
+            if (!isDesktop()) return;
+            const isActive = id => document.getElementById(id).classList.contains('active');
+            if (guest) {
+                ['submitModal', 'likesModal'].forEach(id => {
+                    if (isActive(id)) closeModal({ target: document.getElementById(id) }, id, true);
+                });
+                openDefaultRightWindow();
+            } else if (desktopWasGuest === true && isActive('searchModal')) {
+                closeModal({ target: document.getElementById('searchModal') }, 'searchModal', true);
+                openModal('submitModal', { keepCollapsed: true });
+            }
+            desktopWasGuest = guest;
+        }
+
+        // Окно Chainsaw Squad: открывается справа и занимает всю оставшуюся ширину
+        const CHAINSAW_URL = 'https://chainsawsquad.ru/';
+        let chainsawReturnToSubmit = false;   // мобильная версия: после закрытия сайта возвращаем окно загрузки
+        function toggleChainsaw() {
+            const modal = document.getElementById('chainsawModal');
+            if (modal.classList.contains('active')) { closeModal({ target: modal }, 'chainsawModal'); return; }
+            const frame = document.getElementById('chainsawFrame');
+            if (frame && !frame.getAttribute('src')) frame.setAttribute('src', CHAINSAW_URL);
+            if (!isDesktop()) {
+                const sub = document.getElementById('submitModal');
+                if (sub.classList.contains('active')) { chainsawReturnToSubmit = true; closeModal({ target: sub }, 'submitModal', true); }
+            }
+            openModal('chainsawModal');
+        }
+        (function syncChainsawButton() {
+            const modal = document.getElementById('chainsawModal');
+            const btn = document.getElementById('btnChainsaw');
+            if (!modal || !btn) return;
+            const submit = document.getElementById('submitModal');
+            const sync = () => {
+                const on = modal.classList.contains('active');
+                btn.classList.toggle('active', on);
+                btn.setAttribute('aria-pressed', String(on));
+                // Мобильная версия: кнопка висит над листом загрузки и прячется, пока открыт сайт
+                document.body.classList.toggle('ch-btn-show', !isDesktop() && !!submit && submit.classList.contains('active') && !on);
+            };
+            const mo = new MutationObserver(sync);
+            mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
+            if (submit) mo.observe(submit, { attributes: true, attributeFilter: ['class'] });
+        })();
 
         function refreshDockedProfile() {
             if (!isDesktop() || !currentUser || profileEditorOpen || !activeProfileUserId) return;
@@ -2731,7 +3132,7 @@
         document.addEventListener('keydown', (e) => {
             if (e.key !== 'Escape' || !isDesktop()) return;
             if (e.target && e.target.classList && e.target.classList.contains('profile-search-input')) return;
-            const open = DESKTOP_RIGHT_WINDOWS.filter(id => id !== 'submitModal').map(id => document.getElementById(id)).find(m => m && m.classList.contains('active'));
+            const open = DESKTOP_RIGHT_WINDOWS.filter(id => id !== 'submitModal' && !(id === 'searchModal' && !currentUser)).map(id => document.getElementById(id)).find(m => m && m.classList.contains('active'));
             if (open) { closeModal({ target: open }, open.id); return; }
             if (viewingOtherProfile) showDefaultDock();
         });
@@ -2749,6 +3150,7 @@
             if (desktopMQ.matches) {
                 document.body.classList.remove('modal-open');
                 showDefaultDock();
+                syncGuestMode();
                 openDefaultRightWindow();
                 updateControlsVisibility(feed.scrollTop);
             } else {
@@ -2757,7 +3159,7 @@
                 viewingOtherProfile = false;
                 profileEl.classList.remove('viewing-other');
                 authEl.classList.remove('dock-covered');
-                [profileEl, authEl].forEach(m => {
+                [profileEl, authEl, document.getElementById('chainsawModal')].forEach(m => {
                     clearTimeout(m._closeTimer);
                     m.classList.remove('active');
                     m.style.display = 'none';
@@ -2790,7 +3192,7 @@
         })();
 
         // Начальное состояние ПК-версии: слева профиль (или вход), справа загрузка медиа
-        if (isDesktop()) { showDefaultDock(); openDefaultRightWindow(); }
+        if (isDesktop()) { showDefaultDock(); syncGuestMode(); openDefaultRightWindow(); }
 
         setTimeout(() => {
             const topMask = document.querySelector('.blur-mask-top');
