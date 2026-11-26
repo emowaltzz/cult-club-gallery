@@ -638,17 +638,19 @@
 
         /* Кнопка и окно Chainsaw Squad существуют только в ПК-версии */
         .btn-chainsaw { display: none; }
-        #chainsawModal .modal-content { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
+        #chainsawModal .modal-content { background: #fff; border-color: #e6e6e6; -webkit-backdrop-filter: none; backdrop-filter: none; }
+        #chainsawModal .ch-open, #chainsawModal .ch-close { background: #fff; border-color: #e6e6e6; -webkit-backdrop-filter: none; backdrop-filter: none; }
         #chainsawModal .modal-body { padding: 0 14px 14px; overflow: hidden; }
         .ch-frame { flex: 1; width: 100%; min-height: 0; border: 0; border-radius: 14px; background: #fff; }
         .ch-open { display: none; }
 
         /* Мобильная версия: кнопка Chainsaw Squad над листом загрузки медиа, сайт — окно до самого верха */
         .ch-close { display: none; }
+        /* Кнопка Chainsaw Squad в ленте — под каруселью, прокручивается вместе с лентой */
+        .chainsaw-feed-wrap { width: 100%; max-width: 500px; display: flex; justify-content: center; margin: -8px 0 30px; }
+        .btn-chainsaw-feed { display: flex; align-items: center; justify-content: center; height: 38px; min-width: 190px; padding: 0 26px; border-radius: 999px; border: 1px solid #e6e6e6; background: #fff; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: var(--font-main); font-size: 15px; font-weight: 600; letter-spacing: .5px; white-space: nowrap; cursor: pointer; transition: transform .3s var(--smooth-ease), background .3s ease, color .3s ease; }
+        .btn-chainsaw-feed:active { transform: scale(.95); }
         @media (max-width: 1099.98px) {
-            .btn-chainsaw { display: flex; align-items: center; justify-content: center; position: fixed; left: 50%; bottom: calc(85vh + (15vh - 56px) / 2); width: min(70vw, 350px); height: 56px; min-width: 0; padding: 0 16px; border-radius: 999px; border: 1px solid var(--border); background: #fff; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: var(--font-main); font-size: min(6vw, 28px); font-weight: 600; letter-spacing: .5px; white-space: nowrap; cursor: pointer; z-index: 450; opacity: 0; visibility: hidden; pointer-events: none; transform: translateX(-50%) translateY(10px) scale(.95); transition: transform .4s var(--smooth-ease), opacity .3s ease, visibility 0s linear .4s; }
-            body.ch-btn-show .btn-chainsaw { opacity: 1; visibility: visible; pointer-events: auto; transform: translateX(-50%) scale(1); transition: transform .4s var(--smooth-ease), opacity .3s ease, visibility 0s linear 0s; }
-            body.ch-btn-show .btn-chainsaw:active { transform: translateX(-50%) scale(.95); }
             #chainsawModal .modal-content { height: calc(100dvh - env(safe-area-inset-top, 0px) - 10px); border-radius: 24px 24px 0 0; }
             #chainsawModal .modal-title { text-transform: uppercase; letter-spacing: .12em; }
             #chainsawModal .modal-drag-area { padding: 28px 60px 14px; }
@@ -666,6 +668,7 @@
             /* Фото в ленте не обрезаются при масштабировании окна */
             .post img { max-height: none; object-fit: contain; }
             .tag-showcase { max-width: var(--feed-w); }
+            .chainsaw-feed-wrap { display: none; }   /* на ПК кнопка не в ленте, а под правыми окнами меню */
 
             /* Окно авторизации — по центру слева, а не сверху */
             #authModal { top: 0; bottom: 0; align-items: center; }
@@ -684,13 +687,14 @@
             .ch-open { display: flex; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 1px solid var(--border); background: var(--btn-bg); box-shadow: 0 2px 5px var(--btn-shadow); align-items: center; justify-content: center; color: var(--icon-color); cursor: pointer; text-decoration: none; }
             .ch-open svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-            .btn-chainsaw { display: flex; align-items: center; justify-content: center; position: fixed; left: calc(var(--rwin-l) + var(--side-w) / 2); bottom: 20px; height: 38px; min-width: 190px; padding: 0 26px; border-radius: 999px; border: 1px solid var(--border); background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: var(--font-main); font-size: 15px; font-weight: 600; letter-spacing: .5px; white-space: nowrap; cursor: pointer; z-index: 450; opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); transition: transform .4s var(--smooth-ease), opacity .4s var(--smooth-ease), background .3s ease, color .3s ease, left .55s var(--smooth-ease), visibility 0s linear 0s; }
+            .btn-chainsaw { display: flex; align-items: center; justify-content: center; position: fixed; left: calc(var(--rwin-l) + var(--side-w) / 2); bottom: 20px; height: 38px; min-width: 190px; padding: 0 26px; border-radius: 999px; border: 1px solid #e6e6e6; background: #fff; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: var(--font-main); font-size: 15px; font-weight: 600; letter-spacing: .5px; white-space: nowrap; cursor: pointer; z-index: 450; opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); transition: transform .4s var(--smooth-ease), opacity .4s var(--smooth-ease), background .3s ease, color .3s ease, left .55s var(--smooth-ease), visibility 0s linear 0s; }
             .btn-chainsaw:active { transform: translateX(-50%) scale(.95); }
             @media (hover: hover) { .btn-chainsaw:hover { transform: translateX(-50%) scale(1.04); } }
-            /* Открыт сайт — кнопка плавно уезжает вправо и встаёт по центру открытого окна */
-            .btn-chainsaw.active { background: var(--text-color); color: var(--bg-color); left: calc((var(--rwin-l) + 100vw - var(--gap)) / 2); }
-            #chainsawModal .modal-title { text-transform: uppercase; letter-spacing: .12em; }
+            /* Открыт сайт — кнопка темнеет, плавно уезжает вправо и встаёт по центру открытого окна */
+            .btn-chainsaw.active { background: var(--text-color); border-color: var(--text-color); color: var(--bg-color); left: calc((var(--rwin-l) + 100vw - var(--gap)) / 2); }
             body.panels-collapsed .btn-chainsaw { opacity: 0; visibility: hidden; pointer-events: none; transform: translateX(-50%) translateY(12px) scale(.9); transition: transform .4s var(--smooth-ease), opacity .4s var(--smooth-ease), visibility 0s linear .4s; }
+            /* Открыт сайт — кнопка плавно уезжает вправо и встаёт по центру открытого окна */
+            #chainsawModal .modal-title { text-transform: uppercase; letter-spacing: .12em; }
         }
     </style>
 </head>
@@ -1635,6 +1639,7 @@
                 </div>
                 <div class="post static-post"><div class="image-container"><img src="${img4}" alt="Static Top 3"></div></div>
                 <div class="tag-showcase" id="tagShowcase"></div>
+                <div class="chainsaw-feed-wrap"><button type="button" class="btn-chainsaw-feed" onclick="toggleChainsaw()" aria-label="Chainsaw Squad" aria-pressed="false">𝕮𝖍𝖆𝖎𝖓𝖘𝖆𝖜 𝕾𝖖𝖚𝖆𝖉 ★</button></div>
             `);
 
             const reversedData = data ? [...data].reverse() : [];
@@ -1879,8 +1884,9 @@
             view.querySelector('.ts-next')?.addEventListener('click', e => { e.stopPropagation(); nextAt = clock + 7; move(g + 1); });
 
             // Свайп пальцем или мышью (вертикальная прокрутка ленты не затрагивается: touch-action: pan-y)
+            const SWIPE_ENABLED = false;   // свайп пальцем/мышью отключён
             view.addEventListener('pointerdown', e => {
-                if (!canMove || (e.pointerType === 'mouse' && e.button !== 0)) return;
+                if (!SWIPE_ENABLED || !canMove || (e.pointerType === 'mouse' && e.button !== 0)) return;
                 if (e.target.closest('.ts-like, .ts-nav')) return;
                 drag = { id: e.pointerId, x: e.clientX, y: e.clientY, active: false, from: 0, lastX: e.clientX, lastT: performance.now(), vx: 0 };
             });
@@ -3089,10 +3095,7 @@
             const submit = document.getElementById('submitModal');
             const sync = () => {
                 const on = modal.classList.contains('active');
-                btn.classList.toggle('active', on);
-                btn.setAttribute('aria-pressed', String(on));
-                // Мобильная версия: кнопка висит над листом загрузки и прячется, пока открыт сайт
-                document.body.classList.toggle('ch-btn-show', !isDesktop() && !!submit && submit.classList.contains('active') && !on);
+                document.querySelectorAll('.btn-chainsaw, .btn-chainsaw-feed').forEach(b => { b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
             };
             const mo = new MutationObserver(sync);
             mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
