@@ -51,6 +51,7 @@
         .floating-logo.shrunk { transform: translateX(-50%) scale(0.95); }
         body.modal-open .floating-logo img { filter: blur(10px) drop-shadow(0 8px 16px rgba(0,0,0,0.4)); }
         .floating-logo.hide { opacity: 0; transform: translateX(-50%) scale(0.9); pointer-events: none; }
+        .floating-logo-pc { display: none; }
 
         .feed { height: 100vh; overflow-y: scroll; padding-top: 80px; padding-bottom: 100px; display: flex; flex-direction: column; align-items: center; padding-left: 7px; padding-right: 7px; scrollbar-width: none; -ms-overflow-style: none; transition: filter 0.3s ease; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; position: relative; }
         .feed::-webkit-scrollbar { width: 0px; display: none; }
@@ -58,7 +59,7 @@
 
         .post { width: 100%; max-width: 500px; margin-bottom: 30px; display: flex; flex-direction: column; position: relative; }
         .image-container { position: relative; width: 100%; touch-action: pan-y; }
-        .post img { width: 100%; height: auto; max-height: 80vh; object-fit: cover; background-color: var(--fill-1); border-radius: 8px; display: block; }
+        .post img { width: 100%; height: auto; max-height: none; object-fit: contain; background-color: var(--fill-1); border-radius: 8px; display: block; }
 
         .post.last-published { position: relative; }
         .post.last-published .image-container { position: relative; border-radius: 8px; }
@@ -524,7 +525,17 @@
             .feed { padding-left: var(--feed-l); padding-right: calc(100vw - var(--feed-l) - var(--feed-w)); padding-top: 90px; padding-bottom: 150px; }
             .post, .skeleton-loading, .support-wrapper { max-width: var(--feed-w); }
             body.modal-open .feed { filter: none; }
-            .floating-logo { left: calc(var(--feed-l) + var(--feed-w) / 2); }
+            /* Логотип над лентой — абсолютно та же механика, что на телефоне (hide / shrunk из скролла),
+               но только когда меню свёрнуто. Пока меню развёрнуто — над лентой его нет, лого стоит над профилем. */
+            #logo { top: 15px; bottom: auto; left: calc(var(--feed-l) + var(--feed-w) / 2); }
+            body:not(.panels-collapsed) #logo { opacity: 0 !important; pointer-events: none; }
+            .floating-logo img { display: block; }
+            body.modal-open .floating-logo img { filter: drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.15)) drop-shadow(0px 0px 16px rgba(255, 255, 255, 0.08)) drop-shadow(0px 0px 24px rgba(255, 255, 255, 0.03)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2)); }
+
+            /* Логотип над профилем: пропадает вместе с меню при сворачивании, при наведении слегка увеличивается как кнопки */
+            .floating-logo-pc { display: block; top: 15px; bottom: auto; left: calc(var(--grp-l) + var(--side-w) / 2); pointer-events: auto; opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); transition: transform .4s var(--smooth-ease), opacity .4s var(--smooth-ease), visibility 0s linear 0s; }
+            @media (hover: hover) { .floating-logo-pc:hover { transform: translateX(-50%) scale(1.07); } }
+            body.panels-collapsed .floating-logo-pc { opacity: 0; visibility: hidden; pointer-events: none; transform: translateX(calc(-50% - 28px)) scale(.98); transition: opacity .4s var(--smooth-ease), transform .4s var(--smooth-ease), visibility 0s linear .4s; }
             .toast { left: calc(var(--feed-l) + var(--feed-w) / 2); }
             .keyboard-hide-btn { display: none !important; }
 
@@ -647,7 +658,7 @@
         /* Мобильная версия: кнопка Chainsaw Squad над листом загрузки медиа, сайт — окно до самого верха */
         .ch-close { display: none; }
         /* Кнопка Chainsaw Squad в ленте — под каруселью, прокручивается вместе с лентой */
-        .chainsaw-feed-wrap { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; margin: -8px 0 30px; }
+        .chainsaw-feed-wrap { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; margin: -8px 0 22px; }
         .chainsaw-feed-caption { margin-top: 14px; text-align: center; color: var(--secondary-text); font-size: 13px; line-height: 1.4; font-weight: 500; letter-spacing: .2px; }
         .chainsaw-feed-caption span { display: block; white-space: nowrap; }
         .chainsaw-caption-pc { display: none; }
@@ -666,16 +677,19 @@
            ПК-ДОПОЛНЕНИЯ (окно шире 1100px): вход по центру, фото без обрезки, Chainsaw Squad
            ===================================================================== */
         @media (min-width: 1100px) {
-            :root { --rbottom: calc(var(--panel-bottom) + 94px); }
+            :root { --logo-h: 100px; --profile-top: calc(15px + var(--logo-h) + 8px + 58px); --cap-h: 36.4px; --btn-bot: calc(var(--panel-bottom) + var(--cap-h) + 14px); --rbottom: calc(var(--btn-bot) + 38px + 22px); }
 
             /* Фото в ленте не обрезаются при масштабировании окна */
             .post img { max-height: none; object-fit: contain; }
             .tag-showcase { max-width: var(--feed-w); }
             .chainsaw-feed-wrap { display: none; }   /* на ПК кнопка не в ленте, а под правыми окнами меню */
 
+            /* Профиль сдвинут вниз: сверху лого, под ним строка поиска, затем окно */
+            #profileModal { top: var(--profile-top); }
+
             /* Окно авторизации — по центру слева, а не сверху */
-            #authModal { top: 0; bottom: 0; align-items: center; }
-            #authModal .modal-content { max-height: calc(100vh - 2 * var(--panel-bottom)); }
+            #authModal { top: calc(15px + var(--logo-h) + 8px); bottom: var(--panel-bottom); align-items: center; }
+            #authModal .modal-content { max-height: calc(100vh - 15px - var(--logo-h) - 8px - var(--panel-bottom)); }
 
             /* Без авторизации окно поиска по тегам нельзя закрыть */
             body.guest #searchModal .panel-close-btn { display: none; }
@@ -690,12 +704,12 @@
             .ch-open { display: flex; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; padding: 0; border-radius: 50%; border: 1px solid var(--border); background: var(--btn-bg); box-shadow: 0 2px 5px var(--btn-shadow); align-items: center; justify-content: center; color: var(--icon-color); cursor: pointer; text-decoration: none; }
             .ch-open svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-            .btn-chainsaw { display: flex; align-items: center; justify-content: center; position: fixed; left: calc(var(--rwin-l) + var(--side-w) / 2); bottom: 64px; height: 38px; min-width: 190px; padding: 0 26px; border-radius: 999px; border: 1px solid #e6e6e6; background: #fff; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: var(--font-main); font-size: 15px; font-weight: 600; letter-spacing: .5px; white-space: nowrap; cursor: pointer; z-index: 450; opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); transition: transform .4s var(--smooth-ease), opacity .4s var(--smooth-ease), background .3s ease, color .3s ease, left .55s var(--smooth-ease), visibility 0s linear 0s; }
+            .btn-chainsaw { display: flex; align-items: center; justify-content: center; position: fixed; left: calc(var(--rwin-l) + var(--side-w) / 2); bottom: var(--btn-bot); height: 38px; min-width: 190px; padding: 0 26px; border-radius: 999px; border: 1px solid #e6e6e6; background: #fff; box-shadow: 0 4px 10px var(--btn-shadow); color: var(--text-color); font-family: var(--font-main); font-size: 15px; font-weight: 600; letter-spacing: .5px; white-space: nowrap; cursor: pointer; z-index: 450; opacity: 1; visibility: visible; transform: translateX(-50%) scale(1); transition: transform .4s var(--smooth-ease), opacity .4s var(--smooth-ease), background .3s ease, color .3s ease, left .55s var(--smooth-ease), visibility 0s linear 0s; }
             .btn-chainsaw:active { transform: translateX(-50%) scale(.95); }
             @media (hover: hover) { .btn-chainsaw:hover { transform: translateX(-50%) scale(1.04); } }
             /* Открыт сайт — кнопка темнеет, плавно уезжает вправо и встаёт по центру открытого окна */
             .btn-chainsaw.active { background: var(--text-color); border-color: var(--text-color); color: var(--bg-color); left: calc((var(--rwin-l) + 100vw - var(--gap)) / 2); }
-            .chainsaw-caption-pc { display: block; position: fixed; left: calc(var(--rwin-l) + var(--side-w) / 2); bottom: 20px; transform: translateX(-50%); text-align: center; color: var(--secondary-text); font-size: 13px; line-height: 1.4; font-weight: 500; letter-spacing: .2px; pointer-events: none; z-index: 450; opacity: 1; visibility: visible; transition: left .55s var(--smooth-ease), opacity .4s var(--smooth-ease), transform .4s var(--smooth-ease), visibility 0s linear 0s; }
+            .chainsaw-caption-pc { display: block; position: fixed; left: calc(var(--rwin-l) + var(--side-w) / 2); bottom: var(--panel-bottom); transform: translateX(-50%); text-align: center; color: var(--secondary-text); font-size: 13px; line-height: 1.4; font-weight: 500; letter-spacing: .2px; pointer-events: none; z-index: 450; opacity: 1; visibility: visible; transition: left .55s var(--smooth-ease), opacity .4s var(--smooth-ease), transform .4s var(--smooth-ease), visibility 0s linear 0s; }
             .chainsaw-caption-pc span { display: block; white-space: nowrap; }
             .chainsaw-caption-pc.active { left: calc((var(--rwin-l) + 100vw - var(--gap)) / 2); }
             body.panels-collapsed .chainsaw-caption-pc { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(12px); transition: opacity .4s var(--smooth-ease), transform .4s var(--smooth-ease), visibility 0s linear .4s; }
@@ -712,6 +726,9 @@
 
     <div class="floating-logo hide" id="logo">
         <img src="logo.png" alt="Logo" id="logoImg">
+    </div>
+    <div class="floating-logo floating-logo-pc" id="logoPc">
+        <img src="logo.png" alt="Logo">
     </div>
 
     <main class="feed" id="feed"></main>
@@ -3212,5 +3229,16 @@
             if (bottomMask) bottomMask.style.transform = 'translateZ(0)';
         }, 100);
     </script>
+<script>
+(function () {
+    var img = document.getElementById('logoImg');
+    function syncLogoH() {
+        if (img && img.offsetHeight) document.documentElement.style.setProperty('--logo-h', img.offsetHeight + 'px');
+    }
+    if (img) img.addEventListener('load', syncLogoH);
+    window.addEventListener('resize', syncLogoH);
+    syncLogoH();
+})();
+</script>
 </body>
 </html>
