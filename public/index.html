@@ -453,6 +453,13 @@
         .support-wrapper { width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 10px; margin-bottom: 30px; }
         .support-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 30px; background: var(--text-color); color: var(--bg-color); text-decoration: none; border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px; width: 160px; }
         .chat-btn { display: inline-flex; align-items: center; justify-content: center; padding: 12px 30px; background: var(--btn-bg); color: var(--text-color); text-decoration: none; border: 1px solid var(--border); border-radius: 30px; font-size: 14px; font-weight: 600; letter-spacing: 1px; width: 160px; }
+        .legal-links { width: 100%; text-align: center; font-size: 12px; line-height: 1.7; color: var(--secondary-text); padding: 4px 12px 0; }
+        .legal-links a { color: var(--secondary-text); text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
+        .legal-links .age-badge { display: inline-block; border: 1px solid var(--secondary-text); border-radius: 6px; padding: 0 5px; font-size: 11px; font-weight: 600; margin-left: 4px; line-height: 1.5; }
+        .consent-row { display: flex; align-items: flex-start; gap: 10px; width: 100%; font-size: 12.5px; line-height: 1.4; color: var(--secondary-text); text-align: left; cursor: pointer; flex-shrink: 0; }
+        .consent-row input { flex: 0 0 auto; width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--text-color); cursor: pointer; }
+        .consent-row a, .auth-legal a { color: var(--text-color); text-decoration: underline; text-underline-offset: 2px; }
+        .auth-legal { font-size: 11.5px; line-height: 1.4; color: var(--secondary-text); text-align: center; padding: 0 6px; flex-shrink: 0; }
 
         /* Тост-уведомление о копировании */
         .toast {
@@ -806,6 +813,9 @@
                     <div class="pw-strength-text" id="pwStrengthText">Слишком короткий</div>
                 </div>
 
+                <label class="consent-row"><input type="checkbox" id="consentPd"><span>Согласен(на) на <a href="/consent.html" target="_blank" rel="noopener noreferrer">обработку персональных данных</a></span></label>
+                <label class="consent-row"><input type="checkbox" id="consentDist"><span>Согласен(на) на <a href="/consent-distribution.html" target="_blank" rel="noopener noreferrer">публикацию моих данных и контента</a> в приложении</span></label>
+                <div class="auth-legal">Нажимая «Продолжить», вы подтверждаете, что вам исполнилось 18 лет, и принимаете <a href="/terms.html" target="_blank" rel="noopener noreferrer">Пользовательское соглашение</a> и <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Политику конфиденциальности</a>.</div>
                 <button class="auth-btn" onclick="submitAuth()">Продолжить</button>
             </div>
         </div>
@@ -963,6 +973,12 @@
         const authModal = document.getElementById('authModal');
 
         let currentUser = null;
+        const getToken = () => localStorage.getItem('cult_token') || '';
+        async function rpcCall(name, args) {
+            const { data, error } = await supabaseClient.rpc(name, { p_token: getToken(), ...(args || {}) });
+            if (error && /unauthorized/i.test(error.message || '')) { alert('Сессия истекла. Войдите снова.'); logoutUser(); }
+            return { data, error };
+        }
         let allPostsData = []; 
         let likedPhotos = []; 
         let likedTags = [];
@@ -1085,13 +1101,13 @@
             if (!text) return '';
             let safeText = escapeHtml(text);
             // Markdown [text](url)
-            safeText = safeText.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+            safeText = safeText.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
             // **bold**
             safeText = safeText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
             // _italic_
             safeText = safeText.replace(/(^|[^A-Za-z0-9])_([^_]+)_(?![A-Za-z0-9])/g, '$1<em>$2</em>');
             // Обычные URL
-            safeText = safeText.replace(/(^|\s)(https?:\/\/[^\s]+)/g, '$1<a href="$2" target="_blank">$2</a>');
+            safeText = safeText.replace(/(^|\s)(https?:\/\/[^\s]+)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>');
             return safeText;
         }
 
@@ -1111,7 +1127,10 @@
         }
 
         function checkAuth() {
-            const savedUser = localStorage.getItem('cult_user');
+            let savedUser = localStorage.getItem('cult_user');
+            try { const su = JSON.parse(savedUser || 'null'); if (su && su.password !== undefined) { localStorage.setItem('cult_user', JSON.stringify({ id: su.id, username: su.username })); savedUser = localStorage.getItem('cult_user'); } } catch (_) {}
+            // Сессии, созданные до появления согласий, сбрасываем: пользователь войдёт заново и даст согласие
+            if (savedUser && (localStorage.getItem('cult_consent_v1') !== '1' || !localStorage.getItem('cult_token'))) { localStorage.removeItem('cult_user'); savedUser = null; }
             if (savedUser) currentUser = JSON.parse(savedUser);
             if (!currentUser) { likedPhotos = []; likedTags = []; }
         }
@@ -1154,7 +1173,7 @@
             if (!silent) body.innerHTML = '<div class="profile-empty">Загрузка профиля…</div>';
             openModal('profileModal');
 
-            const { data: account, error } = await supabaseClient.from('users').select('id, username').eq('id', userId).single();
+            const { data: account, error } = await supabaseClient.from('public_users').select('id, username').eq('id', userId).single();
             if (myToken !== profileLoadToken) return;
             if (error || !account) {
                 body.innerHTML = '<div class="profile-empty">Не удалось загрузить профиль.</div>';
@@ -1315,7 +1334,7 @@
             results.classList.add('open');
             const escaped = query.replace(/[,%_]/g, ch => '\\' + ch);
             const [usersResult, profilesResult] = await Promise.all([
-                supabaseClient.from('users').select('id, username').ilike('username', `%${escaped}%`).limit(20),
+                supabaseClient.from('public_users').select('id, username').ilike('username', `%${escaped}%`).limit(20),
                 supabaseClient.from('user_profiles').select('user_id, display_name, avatar_url').ilike('display_name', `%${escaped}%`).limit(20)
             ]);
             if (requestId !== profileSearchRequest) return;
@@ -1363,11 +1382,11 @@
             const { data: existing } = await supabaseClient.from('likes').select('tag').eq('user_id', currentUser.id).in('tag', values);
             const alreadyFollowing = values.every(t => (existing || []).some(x => x.tag === t));
             if (alreadyFollowing) {
-                const { error: delError } = await supabaseClient.from('likes').delete().eq('user_id', currentUser.id).in('tag', values);
+                const { error: delError } = await rpcCall('app_set_tag_likes', { p_tags: values, p_on: false });
                 if (delError) { alert('Не удалось отменить подписку.'); return; }
             } else {
                 const missing = values.filter(t => !(existing || []).some(x => x.tag === t));
-                const { error: addError } = await supabaseClient.from('likes').insert(missing.map(tag => ({ user_id: currentUser.id, tag })));
+                const { error: addError } = await rpcCall('app_set_tag_likes', { p_tags: missing, p_on: true });
                 if (addError) { alert('Не удалось подписаться: ' + addError.message); return; }
             }
             await openUserProfile(profileId);
@@ -1415,11 +1434,9 @@
                 return;
             }
 
-            const { error } = await supabaseClient.from('profile_tags').upsert(
-                tags.map(tag => ({ user_id: currentUser.id, tag })),
-                { onConflict: 'user_id,tag', ignoreDuplicates: true }
-            );
+            const { data: addRes, error } = await rpcCall('app_tag_add', { p_tags: tags });
             if (error) { alert('Не удалось сохранить теги: ' + error.message); return; }
+            if (addRes && addRes.status === 'conflict') { showToast('Тег уже привязан к другому профилю: ' + (addRes.tags || []).join(', ')); return; }
             showToast('Теги сохранены');
             await openUserProfile(currentUser.id);
         }
@@ -1449,9 +1466,9 @@
                 return;
             }
 
-            const { error } = await supabaseClient.from('profile_tags').update({ tag: newTag })
-                .eq('user_id', currentUser.id).eq('tag', oldTag);
+            const { data: editRes, error } = await rpcCall('app_tag_edit', { p_old: oldTag, p_new: newTag });
             if (error) { alert('Не удалось изменить тег: ' + error.message); return; }
+            if (editRes && editRes.status === 'conflict') { showToast('Тег уже привязан к другому профилю: ' + newTag); return; }
             if (tagProfileOwners[normalizeTagKey(oldTag)] === currentUser.id) delete tagProfileOwners[normalizeTagKey(oldTag)];
             tagProfileOwners[normalizeTagKey(newTag)] = currentUser.id;
             await openUserProfile(currentUser.id);
@@ -1460,8 +1477,7 @@
         async function deleteProfileTag(tag) {
             if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
             if (!confirm(`Удалить тег ${normalizeSearchTag(tag)} из профиля?`)) return;
-            const { error } = await supabaseClient.from('profile_tags').delete()
-                .eq('user_id', currentUser.id).eq('tag', tag);
+            const { error } = await rpcCall('app_tag_delete', { p_tag: tag });
             if (error) { alert('Не удалось удалить тег: ' + error.message); return; }
             if (tagProfileOwners[normalizeTagKey(tag)] === currentUser.id) delete tagProfileOwners[normalizeTagKey(tag)];
             await openUserProfile(currentUser.id);
@@ -1470,19 +1486,11 @@
         async function removeProfileAvatar() {
             if (!currentUser || String(activeProfileUserId) !== String(currentUser.id)) return;
             if (!confirm('Удалить аватар профиля?')) return;
-            const oldUrl = document.querySelector('#profileModalBody .profile-avatar')?.src || currentUser.avatar_url || '';
-            const { error } = await supabaseClient.from('user_profiles').upsert(
-                { user_id: currentUser.id, avatar_url: null }, { onConflict: 'user_id' }
-            );
-            if (error) { alert('Не удалось удалить аватар: ' + error.message); return; }
             try {
-                const marker = '/storage/v1/object/public/avatars/';
-                const at = oldUrl.indexOf(marker);
-                if (at >= 0) {
-                    const path = decodeURIComponent(oldUrl.slice(at + marker.length).split('?')[0]);
-                    if (path) await supabaseClient.storage.from('avatars').remove([path]);
-                }
-            } catch (storageError) {}
+                const fd = new FormData(); fd.append('token', getToken()); fd.append('action', 'remove');
+                const resp = await fetch('/api/avatar', { method: 'POST', body: fd });
+                if (!resp.ok) { alert('Не удалось удалить аватар.'); return; }
+            } catch (e) { alert('Не удалось удалить аватар.'); return; }
             currentUser = { ...currentUser, avatar_url: null };
             localStorage.setItem('cult_user', JSON.stringify(currentUser));
             await openUserProfile(currentUser.id);
@@ -1544,10 +1552,7 @@
             const display_name = document.getElementById('profileEditName').value.trim();
             const bio = document.getElementById('profileEditBio').value.trim();
             if (!display_name) { alert('Укажите ник.'); return; }
-            const { error } = await supabaseClient.from('user_profiles').upsert(
-                { user_id: currentUser.id, display_name, bio },
-                { onConflict: 'user_id' }
-            );
+            const { error } = await rpcCall('app_profile_save', { p_patch: { display_name, bio } });
             if (error) { alert('Не удалось сохранить профиль: ' + error.message); return; }
             currentUser = { ...currentUser, display_name, bio };
             localStorage.setItem('cult_user', JSON.stringify(currentUser));
@@ -1567,21 +1572,17 @@
                 ctx.drawImage(bitmap, sx, sy, side, side, 0, 0, 500, 500);
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.88));
                 if (!blob) throw new Error('Не удалось обработать изображение');
-                const path = `${currentUser.id}/${Date.now()}.jpg`;
-                const { error: uploadError } = await supabaseClient.storage.from('avatars').upload(path, blob, { contentType: 'image/jpeg', upsert: true });
-                if (uploadError) throw uploadError;
-                const { data: publicData } = supabaseClient.storage.from('avatars').getPublicUrl(path);
-                const { error } = await supabaseClient.from('user_profiles').upsert(
-                    { user_id: currentUser.id, avatar_url: publicData.publicUrl },
-                    { onConflict: 'user_id' }
-                );
-                if (error) throw error;
-                currentUser = { ...currentUser, avatar_url: publicData.publicUrl };
+                const fd = new FormData(); fd.append('token', getToken()); fd.append('action', 'upload'); fd.append('avatar', blob, 'avatar.jpg');
+                const resp = await fetch('/api/avatar', { method: 'POST', body: fd });
+                const out = await resp.json().catch(() => ({}));
+                if (!resp.ok || !out.url) throw new Error(out.error || 'upload failed');
+                const avatarUrl = out.url;
+                currentUser = { ...currentUser, avatar_url: avatarUrl };
                 localStorage.setItem('cult_user', JSON.stringify(currentUser));
                 await openUserProfile(currentUser.id);
             } catch (err) {
                 console.error(err);
-                alert('Не удалось загрузить аватар. Проверьте настройки хранилища avatars в Supabase.');
+                alert('Не удалось загрузить аватар. Попробуйте ещё раз.');
             }
         }
 
@@ -1592,7 +1593,8 @@
         }
 
         function logoutUser() {
-            localStorage.removeItem('cult_user');
+            const tk = getToken(); if (tk) { try { supabaseClient.rpc('app_logout', { p_token: tk }); } catch (_) {} }
+            localStorage.removeItem('cult_user'); localStorage.removeItem('cult_token');
             currentUser = null;
             likedPhotos = [];
             likedTags = [];
@@ -1612,6 +1614,8 @@
 
             const { data, error } = await supabaseClient.from('photos').select('*').eq('status', 'approved').order('created_at', { ascending: true });
             if (error) { console.error("Ошибка загрузки фото:", error); return; }
+            // Защита от внедрения кода через теги из базы
+            (data || []).forEach(p => { p.tag = String(p.tag || '').replace(/[<>"'`\\&\u0000-\u001f]/g, ''); });
 
             const [{ data: allLikes }, { data: profileTagRows }] = await Promise.all([
                 supabaseClient.from('likes').select('photo_id, tag, user_id'),
@@ -1659,8 +1663,8 @@
                 <div class="post static-post"><div class="image-container"><img src="${img1}" alt="Static Top 1"></div></div>
                 <div class="post static-post"><div class="image-container"><img src="${img2}" alt="Static Top 2"></div></div>
                 <div class="support-wrapper" id="topSupportWrapper">
-                    <a href="https://t.me/ettoveracult?direct" target="_blank" class="support-btn">SUPPORT</a>
-                    <a href="https://t.me/cultclubchatroom" target="_blank" class="chat-btn" id="topChatBtn">CHAT</a>
+                    <a href="https://t.me/ettoveracult?direct" target="_blank" rel="noopener noreferrer" class="support-btn">SUPPORT</a>
+                    <a href="https://t.me/cultclubchatroom" target="_blank" rel="noopener noreferrer" class="chat-btn" id="topChatBtn">CHAT</a>
                 </div>
                 <div class="post static-post"><div class="image-container"><img src="${img4}" alt="Static Top 3"></div></div>
                 <div class="tag-showcase" id="tagShowcase"></div>
@@ -1681,7 +1685,7 @@
                                     new Date(post.created_at).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
                     feed.insertAdjacentHTML('beforeend', `
-                        <div class="post" id="post-${post.id}" data-id="${post.id}" data-tag="${post.tag}" data-desc="${post.description || ''}">
+                        <div class="post" id="post-${post.id}" data-id="${post.id}" data-tag="${post.tag}" data-desc="${escapeHtml(post.description || '')}">
                             <div class="image-container" ondblclick="handleDoubleTap(event, '${post.id}')" onclick="handleSingleTap(event, '${post.id}')">
                                 <img src="${post.image_url}" alt="Photo" class="dynamic-img">
                                 <div class="double-tap-heart" id="heart-${post.id}">
@@ -1735,8 +1739,12 @@
                 <div class="post static-post" id="bottom-static-1"><div class="image-container"><img src="${img1}" alt="Static"></div></div>
                 <div class="post static-post" id="bottom-static-2"><div class="image-container"><img src="${img2}" alt="Static"></div></div>
                 <div class="support-wrapper">
-                    <a href="https://t.me/ettoveracult?direct" target="_blank" class="support-btn">SUPPORT</a>
-                    <a href="https://t.me/cultclubchatroom" target="_blank" class="chat-btn">CHAT</a>
+                    <a href="https://t.me/ettoveracult?direct" target="_blank" rel="noopener noreferrer" class="support-btn">SUPPORT</a>
+                    <a href="https://t.me/cultclubchatroom" target="_blank" rel="noopener noreferrer" class="chat-btn">CHAT</a>
+                    <div class="legal-links">
+                        Вопросы по данным и обращения: SUPPORT или <a href="mailto:emmawaltzz@vk.com">emmawaltzz@vk.com</a><br>
+                        <a href="/privacy.html" target="_blank" rel="noopener noreferrer">Политика</a> · <a href="/terms.html" target="_blank" rel="noopener noreferrer">Соглашение</a> · <a href="/consent.html" target="_blank" rel="noopener noreferrer">Согласие</a><span class="age-badge">18+</span>
+                    </div>
                 </div>
             `);
 
@@ -2135,7 +2143,7 @@
         }
 
         const checkUsernameExists = async (username) => {
-            const { data } = await supabaseClient.from('users').select('id').eq('username', username).single();
+            const { data } = await supabaseClient.from('public_users').select('id').eq('username', username).maybeSingle();
             return !!data;
         };
 
@@ -2197,29 +2205,24 @@
             if (!username || !password) { alert("Заполните оба поля!"); return; }
             if (/[а-яА-ЯёЁ]/.test(username)) { alert("Логин должен содержать только латиницу!"); return; }
             if (/[а-яА-ЯёЁ]/.test(password)) { alert("Пароль должен содержать только латиницу!"); return; }
+            if (!document.getElementById('consentPd').checked || !document.getElementById('consentDist').checked) { alert("Для входа отметьте оба согласия."); return; }
 
             const btn = document.querySelector('.auth-btn');
             btn.innerText = 'Проверка...'; btn.disabled = true;
             try {
-                const { data: existingUser } = await supabaseClient.from('users').select('*').eq('username', username).single();
-                if (existingUser) {
-                    if (existingUser.password === password) {
-                        currentUser = existingUser;
-                        localStorage.setItem('cult_user', JSON.stringify(existingUser));
-                        closeModal({ target: authModal }, 'authModal');
-                        if (isDesktop()) { showDefaultDock(); syncGuestMode(); }
-                        loadRealPhotos(true);
-                    } else { alert("Неверный пароль!"); }
-                } else {
-                    const { data: newUser, error: insertError } = await supabaseClient.from('users').insert([{ username, password }]).select().single();
-                    if (newUser) {
-                        currentUser = newUser;
-                        localStorage.setItem('cult_user', JSON.stringify(newUser));
-                        closeModal({ target: authModal }, 'authModal');
-                        if (isDesktop()) { showDefaultDock(); syncGuestMode(); }
-                        loadRealPhotos(true);
-                    } else { alert("Ошибка: " + insertError.message); }
+                const { data: res, error: rpcError } = await supabaseClient.rpc('app_auth', { p_username: username, p_password: password });
+                if (rpcError || !res) { alert("Ошибка: " + (rpcError ? rpcError.message : "нет ответа")); }
+                else if (res.status === 'ok') {
+                    currentUser = { id: res.user.id, username: res.user.username };
+                    localStorage.setItem('cult_user', JSON.stringify(currentUser)); localStorage.setItem('cult_consent_v1', '1'); localStorage.setItem('cult_token', res.token);
+                    closeModal({ target: authModal }, 'authModal');
+                    if (isDesktop()) { showDefaultDock(); syncGuestMode(); }
+                    loadRealPhotos(true);
                 }
+                else if (res.status === 'bad_password') alert("Неверный пароль!");
+                else if (res.status === 'locked') alert("Слишком много попыток. Попробуйте через 15 минут.");
+                else if (res.status === 'weak') alert("Для нового аккаунта пароль должен быть не короче 6 символов.");
+                else alert("Логин: до 64 символов.");
             } catch (err) { alert("Ошибка сети"); } finally {
                 btn.innerText = 'Продолжить'; btn.disabled = false;
                 usernameInput.value = ''; passwordInput.value = '';
@@ -2232,7 +2235,7 @@
             const btn = document.querySelector(`#post-${postId} .like-btn`);
             if (btn) btn.disabled = true;
             if (likedPhotos.includes(idAsNumber)) {
-                const { error } = await supabaseClient.from('likes').delete().eq('photo_id', idAsNumber).eq('user_id', currentUser.id);
+                const { error } = await rpcCall('app_set_like', { p_photo_id: idAsNumber, p_tag: null, p_on: false });
                 if (!error) {
                     likedPhotos = likedPhotos.filter(id => id !== idAsNumber);
                     if (btn) btn.classList.remove('liked');
@@ -2240,7 +2243,7 @@
                     updatePostLikeCount(idAsNumber);
                 }
             } else {
-                const { error } = await supabaseClient.from('likes').insert([{ photo_id: idAsNumber, user_id: currentUser.id }]);
+                const { error } = await rpcCall('app_set_like', { p_photo_id: idAsNumber, p_tag: null, p_on: true });
                 if (!error) {
                     likedPhotos.push(idAsNumber);
                     if (btn) btn.classList.add('liked');
@@ -2271,7 +2274,7 @@
             }
             const btn = e.currentTarget; btn.disabled = true;
             if (likedTags.includes(tag)) {
-                const { error } = await supabaseClient.from('likes').delete().eq('tag', tag).eq('user_id', currentUser.id);
+                const { error } = await rpcCall('app_set_like', { p_photo_id: null, p_tag: tag, p_on: false });
                 if (!error) {
                     likedTags = likedTags.filter(t => t !== tag);
                     btn.classList.remove('liked');
@@ -2279,7 +2282,7 @@
                     updateTagLikeCount(tag);
                 }
             } else {
-                const { error } = await supabaseClient.from('likes').insert([{ tag: tag, user_id: currentUser.id }]);
+                const { error } = await rpcCall('app_set_like', { p_photo_id: null, p_tag: tag, p_on: true });
                 if (!error) {
                     likedTags.push(tag);
                     btn.classList.add('liked');
@@ -2391,13 +2394,10 @@
                 return;
             }
 
-            const { error } = await supabaseClient.from('photos')
-                .update({ description: updatedDescription })
-                .eq('id', post.id)
-                .eq('tag', post.tag);
+            const { error } = await rpcCall('app_photo_set_description', { p_photo_id: Number(post.id), p_description: updatedDescription });
             if (error) {
                 console.error('Ошибка изменения описания:', error);
-                alert('Не удалось сохранить описание. Проверьте права UPDATE для таблицы photos в Supabase.');
+                alert('Не удалось сохранить описание.');
                 return;
             }
 
@@ -2419,7 +2419,7 @@
             list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--secondary-text);">Загрузка...</div>';
             
             const { data, error } = await supabaseClient.from('comments')
-                .select(`*, users(username)`)
+                .select('*')
                 .eq('photo_id', photoId)
                 .order('created_at', { ascending: false });
 
@@ -2431,6 +2431,11 @@
 
             const commentUserIds = [...new Set((data || []).map(c => c.user_id).filter(Boolean))];
             let commentAvatars = {};
+            let commentNames = {};
+            if (commentUserIds.length) {
+                const { data: nameRows } = await supabaseClient.from('public_users').select('id, username').in('id', commentUserIds);
+                commentNames = Object.fromEntries((nameRows || []).map(r => [String(r.id), r.username]));
+            }
             if (commentUserIds.length) {
                 const { data: profileRows, error: avatarError } = await supabaseClient
                     .from('user_profiles').select('user_id, avatar_url').in('user_id', commentUserIds);
@@ -2458,7 +2463,7 @@
                 if (isMyComment) {
                     actionButtons = `
                         <div class="comment-actions">
-                            <button class="comment-act-btn" onclick="editComment('${c.id}', '${c.text.replace(/'/g, "\\'")}')">Изменить</button>
+                            <button class="comment-act-btn" data-text="${escapeHtml(c.text)}" onclick="editComment('${c.id}', this.dataset.text)">Изменить</button>
                             <button class="comment-act-btn" onclick="deleteComment('${c.id}')">Удалить</button>
                         </div>
                     `;
@@ -2469,7 +2474,7 @@
                     repliesHTML = `<div class="comment-replies">${replies.map(r => renderComment(r, false)).join('')}</div>`;
                 }
 
-                const authorName = c.users?.username || 'unknown';
+                const authorName = commentNames[String(c.user_id)] || 'unknown';
                 const authorAvatar = commentAvatars[String(c.user_id)];
                 const avatarMarkup = authorAvatar
                     ? `<img class="comment-author-avatar" src="${escapeHtml(authorAvatar)}" alt="Аватар ${escapeHtml(authorName)}" loading="lazy">`
@@ -2480,7 +2485,7 @@
                         ${actionButtons}
                         <div class="comment-header">
                             <span class="comment-author-wrap" style="cursor:pointer;" onclick="openUserProfile('${c.user_id}')">${avatarMarkup}<span class="comment-author">@${escapeHtml(authorName)}</span></span>
-                            <span class="comment-text" id="comment-text-${c.id}">${c.text}</span>
+                            <span class="comment-text" id="comment-text-${c.id}">${escapeHtml(c.text)}</span>
                         </div>
                         <span class="comment-date">${dateStr}</span>
                         ${repliesHTML}
@@ -2512,7 +2517,7 @@
 
         async function deleteComment(commentId) {
             if (!confirm('Удалить комментарий?')) return;
-            const { error } = await supabaseClient.from('comments').delete().eq('id', commentId).eq('user_id', currentUser.id);
+            const { error } = await rpcCall('app_comment_delete', { p_id: Number(commentId) });
             if (!error) {
                 loadComments(currentCommentPhotoId);
             } else {
@@ -2527,7 +2532,7 @@
             if (!text) return;
 
             if (editingCommentId) {
-                const { error } = await supabaseClient.from('comments').update({ text }).eq('id', editingCommentId).eq('user_id', currentUser.id);
+                const { error } = await rpcCall('app_comment_edit', { p_id: Number(editingCommentId), p_text: text });
                 if (!error) {
                     editingCommentId = null;
                     input.value = '';
@@ -2535,8 +2540,7 @@
                     loadComments(currentCommentPhotoId);
                 }
             } else {
-                const payload = { photo_id: currentCommentPhotoId, user_id: currentUser.id, text: text, parent_id: replyToId };
-                const { error } = await supabaseClient.from('comments').insert([payload]);
+                const { error } = await rpcCall('app_comment_add', { p_photo_id: Number(currentCommentPhotoId), p_parent_id: replyToId ? Number(replyToId) : null, p_text: text });
                 if (!error) {
                     input.value = '';
                     cancelReply();
@@ -2594,6 +2598,7 @@
             const formData = new FormData();
             formData.append('photo', currentFileToUpload);
             formData.append('tag', tagInput);
+            formData.append('token', getToken());
             formData.append('description', descInput);
 
             const btn = document.querySelector('.btn-submit');
