@@ -4,10 +4,10 @@ import { randomUUID } from 'crypto';
 
 export const runtime = 'nodejs';
 
-// Ключи вшиты в код, как в исходной версии (SUPABASE_SECRET_KEY берётся из Vercel)
+// Секреты (SUPABASE_SECRET_KEY, TELEGRAM_BOT_TOKEN) берутся из переменных Vercel, в коде их нет
 const SUPABASE_URL = 'https://asoljhfvsrxmeniwsvel.supabase.co';
 const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
-const BOT_TOKEN = '9282771149:AAG8sfR7iDHAqffvmgvllqOvy-DV0jYIKVY';
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN; // задаётся в Vercel → Settings → Environment Variables
 const CHAT_ID = '424175344'; // Админ ID
 
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -26,8 +26,8 @@ function detectImageType(buf) {
 
 export async function POST(request) {
   try {
-    if (!SUPABASE_SECRET_KEY) {
-      console.error('Submit API: не задан SUPABASE_SECRET_KEY');
+    if (!SUPABASE_SECRET_KEY || !BOT_TOKEN) {
+      console.error('Submit API: не заданы SUPABASE_SECRET_KEY или TELEGRAM_BOT_TOKEN');
       return NextResponse.json({ error: 'Сервис временно недоступен' }, { status: 500 });
     }
 

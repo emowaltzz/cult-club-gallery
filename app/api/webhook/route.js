@@ -4,8 +4,8 @@ import { randomUUID } from 'crypto';
 
 export const runtime = 'nodejs';
 
-// Ключи вшиты в код, как в исходной версии (SUPABASE_SECRET_KEY берётся из Vercel)
-const BOT_TOKEN = '9282771149:AAG8sfR7iDHAqffvmgvllqOvy-DV0jYIKVY';
+// Секреты (SUPABASE_SECRET_KEY, TELEGRAM_BOT_TOKEN) берутся из переменных Vercel, в коде их нет
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN; // задаётся в Vercel → Settings → Environment Variables
 const ADMIN_ID = '424175344';
 const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET || ''; // необязательно: если задан, должен совпадать с secret_token из setWebhook
 const APP_URL = 'https://cultclubgallery.ru';
