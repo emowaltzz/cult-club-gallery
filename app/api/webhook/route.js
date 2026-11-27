@@ -27,6 +27,34 @@ function storagePathFromUrl(url) {
   return i === -1 ? null : decodeURIComponent(String(url).slice(i + marker.length).split('?')[0]);
 }
 
+const manageKeyboard = (id) => ({
+  inline_keyboard: [
+    [{ text: '✏️ Редактировать', callback_data: `edit_${id}` }],
+    [{ text: '🗑 Удалить полностью', callback_data: `delask_${id}` }],
+  ],
+});
+const deleteOnlyKeyboard = (id) => ({ inline_keyboard: [[{ text: '🗑 Удалить полностью', callback_data: `delask_${id}` }]] });
+
+// Полное удаление публикации: комментарии, лайки, запись в базе и файл в хранилище
+async function purgePhoto(photoId) {
+  const { data: row } = await supabaseAdmin.from('photos').select('image_url').eq('id', photoId).maybeSingle();
+  await supabaseAdmin.from('comments').delete().eq('photo_id', photoId);
+  await supabaseAdmin.from('likes').delete().eq('photo_id', photoId);
+  const { error } = await supabaseAdmin.from('photos').delete().eq('id', photoId);
+  const path = storagePathFromUrl(row?.image_url);
+  if (path) await supabaseAdmin.storage.from('photos').remove([path]);
+  return !error;
+}
+
+// Правка сообщения с кнопкой: у фото-сообщений меняется подпись, у текстовых — текст
+const editCallbackMessage = (cq, text, markup) => {
+  const base = { chat_id: cq.message.chat.id, message_id: cq.message.message_id };
+  if (markup) base.reply_markup = markup;
+  return cq.message.photo
+    ? tg('editMessageCaption', { ...base, caption: text })
+    : tg('editMessageText', { ...base, text });
+};
+
 export async function POST(request) {
   try {
     // 0. Если секрет задан — принимаем запросы только от Telegram (секрет передаётся в setWebhook)
@@ -37,13 +65,31 @@ export async function POST(request) {
 
     const body = await request.json();
 
-    // 1. /start
+    // 1. /start: приветствие с двумя кнопками; при первом запуске сообщение закрепляется
     if (body.message && body.message.text === '/start') {
-      await tg('sendMessage', {
-        chat_id: body.message.chat.id,
+      const startChatId = body.message.chat.id;
+
+      // Первый запуск = в чате ещё нет закреплённого сообщения от бота
+      let alreadyPinned = false;
+      try {
+        const chatInfo = await (await tg('getChat', { chat_id: startChatId })).json();
+        alreadyPinned = Boolean(chatInfo?.result?.pinned_message?.from?.is_bot);
+      } catch (e) {}
+
+      const sent = await (await tg('sendMessage', {
+        chat_id: startChatId,
         text: 'Привет, переходи в галерею.',
-        reply_markup: { inline_keyboard: [[{ text: 'Перейти', web_app: { url: APP_URL } }]] },
-      });
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: 'Перейти', web_app: { url: APP_URL } }],
+            [{ text: 'cultclubgallery.ru', url: 'https://cultclubgallery.ru' }],
+          ],
+        },
+      })).json();
+
+      if (!alreadyPinned && sent?.ok && sent.result?.message_id) {
+        await tg('pinChatMessage', { chat_id: startChatId, message_id: sent.result.message_id, disable_notification: true });
+      }
       return NextResponse.json({ ok: true });
     }
 
@@ -56,7 +102,7 @@ export async function POST(request) {
 
       await tg('answerCallbackQuery', { callback_query_id: cq.id });
 
-      const m = /^(approve|reject|edit)_([\w-]+)$/.exec(cq.data || '');
+      const m = /^(approve|reject|edit|delask|delyes|delno)_([\w-]+)$/.exec(cq.data || '');
       if (!m) return NextResponse.json({ ok: true });
       const [, action, photoId] = m;
 
@@ -65,20 +111,36 @@ export async function POST(request) {
         await tg('editMessageCaption', {
           chat_id: chatId, message_id: messageId,
           caption: `✅ ОПУБЛИКОВАНО\nID: ${photoId}`,
-          reply_markup: { inline_keyboard: [[{ text: '✏️ Редактировать', callback_data: `edit_${photoId}` }]] },
+          reply_markup: manageKeyboard(photoId),
         });
       }
 
       if (action === 'reject') {
         // Отклонённое удаляем полностью: и файл, и запись
-        const { data: row } = await supabaseAdmin.from('photos').select('image_url').eq('id', photoId).maybeSingle();
-        const path = storagePathFromUrl(row?.image_url);
-        if (path) await supabaseAdmin.storage.from('photos').remove([path]);
-        await supabaseAdmin.from('photos').delete().eq('id', photoId);
+        await purgePhoto(photoId);
         await tg('editMessageCaption', {
           chat_id: chatId, message_id: messageId,
           caption: `❌ ОТКЛОНЕНО И УДАЛЕНО\nID: ${photoId}`,
         });
+      }
+
+      // Полное удаление опубликованной публикации: сначала подтверждение
+      if (action === 'delask') {
+        await editCallbackMessage(cq,
+          `🗑 Стереть публикацию полностью?\nID: ${photoId}\nФото, комментарии и лайки будут удалены без возможности восстановления.`,
+          { inline_keyboard: [[
+            { text: 'Да, стереть', callback_data: `delyes_${photoId}` },
+            { text: 'Отмена', callback_data: `delno_${photoId}` },
+          ]] });
+      }
+      if (action === 'delno') {
+        await editCallbackMessage(cq,
+          cq.message.photo ? `✅ ОПУБЛИКОВАНО\nID: ${photoId}` : `Удаление отменено.\nID: ${photoId}`,
+          cq.message.photo ? manageKeyboard(photoId) : deleteOnlyKeyboard(photoId));
+      }
+      if (action === 'delyes') {
+        const ok = await purgePhoto(photoId);
+        await editCallbackMessage(cq, ok ? `🗑 УДАЛЕНО ПОЛНОСТЬЮ\nID: ${photoId}` : `⚠️ Не удалось удалить, смотрите логи.\nID: ${photoId}`);
       }
 
       if (action === 'edit') {
@@ -114,12 +176,12 @@ export async function POST(request) {
           await supabaseAdmin.from('photos').update({ image_url: urlData.publicUrl }).eq('id', photoId);
           const oldPath = storagePathFromUrl(old?.image_url);
           if (oldPath) await supabaseAdmin.storage.from('photos').remove([oldPath]); // старый файл не оставляем
-          await tg('sendMessage', { chat_id: chatId, text: `✅ Фото для ID ${photoId} обновлено!` });
+          await tg('sendMessage', { chat_id: chatId, text: `✅ Фото для ID ${photoId} обновлено!`, reply_markup: deleteOnlyKeyboard(photoId) });
         }
       } else if (msg.text) {
         const newTag = msg.text.trim().replace(/[<>"'`\\&\u0000-\u001f]/g, '').slice(0, 64);
         await supabaseAdmin.from('photos').update({ tag: newTag }).eq('id', photoId);
-        await tg('sendMessage', { chat_id: chatId, text: `✅ Тег для ID ${photoId} обновлён на ${newTag}!` });
+        await tg('sendMessage', { chat_id: chatId, text: `✅ Тег для ID ${photoId} обновлён на ${newTag}!`, reply_markup: deleteOnlyKeyboard(photoId) });
       }
     }
 
