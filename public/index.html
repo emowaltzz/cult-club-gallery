@@ -692,7 +692,10 @@
             .chainsaw-feed-wrap { display: none; }   /* на ПК кнопка не в ленте, а под правыми окнами меню */
 
             /* Профиль сдвинут вниз: сверху лого, под ним строка поиска, затем окно */
-            #profileModal { top: var(--profile-top); }
+            #profileModal { top: var(--profile-top); bottom: calc(var(--panel-bottom) + 4px); }
+
+            /* Правые окна начинаются на уровне строки поиска слева (профиль минус высота поиска) */
+            #submitModal, #searchModal, #likesModal, #chainsawModal { top: calc(var(--profile-top) - 58px); }
 
             /* Окно авторизации — по центру слева, а не сверху */
             #authModal { top: calc(15px + var(--logo-h) + 8px); bottom: var(--panel-bottom); align-items: center; }
